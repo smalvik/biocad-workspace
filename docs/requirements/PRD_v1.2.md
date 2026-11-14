@@ -174,6 +174,11 @@ flowchart TB
 
 **Модель:** GitHub monorepo. `main` — утверждённые релизы, `develop` — интеграционная ветка. Любая задача трекера, включая документацию/исправление, ведётся в **собственной ветке**, открывает **один PR в `develop`**; прямые push в `develop/main` запрещены.
 
+**Согласованное исключение 14.11.2026:** пользователь поручил после проверки WB-02
+слить его через PR в `develop`, затем `develop` через отдельный PR в `main`,
+и начать WB-03 от `develop`. Это снимок кода до релиза; публикация версии/образов
+и deploy остаются отдельными действиями. См. `DECISIONS.md`.
+
 Conventional Commits v1.0.0 стандартизирует **сообщения коммитов**, а не имена веток. Поэтому проект вводит согласованный формат веток, совместимый по типам:
 
 `<type>/<issue-id>-<short-description>` — например, `feat/wb-04-employee-search`, `fix/wb-11-prevent-double-booking`, `ci/wb-09-release-pipeline`, `docs/wb-10-adr-c2`. Типы: `feat`, `fix`, `chore`, `ci`, `test`, `docs`, `refactor`. Коммиты: `feat(map): add employee search`, `fix(booking): prevent overlapping reservations`. Ссылка на тикет — в PR; branch/commit lint — обязательный статус.

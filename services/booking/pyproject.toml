@@ -1,0 +1,40 @@
+[project]
+name = "biocad-booking"
+version = "0.1.0"
+description = "Booking Service: floors, spaces, occupancy and the only writer of bookings"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.115,<0.116",
+    "uvicorn[standard]>=0.32,<0.33",
+    "pydantic-settings>=2.6,<3",
+    "sqlalchemy[asyncio]>=2.0.36,<2.1",
+    "asyncpg>=0.30,<0.31",
+    "alembic>=1.14,<2",
+    "itsdangerous>=2.2,<3",
+]
+
+[dependency-groups]
+dev = [
+    "aio-pika>=9.5,<10",
+    "pytest>=8.3,<9",
+    "pytest-asyncio>=0.24,<0.25",
+    "httpx>=0.28,<0.29",
+    "allure-pytest>=2.13,<3",
+    "ruff>=0.8,<0.9",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "integration: needs real PostgreSQL / running service",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "ASYNC"]

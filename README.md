@@ -1,13 +1,115 @@
-# BIOCAD Workspace Booking — Codex handoff kit
+# BIOCAD Workspace Booking
 
-> IMPORTANT: This repository currently contains **requirements, demo data and reference mockups**. It **does not** yet contain the working React/FastAPI service, successful CI, deployed site, official BIOCAD UI kit or valid releases. The user asked for a three-day full-stack interview assignment; all demonstrations must be backed by real code, testing and deploy evidence.
+React/Vite, независимые FastAPI Booking и Assistant, PostgreSQL, RabbitMQ,
+Mailpit и nginx. WB-01 интегрирован через PR #2 с успешным CI и post-merge regression.
+В WB-02 добавлен Booking API с демо-сессиями, миграцией и защитой PostgreSQL;
+результат его проверок — в [WB-02](docs/changes/WB-02.md).
+Страница пока показывает статусы сервисов. Карта, форма бронирования,
+MCP/LLM и Notification Worker остаются следующими задачами.
+
+Статус и доказательства: [CURRENT_STATE](docs/context/CURRENT_STATE.md),
+[PROGRESS](docs/context/PROGRESS.md), [WB-01](docs/changes/WB-01.md).
+Публичный deploy и опубликованные релизы пока не подтверждены.
+
+## Локальный запуск
+
+Нужны Docker с Linux containers и Compose >= 2.24.4. Node и uv на хосте не нужны.
+Из корня репозитория:
+
+```powershell
+docker compose --env-file .env.example -f infra/compose.yaml up -d --build --wait
+```
+
+Страница: http://localhost:8080. Booking Swagger: http://localhost:8080/api/docs.
+Assistant Swagger: http://localhost:8080/api/v1/assistant/docs. Mailpit: http://localhost:8025.
+API/БД/почта опубликованы только на loopback; RabbitMQ доступен внутри сети Compose.
+Проверка БД: http://localhost:8080/api/v1/readyz. `/healthz` проверяет жизнь процесса,
+`/readyz` Booking проверяет PostgreSQL и возвращает 503 при недоступности БД.
+
+Для собственных настроек скопируйте `.env.example` в игнорируемый `.env` и используйте
+`--env-file .env` вместо `--env-file .env.example`. Не меняйте пароль уже созданного
+PostgreSQL volume только через env: это не изменит пароль роли в БД.
+LLM-ключи для WB-01 не требуются. Значения по умолчанию подходят только локальному демо.
+Booking при запуске выполняет Alembic `upgrade head`. Локальный Compose включает
+`SEED_DEMO_DATA=true`: вымышленные данные из `docs/data/demo_fixture.json` загружаются
+идемпотентно, без перезаписи существующих броней. Вне локального окружения нужен
+собственный `SESSION_SECRET` длиной минимум 32 символа.
+
+Остановить стенд с сохранением данных:
+
+```powershell
+docker compose --env-file .env.example -f infra/compose.yaml down
+```
+
+## Проверки
+
+С Python 3.12+ и Docker:
+
+```powershell
+python scripts/check.py
+python scripts/check.py --run-type regression
+python scripts/check_policy.py
+```
+
+Каждый прогон создаёт отдельный Compose-проект без host ports и отдельные volumes;
+использует `.env.example`, а LLM-ключи отключает. После проверки удаляет только свои
+контейнеры и тестовые volumes. Уже запущенный проект `biocad` сохраняется.
+
+Проверяются сборка/TypeScript, Ruff, pytest двух сервисов, настоящий PostgreSQL,
+AMQP round trip через durable queue с persistent message, SMTP → Mailpit,
+Vitest и Playwright Chromium для desktop/mobile. E2E пока проверяет стартовую страницу,
+proxy и отказ Assistant, а не бронирование или реальный LLM.
+
+Логи, `run.json`, Allure results и Playwright HTML/trace сохраняются отдельно
+в `artifacts/<UTC-run-id>/` (исключено из Git). SHA в отчёте — базовый HEAD;
+`working_tree=dirty` явно отмечает незакоммиченные изменения.
+
+`.github/workflows/ci.yaml` запускает эти проверки для PR в `develop`, полный
+доступный набор после push в `develop`, генерирует Allure HTML и загружает artifacts.
+Для WB-01 подтверждены [PR CI](https://github.com/smalvik/biocad-workspace/actions/runs/43598925846)
+и [post-merge regression](https://github.com/smalvik/biocad-workspace/actions/runs/43599195552).
+Публикация отчёта, staging, immutable release images и production — WB-08/WB-09.
+
+## Booking API — WB-02
+
+Локальные демо-логины: `e01` … `e12`, пароль по умолчанию `demo-workspace`
+(только вымышленные аккаунты). E01 — Анна, e02 — Дмитрий, e03 — Мария.
+`DEMO_PASSWORD` задаёт пароль при первом seed; повторный seed пароль существующей
+учётной записи не меняет. Настоящего SSO нет.
+
+В [Swagger](http://localhost:8080/api/docs):
+
+1. Выполните `POST /api/v1/auth/login` с `username` и `password`.
+   Браузер сохранит HttpOnly session cookie; ответ содержит `csrf_token`.
+2. Прочитайте `GET /api/v1/floors` и `GET /api/v1/spaces` с `floor_id`, `from`, `to`.
+   Даты — ISO с offset, например `2026-11-16T12:00:00+03:00`.
+3. Для `POST /api/v1/bookings` передайте `X-CSRF-Token`, уникальный `Idempotency-Key`
+   и точные `space_id`, `start_at`, `end_at`. Передайте их только после явного
+   решения подтвердить этот ресурс/интервал. Сервер возьмёт владельца из сессии.
+4. `GET /api/v1/bookings/me` показывает свои записи; `POST /api/v1/bookings/{id}/cancel`
+   с тем же CSRF-токеном отменяет только собственную бронь.
+
+Первое подтверждение — 201; повтор идентичного запроса с тем же ключом — 200
+и та же бронь, даже после отмены. Новый payload с прежним ключом и пересечение — 409.
+Смежные интервалы разрешены; отмена освобождает слот. Отсутствие сессии — 401,
+чужая отмена/неверный CSRF — 403, некорректный период — 422. Новые брони в прошлом
+отклоняются; это локальное правило WB-02. Нужны даты в будущем относительно сервера.
+
+Время хранится/возвращается в UTC; отображение будущего интерфейса — Europe/Moscow.
+D-07 закреплён за Анной и не бронируется. D-03 имеет два фиксированных слота
+16.11.2026 (10–12 Мария, 14–16 Павел МСК); 12–14 свободно. Этаж 3 пока без ресурсов.
+Поля reservations описывают бронь на время, не физическое присутствие.
+
+Outbox-событие сохраняется с бронью в одной транзакции; отправки через RabbitMQ
+и писем о пользовательских бронях пока нет. [ADR-001](docs/adr/001-booking-consistency.md).
+Runner проверяет сохранность после настоящего restart PostgreSQL и Booking.
 
 ## Begin here (VS Code + Codex)
 1. Unzip the handoff; open **`biocad-workspace`** as the VS Code workspace folder (`File → Open Folder`).
 2. Install/open the official **Codex IDE extension**, sign in using your ChatGPT account; or use Codex CLI from the workspace terminal.
 3. Open `START_HERE.md` and paste the text from `CODEX_FIRST_PROMPT.md` into Codex. The root `AGENTS.md` is its recurring task contract.
 4. Run `python scripts/verify_handoff.py` to confirm files and asset counts. This does not test a product.
-5. Let Codex perform a **read-only inventory and plan first**, then start WB-01 on its own branch. Continue task-by-task, not by pasting the full PRD into every chat.
+5. Read `CURRENT_STATE.md` and `PROGRESS.md`, then continue the next unfinished WB task on its own branch.
 6. Configure API keys and tokens **locally** using env files ignored by Git and GitHub Actions Secrets, never in chats or committed files.
 
 ## Canonical project contents

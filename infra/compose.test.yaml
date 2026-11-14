@@ -1,0 +1,13 @@
+# Isolated checks publish no ports and never reuse the developer's data volumes.
+# Requires Docker Compose >= 2.24.4 for !reset.
+services:
+  postgres:
+    ports: !reset []
+  booking:
+    ports: !reset []
+  assistant:
+    ports: !reset []
+  web:
+    ports: !reset []
+  mailpit:
+    ports: !reset []
