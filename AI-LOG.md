@@ -56,3 +56,11 @@ availability, Swagger/CSRF inputs и logout, без создания польз�
 Создан локальный `5f3f661` (`feat(booking)`), staged secret scan/policy/diff checks
 прошли. SHA и результаты записаны отдельным documentation commit той же WB-02;
 push второй ветки не выполнялся.
+
+Новое поручение: WB-02 отправлен, PR #4 прошёл CI `43602548303` и самопроверку,
+слит в develop `523c116`; main promotion PR #6 открыт. Явное разрешение пользователя
+на pre-release main snapshot отражено в DECISIONS/PRD; CI проверяет обе базы.
+Post-merge `43602959863` обнаружил ReadError при повторном использовании соединения
+после ожидаемого outbox 500. Создана issue #7 / fix/wb-11-outbox-probe: Connection: close
+только у аварийного probe; проверки rollback/201 сохранены. Локальная регрессия
+`20261114T141005Z-14493f`: 52 passed. Продуктовый race bug не заявляется.

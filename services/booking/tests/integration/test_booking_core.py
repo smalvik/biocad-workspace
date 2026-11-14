@@ -263,7 +263,11 @@ async def test_outbox_failure_rolls_back_booking_and_allows_clean_retry(api, dat
     body = slot("D-16")
     try:
         response = await api.post(
-            "/api/v1/bookings", json=body, headers={"Idempotency-Key": key, "X-Request-ID": correlation}
+            "/api/v1/bookings",
+            json=body,
+            # The injected unhandled 500 closes this connection. The following
+            # retry must not race a keep-alive socket that is being closed.
+            headers={"Idempotency-Key": key, "X-Request-ID": correlation, "Connection": "close"},
         )
         assert response.status_code == 500
         async with database.connect() as connection:
