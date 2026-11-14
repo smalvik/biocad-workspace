@@ -2,7 +2,7 @@
 
 | Issue | PR | Коммит/SHA | Файл:строка | Allure | Статус |
 |---|---|---|---|---|---|
-| WB-01 | TBD | TBD | TBD | TBD | planned |
+| WB-01 | Not created | Base `4b005dd`, uncommitted | [Runner](../../scripts/check.py), [evidence](../evidence/WB-01-local.md) | [Local HTML](../../artifacts/20261114T124950Z-46a9ee/allure-report/index.html) | Locally tested; not merged/released |
 | WB-02 | TBD | TBD | TBD | TBD | planned |
 | WB-03 | TBD | TBD | TBD | TBD | planned |
 | WB-04 | TBD | TBD | TBD | TBD | planned |

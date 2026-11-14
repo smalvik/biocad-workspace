@@ -15,4 +15,4 @@ assert calendar>=12, f'Unexpected calendar PNG count: {calendar}'
 assert len(fixture['employees'])>=12 and len(fixture['spaces'])>=27
 print('OK — Codex handoff documents and visual assets verified.')
 print('Tasks:',len(backlog),'Responsive screens:',sum(counts.values()),'Calendar PNGs:',calendar,'Demo employees:',len(fixture['employees']))
-print('This is NOT a product test; React/FastAPI and deployments are not present.')
+print('This verifies handoff assets only. Use python scripts/check.py to test the implementation.')
