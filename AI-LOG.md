@@ -136,3 +136,5 @@ GitHub token читался в память и передавался через
   Command: `python artifacts/run_logged.py artifacts/WB-05-regression-complete.log python scripts/check.py --run-type regression`.
   Local HTML tooling initially lacked npx; separate ignored Node/Java/Allure image
   prepared. This did not change test results or runtime images. Remote delivery pending.
+  Implementation committed as `7a28ec836562133ea8b540744858e99ed4b77fac`.
+  Final standalone Allure generation with `biocad-allure:local` exited 0.
