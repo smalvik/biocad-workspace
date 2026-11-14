@@ -21,7 +21,12 @@ def create_app() -> FastAPI:
     @app.get("/healthz", tags=["ops"])
     @app.get(f"{API_PREFIX}/healthz", tags=["ops"], include_in_schema=False)
     async def healthz() -> dict:
-        return {"status": "ok", "service": "assistant", "version": get_settings().git_sha}
+        return {
+            "status": "ok",
+            "service": "assistant",
+            "version": get_settings().git_sha,
+            "release_version": get_settings().release_version,
+        }
 
     return app
 

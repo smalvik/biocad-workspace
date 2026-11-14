@@ -12,11 +12,11 @@
 | PostgreSQL schema/tests | Alembic core schema, GiST [start,end), per-user idempotency, atomic outbox and fictional seed; real concurrency + restart regression passed locally |
 | RabbitMQ/MCP/real LLM | Compose RabbitMQ + AMQP smoke implemented; application RPC/MCP/LLM not implemented |
 | Mailpit/email sending | Compose Mailpit + fictional SMTP smoke implemented; Notification Worker not implemented |
-| GitHub repository/branches/PRs | WB-01/02/WB-11 pushed; PR #4/#8 into develop, PR #6 into main merged; WB-03 local branch from develop |
-| Docker Hub image/release | Local runtime/test images built; nothing published to Docker Hub |
-| Ubuntu 22.04 staging/production | NOT DEPLOYED by this package |
+| GitHub repository/branches/PRs | WB-03 PR #9 merged into develop af00fa1; WB-09 separate CI branch, issue #10 |
+| Docker Hub image/release | Updated publisher credentials verified; SHA/version/digest pipeline implemented; first push/release pending |
+| Staging/production | Existing host is Ubuntu 24.04, 4 CPUs/8 GiB, Traefik ingress. Dedicated BIOCAD keys and restricted dispatcher installed; app not deployed yet |
 | Allure report/evidence | WB-03 local: 79 passed, Allure 69 results + 10 Vitest; actual desktop/mobile screenshots; CI artifacts for integrated tasks |
-| GitHub Actions | WB-02/WB-11 PRs plus full develop/main regression passed; WB-03 remote run not created |
+| GitHub Actions | WB-03 PR and post-merge regression PASS; WB-09 publication/staging/prod jobs implemented, actual delivery pending |
 | Official BIOCAD UI Kit | NOT PROVIDED / not verified; approximate reference styling only |
 
 Source of truth for requirements: `docs/requirements/PRD_v1.2.md`. Source of truth for implementation state: actual git tree, code, test command results and links; update this status as work progresses.

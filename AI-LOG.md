@@ -45,3 +45,21 @@ volumes для проверок; SVG из API вместо bitmap и атома�
 локальный compose up с сохранением volumes. Секреты не коммитились/не выводились;
 GitHub token читался в память и передавался через environment, не argv/URL.
 Реальные персональные данные в OpenRouter не отправлялись; MCP/LLM ещё не реализованы.
+
+- **WB-09, 2026-11-14:** по явному запросу владельца настроить delivery до WB-04.
+  WB-03 опубликована, PR #9 self-reviewed и слита в develop `af00fa1`; CI
+  `43608443234` и post-merge `43608755923` прошли. Новая отдельная WB-09 / issue #10.
+  Реализованы manifest guards, build-once SHA/digest images, CI/staging/prod/Allure,
+  ограниченный root-owned SSH dispatcher, backup и image rollback. Полный локальный
+  run `20261114T153725Z-794475`: 91 passed; финальные focused delivery unit: 13 passed.
+  Отдельный реальный runtime proof проверил backup, намеренно неверный web image и
+  восстановление предыдущего, dev IDs не изменились. Ошибки начального pytest параметра
+  и отсутствующего fault-образа зафиксированы и исправлены.
+  Ключ в Cygwin home не найден; auto-review отклонил неподтверждённый другой-project key.
+  Владелец затем явно предоставил root/password в `.env` и поручил создать новый ключ;
+  создан BIOCAD admin key, сохранён путь, проверен вход, существующие authorized_keys
+  сохранены. Отдельный restricted CI key, forced-command user и `/opt/biocad` bootstrap
+  установлены. Старый Docker Hub PAT оказался expired, обновлён владельцем; новый login PASS,
+  Secrets безопасно обновлены stdin. Фактически сервер Ubuntu 24.04/8 GiB/4 CPU с
+  Traefik: адаптировано подключение только Web к существующему ingress. Существующие
+  контейнеры/proxy не перезапускались. Первый реальный CI delivery/release ещё ожидается.

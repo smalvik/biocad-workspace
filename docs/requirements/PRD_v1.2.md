@@ -189,6 +189,14 @@ Conventional Commits v1.0.0 стандартизирует **сообщения 
 
 ## 8. Релизная политика и CI/CD
 
+**Уточнение 2026-11-14 (см. DECISIONS.md):** по поручению пользователя WB-09 выполняется
+до WB-04. PR публикует SHA-candidate после проверок; merge в develop запускает полный
+regression и staging. Merge develop → main запускает сборку один раз для main SHA,
+server staging regression и production из тех же digests. Version/latest и GitHub Release
+публикуются после production smoke. Первый v1.0.0 — промежуточное демо, не полный MVP.
+Фактический сервер Ubuntu 24.04 использует Traefik; только production Web подключается
+к существующей ingress-сети, остальные сервисы имеют отдельные частные сети/volumes.
+
 **SemVer:** только `1.MINOR.PATCH` в тестовом задании. Базовая линия `v1.0.0`, следующий функциональный релиз `v1.1.0`, исправление `v1.1.1`. `feat` → MINOR; `fix` → PATCH; если в пакете и feature и bugfix — один MINOR; при breaking change в пределах задания не повышать MAJOR, а документировать несовместимость и согласовать. **Версию получает не отдельная PR-ветка, а проверенный snapshot `develop`/GitHub Release**.
 
 **Workflow:**

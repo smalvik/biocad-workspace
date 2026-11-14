@@ -65,7 +65,12 @@ def create_app() -> FastAPI:
     @app.get(f"{API_PREFIX}/healthz", tags=["ops"], include_in_schema=False)
     async def healthz() -> dict:
         """Liveness: the process is up. Does not touch dependencies."""
-        return {"status": "ok", "service": "booking", "version": get_settings().git_sha}
+        return {
+            "status": "ok",
+            "service": "booking",
+            "version": get_settings().git_sha,
+            "release_version": get_settings().release_version,
+        }
 
     @app.get("/readyz", tags=["ops"])
     @app.get(f"{API_PREFIX}/readyz", tags=["ops"], include_in_schema=False)

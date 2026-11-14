@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     session_secret: str = "dev-only-insecure-secret"
     display_tz: str = "Europe/Moscow"
     git_sha: str = "dev"
+    release_version: str = "unreleased"
     seed_demo_data: bool = False
     demo_password: str = "demo-workspace"
 
