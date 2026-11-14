@@ -94,3 +94,20 @@ GitHub token читался в память и передавался через
   desktop/mobile screenshots. Existing dev volume: 7 bookings before/after, account
   password rows unchanged, 12 avatar URLs refreshed; live login/asset/logout PASS.
   Generated SSH/Docker-auth directories now have restricted Windows ACLs; no key data logged.
+
+- **WB-04 released:** final PR #16 check/publication `43634407373` PASS, merged
+  develop `a00f590`; post-merge `43635049967` passed full server regression and staging
+  (115 Allure, Vitest separately). Main PR #17 CI `43635067010` PASS, self-reviewed
+  explicitly as agent review, merged `16826d4`. Main workflow `43636402995` PASS;
+  server `20261114T201924Z-e69216`: 131 passed, all 20 commands exit 0, prebuilt
+  digests, clean source. Stage/prod smoke passed; published v1.1.0 at 20:24:26 UTC,
+  server Allure 116 and exact digest/release assets. Independent public HTTPS
+  desktop/mobile smoke 4 passed, exit 0; no booking writes.
+  Current stage/prod manifests match the released main candidate, 12 BIOCAD containers
+  healthy. All 23 original container IDs/images/start times and baseline sample HTTP
+  statuses preserved. Production backup file exists, previous v1.0.0 manifest retained.
+  An empty local DACL from an earlier ACL edit initially blocked SSH snapshot reads;
+  granted only current owner/SYSTEM/Administrators on the five newly generated BIOCAD
+  key/auth files, then real snapshots succeeded. Existing keys and server SSH settings
+  untouched. Actual commands and evidence: `docs/evidence/WB-04-remote.md`.
+  WB-05 form/own bookings/cancel remains the next unimplemented product task.
