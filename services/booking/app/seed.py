@@ -32,8 +32,15 @@ async def seed():
             await db.execute(insert(model).values(**values).on_conflict_do_nothing())
 
         await add(Office, id="moscow-a", name=fixture["office"])
-        for number in (2, 3):
-            await add(Floor, id=f"floor-{number}", office_id="moscow-a", number=number, name=f"Этаж {number}")
+        for item in fixture["floors"]:
+            statement = insert(Floor).values(**item, office_id="moscow-a")
+            # Demo geometry is managed by this fixture; bookings/accounts are not overwritten.
+            await db.execute(
+                statement.on_conflict_do_update(
+                    index_elements=[Floor.id],
+                    set_={"plan": statement.excluded.plan},
+                )
+            )
         for item in fixture["employees"]:
             await add(
                 Employee,
@@ -52,15 +59,20 @@ async def seed():
                     password_hash=hash_password(settings.demo_password),
                 )
         for item in fixture["spaces"]:
-            await add(
-                Space,
+            statement = insert(Space).values(
                 id=item["id"],
                 floor_id=f"floor-{item['floor_number']}",
                 kind=item["kind"],
                 desk_mode=item["desk_mode"],
                 capacity=item.get("capacity", 1),
                 zone=item["zone"],
-                layout={key: item[key] for key in ("x", "y") if key in item},
+                layout=item["layout"],
+            )
+            await db.execute(
+                statement.on_conflict_do_update(
+                    index_elements=[Space.id],
+                    set_={"layout": statement.excluded.layout},
+                )
             )
         for item in fixture["permanent_assignments"]:
             await add(

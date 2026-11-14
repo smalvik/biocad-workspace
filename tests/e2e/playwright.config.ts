@@ -15,7 +15,8 @@ export default defineConfig({
     baseURL: process.env.BASE_URL ?? "http://localhost:8080",
     locale: "ru-RU",
     timezoneId: "Europe/Moscow",
-    trace: "retain-on-failure",
+    // Authenticated flows must not store session cookies/CSRF in network traces.
+    trace: "off",
     screenshot: "only-on-failure",
   },
   projects: [
