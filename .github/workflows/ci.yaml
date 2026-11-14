@@ -61,6 +61,9 @@ jobs:
 
   package:
     name: Publish immutable candidates
+    concurrency:
+      group: candidate-${{ github.event.pull_request.head.sha || github.sha }}
+      cancel-in-progress: false
     needs: check
     if: >-
       vars.REGISTRY_ENABLED == 'true' &&
