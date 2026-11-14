@@ -8,7 +8,8 @@ from sqlalchemy.exc import IntegrityError
 
 from app.auth import DB, User, Writer
 from app.errors import ApiError
-from app.models import Booking, Floor, Office, OutboxEvent, PermanentAssignment, Space
+from app.models import Booking, Employee, Floor, Office, OutboxEvent, PermanentAssignment, Space
+from app.people import person_public
 from app.schemas import BookingRequest, BookingView, OffsetDateTime
 
 router = APIRouter(prefix="/api/v1", tags=["booking"])
@@ -175,6 +176,21 @@ async def snapshot(
             .order_by(PermanentAssignment.valid_from)
         )
     )
+    employee_ids = {row.employee_id for row in [*reservations, *assignments]}
+    people = {
+        person.id: person_public(person)
+        for person in await db.scalars(select(Employee).where(Employee.id.in_(employee_ids)))
+    }
+    # PostgreSQL DISTINCT ON keeps one next reservation per resource in a single query.
+    upcoming = {
+        row.space_id: {"start_at": row.start_at, "end_at": row.end_at}
+        for row in await db.scalars(
+            select(Booking)
+            .where(Booking.space_id.in_(ids), Booking.status == "confirmed", Booking.start_at >= end_at)
+            .distinct(Booking.space_id)
+            .order_by(Booking.space_id, Booking.start_at, Booking.id)
+        )
+    }
     items = []
     for space in spaces:
         periods = [row for row in reservations if row.space_id == space.id]
@@ -192,6 +208,16 @@ async def snapshot(
                 "layout": space.layout,
                 "is_available_for_full_interval": space.desk_mode != "DEDICATED" and not periods,
                 "is_partial": bool(periods) and covered < (end_at - start_at).total_seconds(),
+                "occupancy_kind": (
+                    "dedicated"
+                    if space.desk_mode == "DEDICATED"
+                    else "multiple"
+                    if len(periods) > 1
+                    else "reserved"
+                    if periods
+                    else "free"
+                ),
+                "next_reservation": upcoming.get(space.id),
                 "reservations": [
                     {
                         "booking_id": row.id,
@@ -199,11 +225,17 @@ async def snapshot(
                         "start_at": row.start_at,
                         "end_at": row.end_at,
                         "is_mine": row.employee_id == employee_id,
+                        "person_public": people.get(row.employee_id),
                     }
                     for row in periods
                 ],
                 "assignments": [
-                    {"employee_id": row.employee_id, "valid_from": row.valid_from, "valid_to": row.valid_to}
+                    {
+                        "employee_id": row.employee_id,
+                        "valid_from": row.valid_from,
+                        "valid_to": row.valid_to,
+                        "person_public": people.get(row.employee_id),
+                    }
                     for row in assignments
                     if row.space_id == space.id
                 ],
@@ -218,6 +250,7 @@ async def snapshot(
     }
 
 
+@router.get("/floors/{floor_id}/occupancy")
 @router.get("/spaces")
 async def spaces(
     floor_id: str,

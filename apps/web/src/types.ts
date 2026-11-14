@@ -19,12 +19,52 @@ export type Floor = {
   office_name: string;
   plan: Plan;
 };
+export type PersonPublic = {
+  id: string;
+  full_name: string;
+  job_title: string;
+  department: string;
+  avatar_url?: string | null;
+  fictional: boolean;
+};
+export type EmployeeLocation = {
+  relation: "assignment" | "reservation";
+  space_id: string;
+  space_kind: "DESK" | "MEETING_ROOM";
+  desk_mode: "DEDICATED" | "FREEDESK" | null;
+  floor_id: string;
+  floor_number: number;
+  floor_name: string;
+  office_id: string;
+  office_name: string;
+  booking_id?: string;
+  start_at?: string;
+  end_at?: string;
+  valid_from?: string;
+  valid_to?: string | null;
+};
+export type EmployeeSearchItem = PersonPublic & {
+  locations: EmployeeLocation[] | null;
+};
+export type PeriodResponse = {
+  from: string | null;
+  to: string | null;
+  snapshot_at: string;
+};
+export type EmployeeSearchResponse = PeriodResponse & {
+  items: EmployeeSearchItem[];
+};
+export type EmployeeLocationResponse = PeriodResponse & {
+  employee: PersonPublic;
+  locations: EmployeeLocation[];
+};
 export type Reservation = {
   booking_id: string;
   employee_id: string;
   start_at: string;
   end_at: string;
   is_mine: boolean;
+  person_public?: PersonPublic | null;
 };
 export type Space = {
   id: string;
@@ -36,11 +76,13 @@ export type Space = {
   layout: Rect & { label?: string };
   is_available_for_full_interval: boolean;
   is_partial: boolean;
+  next_reservation?: { start_at: string; end_at: string } | null;
   reservations: Reservation[];
   assignments: {
     employee_id: string;
     valid_from: string;
     valid_to: string | null;
+    person_public?: PersonPublic | null;
   }[];
 };
 export type Snapshot = {
@@ -51,13 +93,7 @@ export type Snapshot = {
   items: Space[];
 };
 export type Session = {
-  employee: {
-    id: string;
-    full_name: string;
-    job_title: string;
-    department: string;
-    fictional: boolean;
-  };
+  employee: PersonPublic;
   csrf_token: string;
 };
 export type TimeWindow = { from: string; to: string };

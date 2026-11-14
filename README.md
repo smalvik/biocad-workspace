@@ -5,8 +5,9 @@ Mailpit и nginx. WB-01 интегрирован через PR #2 с успеш�
 В WB-02 добавлен Booking API с демо-сессиями, миграцией и защитой PostgreSQL;
 результат его проверок — в [WB-02](docs/changes/WB-02.md).
 В WB-03 реализована интерактивная SVG-карта двух этажей с настоящим API,
-входом, фильтрами даты/времени и карточкой места. Форма подтверждения брони,
-поиск сотрудников/аватары, MCP/LLM и Notification Worker — следующие задачи.
+входом, фильтрами даты/времени и карточкой места. В WB-04 локально проверены поиск
+сотрудников, оригинальные вымышленные аватары и таймлайн владельцев по интервалу.
+Форма подтверждения брони, MCP/LLM и Notification Worker — следующие задачи.
 
 Статус и доказательства: [CURRENT_STATE](docs/context/CURRENT_STATE.md),
 [PROGRESS](docs/context/PROGRESS.md), [WB-01](docs/changes/WB-01.md).
@@ -145,6 +146,17 @@ Seed обновляет геометрию floor/space для демо; суще
 bookings/exclusion. [Проверки и настоящие screenshots](docs/evidence/WB-03-local.md).
 
 ## Begin here (VS Code + Codex)
+
+WB-04: поиск по ФИО/отделу переключает этаж и выбирает бронь/постоянное место.
+Период 16.11.2026 для D-03: Мария 10–12, свободно без лица 12–14,
+Павел 14–16; 09–17 показывает два лица и полный таймлайн. Лица обозначают
+бронь/закрепление, а не присутствие. `GET /api/v1/employees?q=&from=&to=`,
+`/api/v1/employees/{id}/location?from=&to=` и `/api/v1/floors/{id}/occupancy?from=&to=`
+требуют демо-сессию; дата/время передаются с UTC offset.
+Без времени directory возвращает только профили, не предполагает текущую локацию.
+Портреты — собственные SVG-иллюстрации; отсутствие/ошибка картинки даёт инициалы.
+Проверки: [131 passed / реальные screenshots](docs/evidence/WB-04-local.md).
+
 1. Unzip the handoff; open **`biocad-workspace`** as the VS Code workspace folder (`File → Open Folder`).
 2. Install/open the official **Codex IDE extension**, sign in using your ChatGPT account; or use Codex CLI from the workspace terminal.
 3. Open `START_HERE.md` and paste the text from `CODEX_FIRST_PROMPT.md` into Codex. The root `AGENTS.md` is its recurring task contract.

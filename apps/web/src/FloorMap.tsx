@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { KeyboardEvent, PointerEvent } from "react";
 import { Icon } from "./Icon";
+import { SvgAvatar } from "./Avatar";
 import { resourceLabel, statusOf } from "./domain";
 import type { Plan, Space } from "./types";
 
@@ -261,6 +262,15 @@ export function FloorMap({
             const status = statusOf(space),
               room = space.kind === "MEETING_ROOM",
               selected = space.id === selectedId;
+            const people =
+              room || status === "free"
+                ? []
+                : (status === "dedicated"
+                    ? space.assignments
+                    : space.reservations
+                  ).flatMap((row) =>
+                    row.person_public ? [row.person_public] : [],
+                  );
             return (
               <g
                 key={space.id}
@@ -287,9 +297,9 @@ export function FloorMap({
                   <rect
                     className="selection-ring"
                     x="-6"
-                    y={room ? -6 : -20}
+                    y={room ? -6 : people.length ? -34 : -20}
                     width={width + 12}
-                    height={height + (room ? 12 : 28)}
+                    height={height + (room ? 12 : people.length ? 42 : 28)}
                     rx="11"
                   />
                 )}
@@ -337,22 +347,34 @@ export function FloorMap({
                     </text>
                   </>
                 )}
+                {people.slice(0, 2).map((person, index) => (
+                  <SvgAvatar
+                    key={`${person.id}-${index}`}
+                    person={person}
+                    x={width / 2 - (people.length > 1 ? 27 : 17) + index * 20}
+                    y={-27}
+                  />
+                ))}
                 <g
                   transform={`translate(${width - 8} ${room ? 12 : 1})`}
                   className="resource-marker"
                 >
                   <circle r="9" />
-                  <text textAnchor="middle" y="3.5">
-                    {status === "dedicated"
-                      ? "×"
-                      : status === "mine"
+                  {status === "dedicated" ? (
+                    <g transform="translate(-6 -6)">
+                      <Icon name="lock" size={12} />
+                    </g>
+                  ) : (
+                    <text textAnchor="middle" y="3.5">
+                      {status === "mine"
                         ? "✓"
                         : space.reservations.length > 1
                           ? space.reservations.length
                           : status === "booked"
                             ? "—"
                             : "✓"}
-                  </text>
+                    </text>
+                  )}
                 </g>
               </g>
             );

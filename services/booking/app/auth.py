@@ -16,6 +16,7 @@ from app.config import get_settings
 from app.db import get_session
 from app.errors import ApiError
 from app.models import AuthSession, DemoAccount, Employee
+from app.people import person_public
 from app.schemas import LoginRequest
 
 COOKIE_NAME = "biocad_session"
@@ -84,13 +85,7 @@ Writer = Annotated[Identity, Depends(mutation_identity)]
 
 def profile(user: Identity) -> dict:
     return {
-        "employee": {
-            "id": user.employee.id,
-            "full_name": user.employee.full_name,
-            "job_title": user.employee.job_title,
-            "department": user.employee.department,
-            "fictional": user.employee.fictional,
-        },
+        "employee": person_public(user.employee),
         "csrf_token": user.session.csrf_token,
     }
 

@@ -7,8 +7,8 @@
 | Static demos | HTML employee-map demo, release-history mock and visual viewer; **not deployed React application** |
 | Interview preparation | 72 draft Q&A, technical architecture decisions and sample release-note templates |
 | Demo employee data | Fictional employees and calendar scenario; see `docs/data/demo_fixture.json` |
-| React application | Live authenticated React SVG map at biocad.smalvik.dev, 2 floors/41 resources, calendar/type filters, pan/zoom/fit, responsive details; no booking form yet |
-| FastAPI services | Booking auth/resource/create/own-list/cancel API added in WB-02; Assistant remains health/OpenAPI skeleton |
+| React application | v1.0.0 map live; WB-04 employee search/avatars/timeline/fallback locally tested (131 cases), not released yet; no booking form |
+| FastAPI services | Booking Core plus locally tested authenticated employee directory/location and batch public occupancy profiles; Assistant remains health/OpenAPI skeleton |
 | PostgreSQL schema/tests | Alembic core schema, GiST [start,end), per-user idempotency, atomic outbox and fictional seed; real concurrency + restart regression passed locally |
 | RabbitMQ/MCP/real LLM | Compose RabbitMQ + AMQP smoke implemented; application RPC/MCP/LLM not implemented |
 | Mailpit/email sending | Compose Mailpit + fictional SMTP smoke implemented; Notification Worker not implemented |
