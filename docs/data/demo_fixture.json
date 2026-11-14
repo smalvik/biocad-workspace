@@ -1,0 +1,429 @@
+{
+  "disclaimer": "Fictional demonstration fixture; not employee records, not measured environmental conditions",
+  "timezone": "Europe/Moscow",
+  "office": "Москва, Корпус А",
+  "employees": [
+    {
+      "id": "e01",
+      "full_name": "Анна Смирнова",
+      "job_title": "Научный сотрудник",
+      "department": "R&D",
+      "avatar_placeholder": "/assets/avatars/e01.png",
+      "fictional": true
+    },
+    {
+      "id": "e02",
+      "full_name": "Дмитрий Иванов",
+      "job_title": "Руководитель группы",
+      "department": "R&D",
+      "avatar_placeholder": "/assets/avatars/e02.png",
+      "fictional": true
+    },
+    {
+      "id": "e03",
+      "full_name": "Мария Соколова",
+      "job_title": "Биоаналитик",
+      "department": "Лаборатория",
+      "avatar_placeholder": "/assets/avatars/e03.png",
+      "fictional": true
+    },
+    {
+      "id": "e04",
+      "full_name": "Павел Громов",
+      "job_title": "Разработчик",
+      "department": "Платформа",
+      "avatar_placeholder": "/assets/avatars/e04.png",
+      "fictional": true
+    },
+    {
+      "id": "e05",
+      "full_name": "Елена Кузнецова",
+      "job_title": "Биоинформатик",
+      "department": "R&D",
+      "avatar_placeholder": "/assets/avatars/e05.png",
+      "fictional": true
+    },
+    {
+      "id": "e06",
+      "full_name": "Артём Петров",
+      "job_title": "Инженер",
+      "department": "ИТ",
+      "avatar_placeholder": "/assets/avatars/e06.png",
+      "fictional": true
+    },
+    {
+      "id": "e07",
+      "full_name": "Ольга Морозова",
+      "job_title": "Менеджер проекта",
+      "department": "Проекты",
+      "avatar_placeholder": "/assets/avatars/e07.png",
+      "fictional": true
+    },
+    {
+      "id": "e08",
+      "full_name": "Михаил Соколов",
+      "job_title": "Аналитик",
+      "department": "ИТ",
+      "avatar_placeholder": "/assets/avatars/e08.png",
+      "fictional": true
+    },
+    {
+      "id": "e09",
+      "full_name": "Ирина Орлова",
+      "job_title": "Специалист",
+      "department": "R&D",
+      "avatar_placeholder": "/assets/avatars/e09.png",
+      "fictional": true
+    },
+    {
+      "id": "e10",
+      "full_name": "Алексей Павлов",
+      "job_title": "Системный аналитик",
+      "department": "ИТ",
+      "avatar_placeholder": "/assets/avatars/e10.png",
+      "fictional": true
+    },
+    {
+      "id": "e11",
+      "full_name": "Наталья Сергеева",
+      "job_title": "Координатор",
+      "department": "Операции",
+      "avatar_placeholder": "/assets/avatars/e11.png",
+      "fictional": true
+    },
+    {
+      "id": "e12",
+      "full_name": "Максим Николаев",
+      "job_title": "Инженер",
+      "department": "ИТ",
+      "avatar_placeholder": "/assets/avatars/e12.png",
+      "fictional": true
+    }
+  ],
+  "spaces": [
+    {
+      "id": "D-01",
+      "kind": "DESK",
+      "desk_mode": "DEDICATED",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 0,
+      "y": 0,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-02",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 1,
+      "y": 0,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-03",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 2,
+      "y": 0,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-04",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 3,
+      "y": 0,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-05",
+      "kind": "DESK",
+      "desk_mode": "DEDICATED",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 4,
+      "y": 0,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-06",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 5,
+      "y": 0,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-07",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 6,
+      "y": 0,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-08",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 7,
+      "y": 0,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-09",
+      "kind": "DESK",
+      "desk_mode": "DEDICATED",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 0,
+      "y": 1,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-10",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 1,
+      "y": 1,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-11",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 2,
+      "y": 1,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-12",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 3,
+      "y": 1,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-13",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 4,
+      "y": 1,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-14",
+      "kind": "DESK",
+      "desk_mode": "DEDICATED",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 5,
+      "y": 1,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-15",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 6,
+      "y": 1,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-16",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 7,
+      "y": 1,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-17",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 0,
+      "y": 2,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-18",
+      "kind": "DESK",
+      "desk_mode": "DEDICATED",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 1,
+      "y": 2,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-19",
+      "kind": "DESK",
+      "desk_mode": "DEDICATED",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 2,
+      "y": 2,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-20",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 3,
+      "y": 2,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-21",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 4,
+      "y": 2,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-22",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 5,
+      "y": 2,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-23",
+      "kind": "DESK",
+      "desk_mode": "DEDICATED",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 6,
+      "y": 2,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "D-24",
+      "kind": "DESK",
+      "desk_mode": "FREEDESK",
+      "floor_number": 2,
+      "zone": "open-space",
+      "x": 7,
+      "y": 2,
+      "features_source": "map_demo"
+    },
+    {
+      "id": "M-01",
+      "kind": "MEETING_ROOM",
+      "desk_mode": null,
+      "floor_number": 2,
+      "capacity": 6,
+      "zone": "meeting",
+      "features_source": "map_demo"
+    },
+    {
+      "id": "M-02",
+      "kind": "MEETING_ROOM",
+      "desk_mode": null,
+      "floor_number": 2,
+      "capacity": 8,
+      "zone": "meeting",
+      "features_source": "map_demo"
+    },
+    {
+      "id": "M-03",
+      "kind": "MEETING_ROOM",
+      "desk_mode": null,
+      "floor_number": 2,
+      "capacity": 4,
+      "zone": "meeting",
+      "features_source": "map_demo"
+    }
+  ],
+  "permanent_assignments": [
+    {
+      "space_id": "D-01",
+      "employee_id": "e02"
+    },
+    {
+      "space_id": "D-05",
+      "employee_id": "e01"
+    },
+    {
+      "space_id": "D-09",
+      "employee_id": "e06"
+    },
+    {
+      "space_id": "D-14",
+      "employee_id": "e05"
+    },
+    {
+      "space_id": "D-18",
+      "employee_id": "e08"
+    },
+    {
+      "space_id": "D-19",
+      "employee_id": "e07"
+    },
+    {
+      "space_id": "D-23",
+      "employee_id": "e10"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "b-demo-1",
+      "space_id": "D-03",
+      "employee_id": "e03",
+      "start_at": "2026-11-16T10:00:00+03:00",
+      "end_at": "2026-11-16T12:00:00+03:00",
+      "status": "confirmed"
+    },
+    {
+      "id": "b-demo-2",
+      "space_id": "D-03",
+      "employee_id": "e04",
+      "start_at": "2026-11-16T14:00:00+03:00",
+      "end_at": "2026-11-16T16:00:00+03:00",
+      "status": "confirmed"
+    },
+    {
+      "id": "b-demo-3",
+      "space_id": "D-07",
+      "employee_id": "e02",
+      "start_at": "2026-11-16T09:00:00+03:00",
+      "end_at": "2026-11-16T12:00:00+03:00",
+      "status": "confirmed"
+    }
+  ],
+  "source": "Created for Codex context handoff; app must implement seeding and avoid treating these records as production data"
+}

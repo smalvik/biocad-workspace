@@ -1,0 +1,128 @@
+[
+  {
+    "id": "WB-01",
+    "priority": "P0",
+    "branch": "chore/wb-01-bootstrap",
+    "title": "Repo/Compose/CI skeleton",
+    "acceptance": "Health endpoints for independently deployable services, reproducible Compose and baseline tests."
+  },
+  {
+    "id": "WB-02",
+    "priority": "P0",
+    "branch": "feat/wb-02-booking-core",
+    "title": "Booking Core / PostgreSQL",
+    "acceptance": "Transactional booking, exclusion constraint, idempotency, real DB race test, restart persistence."
+  },
+  {
+    "id": "WB-03",
+    "priority": "P0",
+    "branch": "feat/wb-03-interactive-map",
+    "title": "React SVG floor map",
+    "acceptance": "2+ floors, 24 desks, 3 rooms, zones, zoom, selectable states, time filters."
+  },
+  {
+    "id": "WB-04",
+    "priority": "P0",
+    "branch": "feat/wb-04-employee-locations",
+    "title": "Employee lookup + avatar occupancy",
+    "acceptance": "Mock employees, permanent vs FreeDesk, avatar per selected period, right drawer, lookup."
+  },
+  {
+    "id": "WB-05",
+    "priority": "P0",
+    "branch": "feat/wb-05-booking-flow",
+    "title": "Form/bookings/cancel",
+    "acceptance": "Confirmation modal, own bookings and cancel, API integration, conflict UI."
+  },
+  {
+    "id": "WB-06",
+    "priority": "P0",
+    "branch": "feat/wb-06-assistant-mcp",
+    "title": "Assistant with real LLM + MCP",
+    "acceptance": "OpenRouter LLM, MCP real availability, RabbitMQ between services, highlight and confirm."
+  },
+  {
+    "id": "WB-07",
+    "priority": "P0",
+    "branch": "feat/wb-07-email-notifications",
+    "title": "Mailpit notifications",
+    "acceptance": "Outbox, RabbitMQ event, deduplicated branded SMTP emails."
+  },
+  {
+    "id": "WB-08",
+    "priority": "P0",
+    "branch": "test/wb-08-regression-evidence",
+    "title": "Allure + race red-green evidence",
+    "acceptance": "Smoke/regression Allure and genuine failing and passing race experiment."
+  },
+  {
+    "id": "WB-09",
+    "priority": "P0",
+    "branch": "ci/wb-09-release-deploy",
+    "title": "Staging/prod CI/CD",
+    "acceptance": "Build/push Docker Hub immutable image, staging regression, prod smoke and rollback."
+  },
+  {
+    "id": "WB-10",
+    "priority": "P0",
+    "branch": "docs/wb-10-delivery-evidence",
+    "title": "README/ADR/C1-C2/AI-LOG",
+    "acceptance": "Reproducible run docs, ADR, interview evidence, actual hours and links."
+  },
+  {
+    "id": "WB-11",
+    "priority": "Conditional",
+    "branch": "fix/wb-11-booking-race",
+    "title": "Bug-fix branch (only if found)",
+    "acceptance": "Real bug fix, focused regression, PATCH if published release."
+  },
+  {
+    "id": "WB-12",
+    "priority": "P1",
+    "branch": "feat/wb-12-llm-failover",
+    "title": "Primary/redundant LLM",
+    "acceptance": "OpenRouter fallback, status display, unavailable assistant never blocks form."
+  },
+  {
+    "id": "WB-13",
+    "priority": "P1",
+    "branch": "feat/wb-13-comfort-search",
+    "title": "Comfort NLP search",
+    "acceptance": "Verified/demo feature fields, hard filters, ranked suggestions explained on map."
+  },
+  {
+    "id": "WB-14",
+    "priority": "P1",
+    "branch": "feat/wb-14-comfort-quiz",
+    "title": "Preference quiz",
+    "acceptance": "Optional 6 questions, save/edit/skip, recommendation using WB-13 engine."
+  },
+  {
+    "id": "WB-15",
+    "priority": "P2",
+    "branch": "feat/wb-15-comfort-feedback",
+    "title": "Feedback/rebooking",
+    "acceptance": "Private rating for completed bookings, future offer with renewed availability."
+  },
+  {
+    "id": "WB-16",
+    "priority": "P1",
+    "branch": "feat/wb-16-occupancy-timeline",
+    "title": "Multi-occupant calendar timeline",
+    "acceptance": "Sequential desk occupants, >1 avatar for long window, stale response rejection."
+  },
+  {
+    "id": "WB-17",
+    "priority": "P0 process/P1 UI",
+    "branch": "feat/wb-17-release-history",
+    "title": "Release notes and history page",
+    "acceptance": "Notes after each task, public /releases only based on real versioned release."
+  },
+  {
+    "id": "WB-18",
+    "priority": "P0 docs",
+    "branch": "docs/wb-18-interview-playbook",
+    "title": "Interview playbook",
+    "acceptance": "Per-task Q&A, alternatives and real code/evidence links, demo walkthrough."
+  }
+]
