@@ -13,12 +13,16 @@ Mailpit и nginx. WB-01 интегрирован через PR #2 с успеш�
 WB-02 и исправление WB-11 интегрированы в develop/main через проверенные PR.
 WB-03 слита в develop через [PR #9](https://github.com/smalvik/biocad-workspace/pull/9);
 [post-merge regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923).
-Публичный deploy и опубликованные релизы пока не подтверждены.
+Рабочее демо: **https://biocad.smalvik.dev** ·
+[v1.0.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.0.0) ·
+[Allure HTML](https://github.com/smalvik/biocad-workspace/releases/download/v1.0.0/index.html).
+Вход: вымышленные `e01` … `e12`, пароль `demo-workspace`.
 
 CI/CD WB-09: [runbook и фактический статус](docs/process/DELIVERY.md).
 Реализованы SHA/digest images, отдельные staging/production проекты, ограниченный SSH
 dispatcher, backup/rollback и Allure. Сервер обследован, BIOCAD admin/CI ключи созданы,
-ограниченный dispatcher установлен. Публикация и первый deploy ожидают проверенного PR.
+ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43626386129),
+public desktop/mobile smoke — 2 passed; 23 старых контейнера сохранились.
 
 ## Локальный запуск
 

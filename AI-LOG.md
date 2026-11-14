@@ -72,3 +72,14 @@ GitHub token читался в память и передавался через
   created separate conditional bug issue #13 and `fix/wb-11-candidate-serialization`.
   Adds a non-cancelling source-SHA package lock; no actual corrupt/overwritten registry
   artifact or production defect is claimed. Staging flow remains independent and gated.
+
+- **Delivery completed / WB-04 start:** #14 passed and merged `f5336c8`.
+  Real push/PR publication intervals do not overlap; all seven digests identical
+  (`artifacts/WB-11-serialization-proof.json`). Main #12 -> `e7ba97b`;
+  workflow `43626386129` PASS, published v1.0.0, actual stage/prod HTTPS smoke,
+  server Allure 84 passed + Vitest separately. Independent public desktop/mobile
+  smoke 2 passed, final launcher exit 0; initial PowerShell NativeCommandError
+  was Docker pull stderr transport, not failed browser cases. All 23 previous
+  container IDs/start times and sample HTTP statuses preserved. Shipped issues closed.
+  WB-04 issue #15, separate feature branch from develop `f5336c8`; scope employee
+  lookup, safe public profiles, selected-period avatars/timeline and responsive details.

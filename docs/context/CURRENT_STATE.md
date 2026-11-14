@@ -7,16 +7,16 @@
 | Static demos | HTML employee-map demo, release-history mock and visual viewer; **not deployed React application** |
 | Interview preparation | 72 draft Q&A, technical architecture decisions and sample release-note templates |
 | Demo employee data | Fictional employees and calendar scenario; see `docs/data/demo_fixture.json` |
-| React application | Local authenticated React SVG map, 2 floors/41 resources, calendar/type filters, pan/zoom/fit, responsive details; no booking form yet |
+| React application | Live authenticated React SVG map at biocad.smalvik.dev, 2 floors/41 resources, calendar/type filters, pan/zoom/fit, responsive details; no booking form yet |
 | FastAPI services | Booking auth/resource/create/own-list/cancel API added in WB-02; Assistant remains health/OpenAPI skeleton |
 | PostgreSQL schema/tests | Alembic core schema, GiST [start,end), per-user idempotency, atomic outbox and fictional seed; real concurrency + restart regression passed locally |
 | RabbitMQ/MCP/real LLM | Compose RabbitMQ + AMQP smoke implemented; application RPC/MCP/LLM not implemented |
 | Mailpit/email sending | Compose Mailpit + fictional SMTP smoke implemented; Notification Worker not implemented |
-| GitHub repository/branches/PRs | WB-03 PR #9 merged into develop af00fa1; WB-09 separate CI branch, issue #10 |
-| Docker Hub image/release | Updated publisher credentials verified; SHA/version/digest pipeline implemented; first push/release pending |
-| Staging/production | Existing host is Ubuntu 24.04, 4 CPUs/8 GiB, Traefik ingress. Dedicated BIOCAD keys and restricted dispatcher installed; app not deployed yet |
-| Allure report/evidence | WB-03 local: 79 passed, Allure 69 results + 10 Vitest; actual desktop/mobile screenshots; CI artifacts for integrated tasks |
-| GitHub Actions | WB-03 PR and post-merge regression PASS; WB-09 publication/staging/prod jobs implemented, actual delivery pending |
+| GitHub repository/branches/PRs | WB-09 #11 / CI fix #14 / main promotion #12 merged; v1.0.0 source e7ba97b; WB-04 issue #15 started from develop f5336c8 |
+| Docker Hub image/release | Three runtime images with verified v1.0.0/latest aliases; seven immutable runtime/test SHA candidates and exact published digest manifest |
+| Staging/production | Both live, isolated on existing Ubuntu 24.04 / Traefik host; production HTTPS, restricted CI key, backups/rollback; 23 preexisting containers preserved |
+| Allure report/evidence | Main CI 92 passed; server Allure 84 (regression + stage/prod smoke), Vitest 10 separately; independent public desktop/mobile smoke 2 passed |
+| GitHub Actions | Main 43626386129 passed checks, publication, server regression/staging/prod and release/Allure publishing; real same-SHA serialization proof passed |
 | Official BIOCAD UI Kit | NOT PROVIDED / not verified; approximate reference styling only |
 
 Source of truth for requirements: `docs/requirements/PRD_v1.2.md`. Source of truth for implementation state: actual git tree, code, test command results and links; update this status as work progresses.
@@ -32,6 +32,6 @@ tested on `feat/wb-03-interactive-map`, created from develop `34d4f7c` after tho
 Next product work after WB-03 review: WB-04 employee lookup/avatars, then WB-05 form.
 
 GitHub repo confirmed: https://github.com/smalvik/biocad-workspace.
-Still unverified: Docker Hub namespace, deployment host/access, official BIOCAD UI Kit,
-approved/funded OpenRouter model and budget. Do not ask for raw credentials in chat;
+Docker Hub namespace and server access/deployment are verified; see [remote evidence](../evidence/WB-09-remote.md).
+Still unverified: official BIOCAD UI Kit and approved/funded OpenRouter model/budget. Do not ask for raw credentials in chat;
 use local env and CI secrets.
