@@ -97,10 +97,28 @@ async def create_booking(
 
 @router.get("/bookings/me")
 async def my_bookings(db: DB, user: User):
-    rows = await db.scalars(
-        select(Booking).where(Booking.employee_id == user.employee.id).order_by(Booking.start_at, Booking.id)
+    rows = await db.execute(
+        select(Booking, Space, Floor, Office)
+        .join(Space, Space.id == Booking.space_id)
+        .join(Floor, Floor.id == Space.floor_id)
+        .join(Office, Office.id == Floor.office_id)
+        .where(Booking.employee_id == user.employee.id)
+        .order_by(Booking.start_at, Booking.id)
     )
-    return {"items": [BookingView.model_validate(row) for row in rows]}
+    return {
+        "items": [
+            {
+                **BookingView.model_validate(booking).model_dump(mode="json"),
+                "resource": {
+                    "kind": space.kind,
+                    "floor_id": floor.id,
+                    "floor_name": floor.name,
+                    "office_name": office.name,
+                },
+            }
+            for booking, space, floor, office in rows
+        ]
+    }
 
 
 @router.post("/bookings/{booking_id}/cancel", response_model=BookingView)

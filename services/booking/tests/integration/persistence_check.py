@@ -35,7 +35,10 @@ async def test_booking_survives_service_and_postgres_restart(api, database, phas
         ready = await api.get("/api/v1/readyz")
         assert ready.status_code == 200
         rows = (await api.get("/api/v1/bookings/me")).json()["items"]
-        assert previous["booking"] in rows
+        restored = next(row for row in rows if row["id"] == previous["booking"]["id"])
+        # The list additionally includes safe resource/location fields; every original
+        # persisted booking field must still match the creation response exactly.
+        assert {key: restored[key] for key in previous["booking"]} == previous["booking"]
         replay = await api.post(
             "/api/v1/bookings", json=previous["payload"], headers={"Idempotency-Key": previous["key"]}
         )

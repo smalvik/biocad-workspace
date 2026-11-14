@@ -12,6 +12,7 @@ function usePeriodData<T extends PeriodResponse>(
   ) => Promise<T>,
   onExpired: () => void,
   delay = 0,
+  externalRevision = 0,
 ) {
   type State = {
     key: string;
@@ -32,7 +33,13 @@ function usePeriodData<T extends PeriodResponse>(
     to = window?.to;
   const key =
     from && to
-      ? JSON.stringify([value, Date.parse(from), Date.parse(to), revision])
+      ? JSON.stringify([
+          value,
+          Date.parse(from),
+          Date.parse(to),
+          revision,
+          externalRevision,
+        ])
       : "";
   useEffect(() => {
     const id = ++sequence.current;
@@ -96,8 +103,16 @@ export function useEmployeeSearch(
   q: string,
   window: TimeWindow | null,
   onExpired: () => void,
+  revision = 0,
 ) {
-  return usePeriodData(q.trim(), window, api.employees, onExpired, 250);
+  return usePeriodData(
+    q.trim(),
+    window,
+    api.employees,
+    onExpired,
+    250,
+    revision,
+  );
 }
 
 export function useEmployeeLocation(

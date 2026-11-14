@@ -94,3 +94,47 @@ GitHub token читался в память и передавался через
   desktop/mobile screenshots. Existing dev volume: 7 bookings before/after, account
   password rows unchanged, 12 avatar URLs refreshed; live login/asset/logout PASS.
   Generated SSH/Docker-auth directories now have restricted Windows ACLs; no key data logged.
+
+- **WB-04 released:** final PR #16 check/publication `43634407373` PASS, merged
+  develop `a00f590`; post-merge `43635049967` passed full server regression and staging
+  (115 Allure, Vitest separately). Main PR #17 CI `43635067010` PASS, self-reviewed
+  explicitly as agent review, merged `16826d4`. Main workflow `43636402995` PASS;
+  server `20261114T201924Z-e69216`: 131 passed, all 20 commands exit 0, prebuilt
+  digests, clean source. Stage/prod smoke passed; published v1.1.0 at 20:24:26 UTC,
+  server Allure 116 and exact digest/release assets. Independent public HTTPS
+  desktop/mobile smoke 4 passed, exit 0; no booking writes.
+  Current stage/prod manifests match the released main candidate, 12 BIOCAD containers
+  healthy. All 23 original container IDs/images/start times and baseline sample HTTP
+  statuses preserved. Production backup file exists, previous v1.0.0 manifest retained.
+  An empty local DACL from an earlier ACL edit initially blocked SSH snapshot reads;
+  granted only current owner/SYSTEM/Administrators on the five newly generated BIOCAD
+  key/auth files, then real snapshots succeeded. Existing keys and server SSH settings
+  untouched. Actual commands and evidence: `docs/evidence/WB-04-remote.md`.
+  WB-05 form/own bookings/cancel remains the next unimplemented product task.
+
+- **WB-05 implementation, 2026-11-14/15:** issue #18, separate branch from develop
+  `a00f590`, carried only post-release WB-04 documentation (`7f5e82a`). Added frozen
+  explicit confirmation, CSRF/stable retry identity, persisted uncertain intent per
+  demo user, request guards, own-list and confirmed idempotent cancellation.
+  Own list adds safe joined resource location; no schema/write transaction changes.
+  Early tests exposed incorrect dedicated test resources, persistence DTO comparison,
+  HTTP-origin randomUUID unavailability, unmount focus restoration and a mobile
+  M-03 hit target obscured by zoom controls. Corrected each; obsolete test run was
+  intentionally aborted, failure artifacts retained. getRandomValues choice checked
+  against https://w3c.github.io/webcrypto/#crypto-interface and actual browser probe.
+  Existing dev upgrade preserved all seven booking records and account password rows;
+  live own-list/login/logout passed. Independent local form preview/own-list on
+  desktop/mobile passed with zero attempted booking writes. Final full regression
+  and remote delivery are pending; production remains v1.1.0.
+
+- **WB-05 local verified:** `20261114T210618Z-566c12`, base `7f5e82a` dirty,
+  full runner exit 0, every command exit 0. 157 passed: 76 Booking/delivery,
+  2 Assistant, 2 persistence, 25 Vitest, 52 Playwright; Allure 132.
+  Actual desktop confirmation and mobile M-03 cancellation screenshots inspected.
+  Existing-volume upgrade repeated after the map change: 7 complete booking records
+  and account password rows unchanged, live own-list/login/logout passed.
+  Command: `python artifacts/run_logged.py artifacts/WB-05-regression-complete.log python scripts/check.py --run-type regression`.
+  Local HTML tooling initially lacked npx; separate ignored Node/Java/Allure image
+  prepared. This did not change test results or runtime images. Remote delivery pending.
+  Implementation committed as `7a28ec836562133ea8b540744858e99ed4b77fac`.
+  Final standalone Allure generation with `biocad-allure:local` exited 0.

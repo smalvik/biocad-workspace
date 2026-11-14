@@ -676,12 +676,10 @@ legend {
   text-decoration: underline;
 }
 .zoom-controls {
-  position: absolute;
-  bottom: 14px;
-  right: 14px;
   display: flex;
-  flex-direction: column;
+  justify-content: flex-end;
   gap: 5px;
+  padding-top: 10px;
 }
 .zoom-controls .icon-button {
   box-shadow: 0 2px 9px #1732520d;
@@ -1452,10 +1450,6 @@ legend {
     font-size: 9px;
     top: 9px;
     left: 9px;
-  }
-  .zoom-controls {
-    right: 9px;
-    bottom: 9px;
   }
   .accessible-picker {
     flex-direction: column;
