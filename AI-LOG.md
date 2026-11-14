@@ -63,3 +63,12 @@ GitHub token читался в память и передавался через
   Secrets безопасно обновлены stdin. Фактически сервер Ubuntu 24.04/8 GiB/4 CPU с
   Traefik: адаптировано подключение только Web к существующему ingress. Существующие
   контейнеры/proxy не перезапускались. Первый реальный CI delivery/release ещё ожидается.
+
+- WB-09 PR #11 passed CI and seven-image registry publication (`43612515436`,
+  `43613064726`), merged develop `f3a6e8f`. Prebuilt-digest local runner also passed
+  92 cases without builds (`20261114T160232Z-24d3b1`). Promotion PR #12 opened.
+  Observed push run `43624173958` and PR run `43624230115` for identical source SHA;
+  package jobs were not serialized across refs. Cancelled duplicate promotion run,
+  created separate conditional bug issue #13 and `fix/wb-11-candidate-serialization`.
+  Adds a non-cancelling source-SHA package lock; no actual corrupt/overwritten registry
+  artifact or production defect is claimed. Staging flow remains independent and gated.

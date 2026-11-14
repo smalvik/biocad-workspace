@@ -4,6 +4,10 @@
 WB-01 is merged; WB-02 Booking API is implemented and verified locally.
 WB-03 map is merged into develop; employee lookup, booking form and AI remain TODO.
 WB-09 is being delivered before WB-04 by explicit user instruction.
+WB-09 merged through PR #11 at `f3a6e8f`; PR CI/publication passed runs
+`43612515436` and `43613064726`. Actual local prebuilt-digest regression passed
+`20261114T160232Z-24d3b1` (92 cases, no builds). First server staging is in progress.
+Conditional WB-11 issue #13 fixes package concurrency for push + promotion PR of one SHA.
 
 | WB | Branch | PR | Tests / Allure | Release | State |
 |---|---|---|---|---|---|
