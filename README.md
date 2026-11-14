@@ -5,7 +5,7 @@ Mailpit и nginx. WB-01 интегрирован через PR #2 с успеш�
 В WB-02 добавлен Booking API с демо-сессиями, миграцией и защитой PostgreSQL;
 результат его проверок — в [WB-02](docs/changes/WB-02.md).
 В WB-03 реализована интерактивная SVG-карта двух этажей с настоящим API,
-входом, фильтрами даты/времени и карточкой места. В WB-04 локально проверены поиск
+входом, фильтрами даты/времени и карточкой места. В WB-04 опубликованы поиск
 сотрудников, оригинальные вымышленные аватары и таймлайн владельцев по интервалу.
 Форма подтверждения брони, MCP/LLM и Notification Worker — следующие задачи.
 
@@ -15,15 +15,16 @@ WB-02 и исправление WB-11 интегрированы в develop/main
 WB-03 слита в develop через [PR #9](https://github.com/smalvik/biocad-workspace/pull/9);
 [post-merge regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923).
 Рабочее демо: **https://biocad.smalvik.dev** ·
-[v1.0.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.0.0) ·
-[Allure HTML](https://github.com/smalvik/biocad-workspace/releases/download/v1.0.0/index.html).
+[v1.1.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.1.0) ·
+[Allure HTML](https://github.com/smalvik/biocad-workspace/releases/download/v1.1.0/index.html).
 Вход: вымышленные `e01` … `e12`, пароль `demo-workspace`.
 
 CI/CD WB-09: [runbook и фактический статус](docs/process/DELIVERY.md).
 Реализованы SHA/digest images, отдельные staging/production проекты, ограниченный SSH
 dispatcher, backup/rollback и Allure. Сервер обследован, BIOCAD admin/CI ключи созданы,
-ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43626386129),
-public desktop/mobile smoke — 2 passed; 23 старых контейнера сохранились.
+ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43636402995),
+131 regression / Allure 116; public desktop/mobile smoke — 4 passed;
+23 старых контейнера сохранились. [Фактические evidence](docs/evidence/WB-04-remote.md).
 
 ## Локальный запуск
 
@@ -139,7 +140,7 @@ Runner проверяет сохранность после настоящего
 старые статусы скрываются, прежний запрос отменяется; ответ другого периода
 не применяется. Карточка показывает все пересекающиеся брони и точное время.
 Это сведения о резервировании, не физическом присутствии. Авторы брони/аватары
-и поиск появятся в WB-04; форма подтверждения — WB-05. Сейчас карта не записывает бронь.
+и поиск реализованы в WB-04; форма подтверждения — WB-05. Сейчас карта не записывает бронь.
 
 Seed обновляет геометрию floor/space для демо; существующие брони, аккаунты
 и пароли сохраняются. Alembic `0002_floor_plan` добавляет поле плана без изменения
@@ -155,7 +156,8 @@ WB-04: поиск по ФИО/отделу переключает этаж и в
 требуют демо-сессию; дата/время передаются с UTC offset.
 Без времени directory возвращает только профили, не предполагает текущую локацию.
 Портреты — собственные SVG-иллюстрации; отсутствие/ошибка картинки даёт инициалы.
-Проверки: [131 passed / реальные screenshots](docs/evidence/WB-04-local.md).
+Проверки: [131 passed / реальные screenshots](docs/evidence/WB-04-local.md),
+[выпуск v1.1.0 / сервер / public smoke](docs/evidence/WB-04-remote.md).
 
 ## Begin here (VS Code + Codex)
 

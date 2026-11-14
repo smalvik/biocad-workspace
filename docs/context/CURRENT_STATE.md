@@ -7,16 +7,16 @@
 | Static demos | HTML employee-map demo, release-history mock and visual viewer; **not deployed React application** |
 | Interview preparation | 72 draft Q&A, technical architecture decisions and sample release-note templates |
 | Demo employee data | Fictional employees and calendar scenario; see `docs/data/demo_fixture.json` |
-| React application | v1.0.0 map live; WB-04 employee search/avatars/timeline/fallback locally tested (131 cases), not released yet; no booking form |
-| FastAPI services | Booking Core plus locally tested authenticated employee directory/location and batch public occupancy profiles; Assistant remains health/OpenAPI skeleton |
+| React application | v1.1.0 live: map, employee search, selected-period portraits/timeline and initials fallback; no booking form |
+| FastAPI services | Live Booking Core plus authenticated employee directory/location and batch public occupancy profiles; Assistant remains health/OpenAPI skeleton |
 | PostgreSQL schema/tests | Alembic core schema, GiST [start,end), per-user idempotency, atomic outbox and fictional seed; real concurrency + restart regression passed locally |
 | RabbitMQ/MCP/real LLM | Compose RabbitMQ + AMQP smoke implemented; application RPC/MCP/LLM not implemented |
 | Mailpit/email sending | Compose Mailpit + fictional SMTP smoke implemented; Notification Worker not implemented |
-| GitHub repository/branches/PRs | WB-09 #11 / CI fix #14 / main promotion #12 merged; v1.0.0 source e7ba97b; WB-04 issue #15 started from develop f5336c8 |
-| Docker Hub image/release | Three runtime images with verified v1.0.0/latest aliases; seven immutable runtime/test SHA candidates and exact published digest manifest |
+| GitHub repository/branches/PRs | WB-04 #16 merged develop a00f590; main promotion #17 merged 16826d4; v1.1.0 published |
+| Docker Hub image/release | Three runtime images with verified v1.1.0/latest aliases; seven immutable runtime/test SHA candidates and exact published digest manifest |
 | Staging/production | Both live, isolated on existing Ubuntu 24.04 / Traefik host; production HTTPS, restricted CI key, backups/rollback; 23 preexisting containers preserved |
-| Allure report/evidence | Main CI 92 passed; server Allure 84 (regression + stage/prod smoke), Vitest 10 separately; independent public desktop/mobile smoke 2 passed |
-| GitHub Actions | Main 43626386129 passed checks, publication, server regression/staging/prod and release/Allure publishing; real same-SHA serialization proof passed |
+| Allure report/evidence | WB-04 regression 131 passed; server Allure 116 (114 regression + stage/prod smoke), Vitest 17 separately; independent public desktop/mobile smoke 4 passed |
+| GitHub Actions | Main 43636402995 passed checks, publication, server regression/staging/prod and v1.1.0/Allure publishing; real same-SHA serialization proof passed |
 | Official BIOCAD UI Kit | NOT PROVIDED / not verified; approximate reference styling only |
 
 Source of truth for requirements: `docs/requirements/PRD_v1.2.md`. Source of truth for implementation state: actual git tree, code, test command results and links; update this status as work progresses.
@@ -30,7 +30,9 @@ post-merge regression passed. WB-02 and WB-11 were integrated into develop and,
 by explicit user instruction, main (snapshot, no release/deploy). WB-03 is locally
 tested on `feat/wb-03-interactive-map`, created from develop `34d4f7c` after those merges.
 Later WB-09 delivered that baseline as v1.0.0; [remote proof](../evidence/WB-09-remote.md).
-WB-04 employee lookup/avatars are now locally tested in [PR #16](https://github.com/smalvik/biocad-workspace/pull/16).
+WB-04 employee lookup/avatars shipped through [PR #16](https://github.com/smalvik/biocad-workspace/pull/16)
+and [main #17](https://github.com/smalvik/biocad-workspace/pull/17),
+[actual v1.1.0 evidence](../evidence/WB-04-remote.md).
 Next unimplemented product flow: WB-05 booking form.
 
 GitHub repo confirmed: https://github.com/smalvik/biocad-workspace.
