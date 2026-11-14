@@ -29,3 +29,10 @@ Remote push, release и deploy не выполнялись.
 actionlint, policy/handoff checks прошли. Allure HTML с 15 результатами создан
 локально через `allure-commandline@2.32.0` и Java в Docker. Модель: Codex;
 точный model id, стоимость и человеческое время не установлены.
+
+Публикация WB-01 (новое поручение пользователя): проверен существующий пустой
+GitHub repo smalvik/biocad-workspace; настроен origin. После проверки staged paths
+и credential patterns создан `bc283c7` и отправлены main, develop,
+chore/wb-01-bootstrap. Созданы issue #1 и PR #2; CI запущен, его успех пока не заявляется.
+Для аутентификации локальный токен прочитан только в память и передан Docker
+через environment, без включения в argv/URL/log. Секреты не коммитились.

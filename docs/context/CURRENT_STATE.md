@@ -12,7 +12,7 @@
 | PostgreSQL schema/tests | Real PostgreSQL readiness smoke; no domain schema, migration or exclusion constraint yet |
 | RabbitMQ/MCP/real LLM | Compose RabbitMQ + AMQP smoke implemented; application RPC/MCP/LLM not implemented |
 | Mailpit/email sending | Compose Mailpit + fictional SMTP smoke implemented; Notification Worker not implemented |
-| GitHub repository/branches/PRs | Local main/develop exist; WB-01 branch created; no remote action in this session |
+| GitHub repository/branches/PRs | main/develop/WB-01 pushed to smalvik/biocad-workspace; issue #1, PR #2 created |
 | Docker Hub image/release | NOT BUILT/UPLOADED by this package |
 | Ubuntu 22.04 staging/production | NOT DEPLOYED by this package |
 | Allure report/evidence | Per-run local results in artifacts; final WB-01 results in task note; no published report |
