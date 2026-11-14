@@ -1,4 +1,4 @@
-"""Run WB-01 checks with Docker and Python only, without touching the local .env or stack."""
+"""Run the available checks in isolated Docker infrastructure without loading the local .env."""
 
 import argparse
 import json
@@ -49,6 +49,9 @@ def main() -> int:
             "OPENROUTER_API_KEY": "",
             "OPENROUTER_PRIMARY_MODEL": "",
             "OPENROUTER_FALLBACK_MODEL": "",
+            "ALLOW_DATABASE_TESTS": "1",
+            "DEMO_PASSWORD": "demo-workspace",
+            "SEED_DEMO_DATA": "true",
         }
     )
     compose = [
@@ -141,6 +144,26 @@ def main() -> int:
                 run(*compose, "run", "--rm", "--no-deps", service, "ruff", "check", ".")
                 run(*compose, "run", "--rm", "--no-deps", service, "ruff", "format", "--check", ".")
                 run(*compose, "run", "--rm", "--no-deps", service)
+            run(*compose, "exec", "-T", "booking", "python", "-m", "app.seed")
+            for phase in ("prepare", "verify"):
+                if phase == "verify":
+                    run(*compose, "stop", "booking")
+                    run(*compose, "restart", "postgres")
+                    run(*compose, "up", "-d", "--no-build", "--wait", "postgres")
+                    run(*compose, "up", "-d", "--no-build", "--wait", "booking")
+                run(
+                    *compose,
+                    "run",
+                    "--rm",
+                    "--no-deps",
+                    "-e",
+                    f"PERSISTENCE_PHASE={phase}",
+                    "booking-tests",
+                    "pytest",
+                    "-q",
+                    "tests/integration/persistence_check.py",
+                    "--alluredir=/allure-results",
+                )
             run(*compose, "run", "--rm", "--no-deps", "web-tests")
             run(*compose, "run", "--rm", "--no-deps", "e2e", "npx", "tsc", "--noEmit")
             run(*compose, "run", "--rm", "--no-deps", "e2e")

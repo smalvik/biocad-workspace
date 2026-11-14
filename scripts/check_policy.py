@@ -11,16 +11,18 @@ COMMIT_PATTERN = r"(?:feat|fix|chore|test|ci|docs|refactor|build|perf|style|reve
 
 def main() -> None:
     branch = os.environ.get("PR_BRANCH", "")
+    promotion = branch == "develop" and os.environ.get("PR_BASE_BRANCH") == "main"
     if branch:
-        match = re.fullmatch(r"(?:feat|fix|chore|test|ci|docs|refactor)/(wb-\d{2})-[a-z0-9-]+", branch)
-        assert match, "Use a purpose-specific branch such as chore/wb-01-bootstrap"
-        note = ROOT / "docs" / "changes" / f"{match[1].upper()}.md"
-        assert note.is_file(), f"Missing change note: {note.name}"
-        assert re.search(
-            r"^status: (?:implemented|tested|completed|merged|released)$",
-            note.read_text(encoding="utf-8"),
-            re.MULTILINE,
-        ), "Change note is still a draft"
+        if not promotion:
+            match = re.fullmatch(r"(?:feat|fix|chore|test|ci|docs|refactor)/(wb-\d{2})-[a-z0-9-]+", branch)
+            assert match, "Use a purpose-specific task branch; develop may only be promoted into main"
+            note = ROOT / "docs" / "changes" / f"{match[1].upper()}.md"
+            assert note.is_file(), f"Missing change note: {note.name}"
+            assert re.search(
+                r"^status: (?:implemented|tested|completed|merged|released)$",
+                note.read_text(encoding="utf-8"),
+                re.MULTILINE,
+            ), "Change note is still a draft"
         assert re.fullmatch(
             COMMIT_PATTERN, os.environ.get("PR_TITLE", "")
         ), "PR title must follow Conventional Commits"
