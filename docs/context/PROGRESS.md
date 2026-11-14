@@ -21,7 +21,7 @@ Published [v1.0.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.0
 | WB-03 | `feat/wb-03-interactive-map` | [#9 merged](https://github.com/smalvik/biocad-workspace/pull/9) | [PR PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608443234), [post-merge PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923) | v1.0.0 | In develop at af00fa1 |
 | WB-09 | `ci/wb-09-release-deploy` | [#11](https://github.com/smalvik/biocad-workspace/pull/11), [main #12](https://github.com/smalvik/biocad-workspace/pull/12) | [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43626386129), [remote evidence](../evidence/WB-09-remote.md) | v1.0.0 | Released, existing apps preserved |
 | WB-11 delivery | `fix/wb-11-candidate-serialization` | [#14 merged](https://github.com/smalvik/biocad-workspace/pull/14) | 92-case CI + actual two-event serialization/digest equality proof | v1.0.0 | Released |
-| WB-04 | `feat/wb-04-employee-locations` | [Issue #15](https://github.com/smalvik/biocad-workspace/issues/15), PR pending | [Local 131 passed / Allure 114](../evidence/WB-04-local.md), dev volume upgrade PASS | Unreleased | Locally tested, remote delivery pending |
+| WB-04 | `feat/wb-04-employee-locations` | [PR #16](https://github.com/smalvik/biocad-workspace/pull/16), issue #15 | [Local 131 passed / Allure 114](../evidence/WB-04-local.md), dev volume upgrade PASS | Unreleased | CI running, remote delivery pending |
 | WB-05 … WB-18 (except WB-09/WB-11) | See backlog | — | — | — | TODO |
 
 For each completed task, add the real branch, SHA, PR URL, command output summary, Allure run/report URL, merge SHA, staging verification and release (if any). Keep unfinished items TODO, never fabricate completed results.

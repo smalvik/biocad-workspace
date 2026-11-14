@@ -29,7 +29,9 @@ WB-01 merged through PR #2 at `e5bb0b5` after CI and explicit agent self-review;
 post-merge regression passed. WB-02 and WB-11 were integrated into develop and,
 by explicit user instruction, main (snapshot, no release/deploy). WB-03 is locally
 tested on `feat/wb-03-interactive-map`, created from develop `34d4f7c` after those merges.
-Next product work after WB-03 review: WB-04 employee lookup/avatars, then WB-05 form.
+Later WB-09 delivered that baseline as v1.0.0; [remote proof](../evidence/WB-09-remote.md).
+WB-04 employee lookup/avatars are now locally tested in [PR #16](https://github.com/smalvik/biocad-workspace/pull/16).
+Next unimplemented product flow: WB-05 booking form.
 
 GitHub repo confirmed: https://github.com/smalvik/biocad-workspace.
 Docker Hub namespace and server access/deployment are verified; see [remote evidence](../evidence/WB-09-remote.md).
