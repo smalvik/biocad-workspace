@@ -3,6 +3,8 @@
 Branch `feat/wb-03-interactive-map`, created from develop
 `34d4f7cf140e15eca25246211f8906d0a5384292` after the requested WB-02/main merges.
 Run `20261114T143322Z-c7f947` (UTC; 17:33:22 Europe/Moscow), dirty working tree.
+Implementation committed locally as `a02a488634b226c1ba69c86aa22b15b20d2df688`.
+Only documentation changed after the passing regression/live smoke.
 
 ```powershell
 python scripts/check.py --run-type regression

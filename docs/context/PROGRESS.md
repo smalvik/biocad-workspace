@@ -31,5 +31,6 @@ Post-merge run `43602959863` failed in the outbox probe's HTTP connection reuse;
 Main promotion PR #6 passed run `43604569715`, merged as
 `59e4883e46c67bc1f35d032cbcb708cf117f5236`; post-merge main regression `43604855360` passed.
 WB-03 was created from develop `34d4f7c` after both requested merges. No release/deploy.
+WB-03 implementation commit: `a02a488634b226c1ba69c86aa22b15b20d2df688` (local).
 Implementation commit: `5f3f66174ab8ab9d1155a0331ea8abe880706690`; later task-note
 updates only record evidence. Working tree is clean after committing task documentation.

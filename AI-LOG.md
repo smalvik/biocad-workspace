@@ -30,6 +30,7 @@ Codex продолжил найденный незакоммиченный React
   desktop/mobile просмотрены. Traces отключены для защиты cookies/CSRF.
   WB-03 пока локальна; профили/аватары и booking form оставлены WB-04/WB-05.
   Dev-стек обновлён с сохранением volume; дополнительный desktop/mobile smoke — 2 passed.
+  Реализация сохранена локальным `a02a488`; SHA записан отдельным docs-коммитом той же задачи.
 
 Ключевые решения агента: реальный PostgreSQL constraint вместо SELECT/локального
 lock ([ADR-001](docs/adr/001-booking-consistency.md)); отдельный Compose-проект и
