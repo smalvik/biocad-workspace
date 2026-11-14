@@ -85,5 +85,15 @@ export function initials(name: string): string {
 }
 
 export function resourceLabel(space: Space): string {
-  return `${space.id}, ${space.kind === "MEETING_ROOM" ? "переговорная" : "рабочее место"}, ${STATUS_LABELS[statusOf(space)]}${space.reservations.length > 1 ? `, ${space.reservations.length} брони` : ""}`;
+  const status = statusOf(space);
+  const people =
+    status === "free"
+      ? []
+      : status === "dedicated"
+        ? space.assignments
+        : space.reservations;
+  const names = people.flatMap((row) =>
+    row.person_public ? [row.person_public.full_name] : [],
+  );
+  return `${space.id}, ${space.kind === "MEETING_ROOM" ? "переговорная" : "рабочее место"}, ${STATUS_LABELS[status]}${space.reservations.length > 1 ? `, ${space.reservations.length} брони` : ""}${names.length ? `, ${names.join(", ")}` : ""}`;
 }

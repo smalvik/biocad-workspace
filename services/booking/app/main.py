@@ -9,6 +9,7 @@ from app import db
 from app.auth import router as auth_router
 from app.bookings import router as booking_router
 from app.config import get_settings
+from app.employees import router as employee_router
 from app.errors import ApiError
 
 API_PREFIX = "/api/v1"
@@ -60,6 +61,7 @@ def create_app() -> FastAPI:
 
     app.include_router(auth_router)
     app.include_router(booking_router)
+    app.include_router(employee_router)
 
     @app.get("/healthz", tags=["ops"])
     @app.get(f"{API_PREFIX}/healthz", tags=["ops"], include_in_schema=False)

@@ -9,7 +9,8 @@
       "job_title": "Научный сотрудник",
       "department": "R&D",
       "avatar_placeholder": "/assets/avatars/e01.png",
-      "fictional": true
+      "fictional": true,
+      "avatar_url": "/demo-avatars/v1/e01.svg"
     },
     {
       "id": "e02",
@@ -17,7 +18,8 @@
       "job_title": "Руководитель группы",
       "department": "R&D",
       "avatar_placeholder": "/assets/avatars/e02.png",
-      "fictional": true
+      "fictional": true,
+      "avatar_url": "/demo-avatars/v1/e02.svg"
     },
     {
       "id": "e03",
@@ -25,7 +27,8 @@
       "job_title": "Научный сотрудник",
       "department": "Лаборатория",
       "avatar_placeholder": "/assets/avatars/e03.png",
-      "fictional": true
+      "fictional": true,
+      "avatar_url": "/demo-avatars/v1/e03.svg"
     },
     {
       "id": "e04",
@@ -33,7 +36,8 @@
       "job_title": "Инженер",
       "department": "Платформа",
       "avatar_placeholder": "/assets/avatars/e04.png",
-      "fictional": true
+      "fictional": true,
+      "avatar_url": "/demo-avatars/v1/e04.svg"
     },
     {
       "id": "e05",
@@ -41,7 +45,8 @@
       "job_title": "Биоинформатик",
       "department": "R&D",
       "avatar_placeholder": "/assets/avatars/e05.png",
-      "fictional": true
+      "fictional": true,
+      "avatar_url": "/demo-avatars/v1/e05.svg"
     },
     {
       "id": "e06",
@@ -49,7 +54,8 @@
       "job_title": "Инженер",
       "department": "ИТ",
       "avatar_placeholder": "/assets/avatars/e06.png",
-      "fictional": true
+      "fictional": true,
+      "avatar_url": "/demo-avatars/v1/e06.svg"
     },
     {
       "id": "e07",
@@ -57,7 +63,8 @@
       "job_title": "Менеджер проекта",
       "department": "Проекты",
       "avatar_placeholder": "/assets/avatars/e07.png",
-      "fictional": true
+      "fictional": true,
+      "avatar_url": "/demo-avatars/v1/e07.svg"
     },
     {
       "id": "e08",
@@ -65,7 +72,8 @@
       "job_title": "Аналитик",
       "department": "ИТ",
       "avatar_placeholder": "/assets/avatars/e08.png",
-      "fictional": true
+      "fictional": true,
+      "avatar_url": "/demo-avatars/v1/e08.svg"
     },
     {
       "id": "e09",
@@ -73,7 +81,8 @@
       "job_title": "Специалист",
       "department": "R&D",
       "avatar_placeholder": "/assets/avatars/e09.png",
-      "fictional": true
+      "fictional": true,
+      "avatar_url": "/demo-avatars/v1/e09.svg"
     },
     {
       "id": "e10",
@@ -81,7 +90,8 @@
       "job_title": "Системный аналитик",
       "department": "ИТ",
       "avatar_placeholder": "/assets/avatars/e10.png",
-      "fictional": true
+      "fictional": true,
+      "avatar_url": "/demo-avatars/v1/e10.svg"
     },
     {
       "id": "e11",
@@ -89,7 +99,8 @@
       "job_title": "Координатор",
       "department": "Операции",
       "avatar_placeholder": "/assets/avatars/e11.png",
-      "fictional": true
+      "fictional": true,
+      "avatar_url": "/demo-avatars/v1/e11.svg"
     },
     {
       "id": "e12",
@@ -97,7 +108,8 @@
       "job_title": "Инженер",
       "department": "ИТ",
       "avatar_placeholder": "/assets/avatars/e12.png",
-      "fictional": true
+      "fictional": true,
+      "avatar_url": "/demo-avatars/v1/e12.svg"
     }
   ],
   "spaces": [

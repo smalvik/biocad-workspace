@@ -1,7 +1,19 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { App } from "./App";
 import { api, ApiError } from "./api";
-import type { Floor, Session, Snapshot, Space } from "./types";
+import type {
+  EmployeeLocationResponse,
+  Floor,
+  Session,
+  Snapshot,
+  Space,
+} from "./types";
 
 const session: Session = {
   employee: {
@@ -45,6 +57,11 @@ const space: Space = {
   assignments: [],
 };
 function fixtures() {
+  vi.spyOn(api, "employees").mockImplementation(async (_, window) => ({
+    ...window,
+    snapshot_at: "2026-11-14T12:00:00Z",
+    items: [],
+  }));
   vi.spyOn(api, "floors").mockResolvedValue({ items: [floor] });
   vi.spyOn(api, "snapshot").mockImplementation(
     async (id, window): Promise<Snapshot> => ({
@@ -116,5 +133,116 @@ describe("authenticated office map", () => {
     );
     expect(screen.queryByTestId("space-D-03")).not.toBeInTheDocument();
     await waitFor(() => expect(api.snapshot).toHaveBeenCalledTimes(count));
+  });
+  it("locates an employee on another floor and resets filters which would hide the reservation", async () => {
+    vi.spyOn(api, "me").mockResolvedValue(session);
+    fixtures();
+    const third = { ...floor, id: "floor-3", number: 3, name: "Этаж 3" };
+    const person = {
+      ...session.employee,
+      id: "e12",
+      full_name: "Максим Николаев",
+    };
+    const location = {
+      relation: "reservation" as const,
+      space_id: "D-32",
+      space_kind: "DESK" as const,
+      desk_mode: "FREEDESK" as const,
+      floor_id: "floor-3",
+      floor_number: 3,
+      floor_name: "Этаж 3",
+      office_id: "moscow-a",
+      office_name: floor.office_name,
+      start_at: "2026-11-16T10:00:00+03:00",
+      end_at: "2026-11-16T12:00:00+03:00",
+    };
+    vi.mocked(api.floors).mockResolvedValue({ items: [floor, third] });
+    vi.mocked(api.snapshot).mockImplementation(async (id, window) => ({
+      ...window,
+      floor_id: id,
+      snapshot_at: "2026-11-14T12:00:00Z",
+      items: [
+        {
+          ...space,
+          id: id === "floor-3" ? "D-32" : "D-03",
+          floor_id: id,
+          is_available_for_full_interval: false,
+        },
+      ],
+    }));
+    vi.mocked(api.employees).mockImplementation(async (_, window) => ({
+      ...window,
+      snapshot_at: "2026-11-14T12:00:00Z",
+      items: [{ ...person, locations: [location] }],
+    }));
+    vi.spyOn(api, "employeeLocation").mockImplementation(async (_, window) => ({
+      ...window,
+      snapshot_at: "2026-11-14T12:00:00Z",
+      employee: person,
+      locations: [location],
+    }));
+    render(<App />);
+    await screen.findByTestId("space-D-03");
+    fireEvent.click(screen.getByLabelText("Только свободные"));
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: "Показать сотрудника Максим Николаев",
+      }),
+    );
+    await waitFor(() =>
+      expect(screen.getByLabelText("Этаж")).toHaveValue("floor-3"),
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("space-D-32")).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      ),
+    );
+    expect(screen.getByLabelText("Только свободные")).not.toBeChecked();
+    expect(
+      screen.getByRole("heading", { name: "FreeDesk D-32" }),
+    ).toBeInTheDocument();
+  });
+  it("does not let a late employee lookup override a later manual map selection", async () => {
+    vi.spyOn(api, "me").mockResolvedValue(session);
+    fixtures();
+    vi.mocked(api.employees).mockImplementation(async (_, window) => ({
+      ...window,
+      snapshot_at: "2026-11-14T12:00:00Z",
+      items: [{ ...session.employee, locations: [] }],
+    }));
+    let resolve!: (value: EmployeeLocationResponse) => void;
+    vi.spyOn(api, "employeeLocation").mockImplementation(
+      () =>
+        new Promise((done) => {
+          resolve = done;
+        }),
+    );
+    render(<App />);
+    await screen.findByTestId("space-D-03");
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: "Показать сотрудника Анна Смирнова",
+      }),
+    );
+    await waitFor(() => expect(api.employeeLocation).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByTestId("space-D-03"));
+    await act(async () =>
+      resolve({
+        from: "2026-11-16T10:00:00+03:00",
+        to: "2026-11-16T12:00:00+03:00",
+        snapshot_at: "2026-11-14T12:00:00Z",
+        employee: session.employee,
+        locations: [],
+      }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "FreeDesk D-03" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Брони или закрепления на выбранный интервал не найдены.",
+      ),
+    ).not.toBeInTheDocument();
   });
 });

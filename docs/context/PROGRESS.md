@@ -6,17 +6,23 @@ WB-03 map is merged into develop; employee lookup, booking form and AI remain TO
 WB-09 is being delivered before WB-04 by explicit user instruction.
 WB-09 merged through PR #11 at `f3a6e8f`; PR CI/publication passed runs
 `43612515436` and `43613064726`. Actual local prebuilt-digest regression passed
-`20261114T160232Z-24d3b1` (92 cases, no builds). First server staging is in progress.
-Conditional WB-11 issue #13 fixes package concurrency for push + promotion PR of one SHA.
+`20261114T160232Z-24d3b1` (92 cases, no builds). Server staging and production are complete.
+Conditional WB-11 #13 fixed package concurrency; real two-event proof passed.
+Published [v1.0.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.0.0),
+[main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43626386129),
+[remote evidence](../evidence/WB-09-remote.md). Public desktop/mobile smoke 2 passed;
+23 preexisting container IDs/start times unchanged. WB-04 starts from develop `f5336c8`, issue #15.
 
 | WB | Branch | PR | Tests / Allure | Release | State |
 |---|---|---|---|---|---|
-| WB-01 | `chore/wb-01-bootstrap` | [#2 merged](https://github.com/smalvik/biocad-workspace/pull/2) | [PR CI passed](https://github.com/smalvik/biocad-workspace/actions/runs/43598925846), [post-merge regression passed](https://github.com/smalvik/biocad-workspace/actions/runs/43599195552) | Unreleased | Merged; task branch retained |
-| WB-02 | `feat/wb-02-booking-core` | [#4 merged](https://github.com/smalvik/biocad-workspace/pull/4), [main #6 merged](https://github.com/smalvik/biocad-workspace/pull/6) | [develop regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43604565825), [main regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43604855360) | Unreleased | In develop and main per user instruction |
-| WB-11 | `fix/wb-11-outbox-probe` | [#8 merged](https://github.com/smalvik/biocad-workspace/pull/8) | [PR CI PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43604235478), full post-merge regression PASS | Unreleased | Test harness defect fixed; no application race claimed |
-| WB-03 | `feat/wb-03-interactive-map` | [#9 merged](https://github.com/smalvik/biocad-workspace/pull/9) | [PR PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608443234), [post-merge PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923) | Unreleased | In develop at af00fa1 |
-| WB-09 | `ci/wb-09-release-deploy` | [Issue #10](https://github.com/smalvik/biocad-workspace/issues/10), PR pending | [Local evidence](../evidence/WB-09-local.md): full 91 passed; focused delivery 13 passed; real runtime/backup/image restore smoke passed | Unreleased | Dispatcher bootstrapped; registry/release/deployment pending |
-| WB-04 … WB-18 (except WB-09/WB-11) | See backlog | — | — | — | TODO |
+| WB-01 | `chore/wb-01-bootstrap` | [#2 merged](https://github.com/smalvik/biocad-workspace/pull/2) | [PR CI passed](https://github.com/smalvik/biocad-workspace/actions/runs/43598925846), [post-merge regression passed](https://github.com/smalvik/biocad-workspace/actions/runs/43599195552) | v1.0.0 | Merged; task branch retained |
+| WB-02 | `feat/wb-02-booking-core` | [#4 merged](https://github.com/smalvik/biocad-workspace/pull/4), [main #6 merged](https://github.com/smalvik/biocad-workspace/pull/6) | [develop regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43604565825), [main regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43604855360) | v1.0.0 | In develop and main per user instruction |
+| WB-11 | `fix/wb-11-outbox-probe` | [#8 merged](https://github.com/smalvik/biocad-workspace/pull/8) | [PR CI PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43604235478), full post-merge regression PASS | v1.0.0 | Test harness defect fixed; no application race claimed |
+| WB-03 | `feat/wb-03-interactive-map` | [#9 merged](https://github.com/smalvik/biocad-workspace/pull/9) | [PR PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608443234), [post-merge PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923) | v1.0.0 | In develop at af00fa1 |
+| WB-09 | `ci/wb-09-release-deploy` | [#11](https://github.com/smalvik/biocad-workspace/pull/11), [main #12](https://github.com/smalvik/biocad-workspace/pull/12) | [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43626386129), [remote evidence](../evidence/WB-09-remote.md) | v1.0.0 | Released, existing apps preserved |
+| WB-11 delivery | `fix/wb-11-candidate-serialization` | [#14 merged](https://github.com/smalvik/biocad-workspace/pull/14) | 92-case CI + actual two-event serialization/digest equality proof | v1.0.0 | Released |
+| WB-04 | `feat/wb-04-employee-locations` | [PR #16](https://github.com/smalvik/biocad-workspace/pull/16), issue #15 | [Local 131 passed / Allure 114](../evidence/WB-04-local.md), dev volume upgrade PASS | Unreleased | CI running, remote delivery pending |
+| WB-05 … WB-18 (except WB-09/WB-11) | See backlog | — | — | — | TODO |
 
 For each completed task, add the real branch, SHA, PR URL, command output summary, Allure run/report URL, merge SHA, staging verification and release (if any). Keep unfinished items TODO, never fabricate completed results.
 
