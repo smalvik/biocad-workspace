@@ -53,3 +53,6 @@ event loop scope и whitespace header в harness; исправлены, логи
 Изменения WB-02 пока локальны; их remote CI/merge/deploy не заявляются.
 Локальный Booking обновлён с сохранением volume; через nginx проверены login,
 availability, Swagger/CSRF inputs и logout, без создания пользовательских броней.
+Создан локальный `5f3f661` (`feat(booking)`), staged secret scan/policy/diff checks
+прошли. SHA и результаты записаны отдельным documentation commit той же WB-02;
+push второй ветки не выполнялся.

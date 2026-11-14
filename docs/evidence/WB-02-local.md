@@ -4,6 +4,9 @@ Branch: `feat/wb-02-booking-core`, created from integrated develop
 `e5bb0b5ce4980074f40e682a8beac072f73ba06f` (WB-01 PR #2).
 Run ID: `20261114T133549Z-a1866f` (UTC; 16:35:49 Europe/Moscow).
 The tested working tree was dirty; this is local evidence, not a WB-02 remote CI pass.
+The implementation was subsequently committed locally as
+`5f3f66174ab8ab9d1155a0331ea8abe880706690`; no API/test/runner changes followed
+the passing run, only documentation updates.
 
 ```powershell
 python scripts/check.py --run-type regression
