@@ -1,0 +1,18 @@
+# Optional production ingress on an already existing, owner-approved Traefik network.
+# Only Web joins it. All data/API/broker services remain on the private project network.
+services:
+  web:
+    networks: [default, ingress]
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: ${INGRESS_NETWORK:?Verified existing ingress network}
+      traefik.http.routers.biocad-production.rule: Host(`${PUBLIC_HOST:?}`)
+      traefik.http.routers.biocad-production.entrypoints: websecure
+      traefik.http.routers.biocad-production.tls.certresolver: le
+      traefik.http.routers.biocad-production.service: biocad-production-web
+      traefik.http.services.biocad-production-web.loadbalancer.server.port: '80'
+
+networks:
+  ingress:
+    external: true
+    name: ${INGRESS_NETWORK:?}

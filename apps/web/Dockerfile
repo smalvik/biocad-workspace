@@ -11,8 +11,10 @@ CMD ["npm", "test"]
 
 FROM nginx:1.27.3-alpine AS runtime
 ARG GIT_SHA=dev
+ARG RELEASE_VERSION=unreleased
 LABEL org.opencontainers.image.source="biocad-workspace" org.opencontainers.image.revision=$GIT_SHA
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
+RUN printf '{"git_sha":"%s","release_version":"%s"}\n' "$GIT_SHA" "$RELEASE_VERSION" > /usr/share/nginx/html/version.json
 HEALTHCHECK --interval=10s --timeout=3s --retries=5 CMD wget -qO- http://127.0.0.1/ >/dev/null || exit 1
 EXPOSE 80

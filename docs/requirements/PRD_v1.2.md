@@ -189,6 +189,14 @@ Conventional Commits v1.0.0 стандартизирует **сообщения 
 
 ## 8. Релизная политика и CI/CD
 
+**Уточнение 2026-11-14 (см. DECISIONS.md):** по поручению пользователя WB-09 выполняется
+до WB-04. PR публикует SHA-candidate после проверок; merge в develop запускает полный
+regression и staging. Merge develop → main запускает сборку один раз для main SHA,
+server staging regression и production из тех же digests. Version/latest и GitHub Release
+публикуются после production smoke. Первый v1.0.0 — промежуточное демо, не полный MVP.
+Фактический сервер Ubuntu 24.04 использует Traefik; только production Web подключается
+к существующей ingress-сети, остальные сервисы имеют отдельные частные сети/volumes.
+
 **SemVer:** только `1.MINOR.PATCH` в тестовом задании. Базовая линия `v1.0.0`, следующий функциональный релиз `v1.1.0`, исправление `v1.1.1`. `feat` → MINOR; `fix` → PATCH; если в пакете и feature и bugfix — один MINOR; при breaking change в пределах задания не повышать MAJOR, а документировать несовместимость и согласовать. **Версию получает не отдельная PR-ветка, а проверенный snapshot `develop`/GitHub Release**.
 
 **Workflow:**
@@ -204,10 +212,12 @@ flowchart LR
   RG --> G{Green?}
   G -->|Нет| FIX[Новая fix task/branch]
   FIX --> PR
-  G -->|Да| R[Tag v1.MINOR.PATCH; main + GitHub Release]
-  R --> P[Promote tested digests → v-tag и latest]
-  P --> PD[Signed deploy webhook → production pull/up]
-  PD --> SM[Post-deploy smoke + rollback при ошибке]
+  G -->|Да| R[PR develop → main]
+  R --> MC[Main regression → build main SHA once]
+  MC --> MS[Stage exact main candidate → server regression]
+  MS --> PD[Restricted SSH → production pull/up by digest]
+  PD --> SM[HTTPS smoke + image rollback при ошибке]
+  SM -->|Green| P[Promote digests → version/latest + GitHub Release]
 ```
 
 **Образы Docker Hub:** `organization/biocad-web`, `organization/biocad-booking`, `organization/biocad-assistant`, `organization/biocad-notifier`. Каждый релизный образ имеет теги `sha-<gitsha>`, `v1.x.y`, `latest` (только после приёмки) и OCI-label с Git SHA. **Нельзя повторно пересобирать** после staging-regression: добавление version/latest — продвижение проверенного digest. Для rollback хранить предыдущий digest/версию; `latest` — удобная ссылка, но для аудита и восстановления записывать digest, который действительно развёрнут.

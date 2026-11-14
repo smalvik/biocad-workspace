@@ -6,6 +6,7 @@ export default defineConfig({
   testDir: "./specs",
   timeout: 30_000,
   retries: process.env.CI ? 1 : 0,
+  workers: process.env.CI ? 1 : undefined,
   reporter: [
     ["list"],
     ["html", { open: "never", outputFolder: "playwright-report" }],
@@ -15,7 +16,8 @@ export default defineConfig({
     baseURL: process.env.BASE_URL ?? "http://localhost:8080",
     locale: "ru-RU",
     timezoneId: "Europe/Moscow",
-    trace: "retain-on-failure",
+    // Authenticated flows must not store session cookies/CSRF in network traces.
+    trace: "off",
     screenshot: "only-on-failure",
   },
   projects: [

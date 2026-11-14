@@ -16,7 +16,7 @@ def report_metadata():
         ("release_version", "unreleased"),
         ("working_tree", "unknown"),
     ):
-        variable = "APP_ENV" if name == "environment" else name.upper()
+        variable = "REPORT_ENV" if name == "environment" else name.upper()
         allure.dynamic.label(name, os.environ.get(variable, default))
 
 

@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app.auth import DB, User, Writer
 from app.errors import ApiError
-from app.models import Booking, Floor, OutboxEvent, PermanentAssignment, Space
+from app.models import Booking, Floor, Office, OutboxEvent, PermanentAssignment, Space
 from app.schemas import BookingRequest, BookingView, OffsetDateTime
 
 router = APIRouter(prefix="/api/v1", tags=["booking"])
@@ -120,10 +120,20 @@ async def cancel_booking(booking_id: UUID, request: Request, db: DB, user: Write
 
 @router.get("/floors")
 async def floors(db: DB, user: User):
-    rows = await db.scalars(select(Floor).order_by(Floor.number))
+    rows = await db.execute(
+        select(Floor, Office.name).join(Office, Office.id == Floor.office_id).order_by(Floor.number)
+    )
     return {
         "items": [
-            {"id": row.id, "number": row.number, "name": row.name, "office_id": row.office_id} for row in rows
+            {
+                "id": row.id,
+                "number": row.number,
+                "name": row.name,
+                "office_id": row.office_id,
+                "office_name": office_name,
+                "plan": row.plan,
+            }
+            for row, office_name in rows
         ],
         "timezone": "Europe/Moscow",
     }
