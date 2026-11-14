@@ -1,0 +1,16 @@
+{
+  "name": "biocad-e2e",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "test": "playwright test",
+    "smoke": "playwright test --grep @smoke"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.49.1",
+    "allure-playwright": "3.0.7",
+    "allure-js-commons": "3.0.7",
+    "@types/node": "22.10.2",
+    "typescript": "5.6.3"
+  }
+}

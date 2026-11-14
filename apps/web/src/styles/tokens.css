@@ -1,0 +1,35 @@
+/* Approximate BIOCAD tokens from docs/design/UI_CONTRACT.md — NOT the official UI Kit.
+   Replace values here when official assets are provided; components must only use variables. */
+:root {
+  --brand-navy: #0c204d;
+  --brand-green: #43b880;
+  --surface: #f4f6fb;
+  --surface-card: #ffffff;
+  --text: #222224;
+  --text-muted: #5b6475;
+  --status-free: #43b880;
+  --status-booked: #6fa8dc;
+  --status-dedicated: #9aa3b2;
+  --status-selected: #0c204d;
+  --danger: #d64545;
+  --warning: #e8a33d;
+  --radius-s: 8px;
+  --radius-m: 12px;
+  --radius-l: 16px;
+  --font: Arial, "Helvetica Neue", sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--surface); color: var(--text); font-family: var(--font); }
+.shell { min-height: 100vh; }
+.topbar {
+  display: flex; gap: 16px; align-items: baseline; padding: 12px 16px;
+  background: var(--brand-navy); color: #fff;
+}
+.brand { font-weight: 700; }
+.topbar .muted { color: #c7d0e3; }
+.card {
+  margin: 16px; padding: 16px; background: var(--surface-card);
+  border-radius: var(--radius-m); max-width: 720px;
+}
+.muted { color: var(--text-muted); }

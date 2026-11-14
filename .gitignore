@@ -25,3 +25,4 @@ allure-report/
 secrets/
 infra/data/
 **/.cache/
+artifacts/

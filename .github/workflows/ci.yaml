@@ -1,0 +1,58 @@
+name: Checks
+
+on:
+  pull_request:
+    branches: [develop]
+    types: [opened, synchronize, reopened, edited]
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Branch and security baseline
+        env:
+          PR_BRANCH: ${{ github.head_ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python scripts/check_policy.py
+      - name: Unit, integration and browser checks
+        env:
+          RUN_TYPE: ${{ github.event_name == 'push' && 'regression' || 'smoke' }}
+        run: python scripts/check.py --run-type "$RUN_TYPE"
+      - uses: actions/setup-node@v4
+        if: always()
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        if: always()
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Generate readable Allure report
+        if: always()
+        run: npx --yes --package=allure-commandline@2.32.0 allure generate artifacts/*/allure-results --clean -o artifacts/allure-report
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: checks-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 14

@@ -1,13 +1,75 @@
-# BIOCAD Workspace Booking — Codex handoff kit
+# BIOCAD Workspace Booking
 
-> IMPORTANT: This repository currently contains **requirements, demo data and reference mockups**. It **does not** yet contain the working React/FastAPI service, successful CI, deployed site, official BIOCAD UI kit or valid releases. The user asked for a three-day full-stack interview assignment; all demonstrations must be backed by real code, testing and deploy evidence.
+Локальный каркас WB-01: React/Vite, независимые FastAPI Booking и Assistant,
+PostgreSQL, RabbitMQ, Mailpit и nginx. Страница показывает доступность двух API.
+Карта, авторизация, схема броней, конкурентная защита, MCP/LLM и Notification Worker
+предстоят в следующих задачах.
+
+Статус и доказательства: [CURRENT_STATE](docs/context/CURRENT_STATE.md),
+[PROGRESS](docs/context/PROGRESS.md), [WB-01](docs/changes/WB-01.md).
+Публичный deploy, PR и опубликованные релизы пока не подтверждены.
+
+## Локальный запуск
+
+Нужны Docker с Linux containers и Compose >= 2.24.4. Node и uv на хосте не нужны.
+Из корня репозитория:
+
+```powershell
+docker compose --env-file .env.example -f infra/compose.yaml up -d --build --wait
+```
+
+Страница: http://localhost:8080. Booking Swagger: http://localhost:8080/api/docs.
+Assistant Swagger: http://localhost:8080/api/v1/assistant/docs. Mailpit: http://localhost:8025.
+API/БД/почта опубликованы только на loopback; RabbitMQ доступен внутри сети Compose.
+Проверка БД: http://localhost:8080/api/v1/readyz. `/healthz` проверяет жизнь процесса,
+`/readyz` Booking проверяет PostgreSQL и возвращает 503 при недоступности БД.
+
+Для собственных настроек скопируйте `.env.example` в игнорируемый `.env` и используйте
+`--env-file .env` вместо `--env-file .env.example`. Не меняйте пароль уже созданного
+PostgreSQL volume только через env: это не изменит пароль роли в БД.
+LLM-ключи для WB-01 не требуются. Значения по умолчанию подходят только локальному демо.
+Пользователей, миграций и seed в сервисе пока нет; JSON в `docs/data` — будущая фикстура.
+
+Остановить стенд с сохранением данных:
+
+```powershell
+docker compose --env-file .env.example -f infra/compose.yaml down
+```
+
+## Проверки
+
+С Python 3.12+ и Docker:
+
+```powershell
+python scripts/check.py
+python scripts/check.py --run-type regression
+python scripts/check_policy.py
+```
+
+Каждый прогон создаёт отдельный Compose-проект без host ports и отдельные volumes;
+использует `.env.example`, а LLM-ключи отключает. После проверки удаляет только свои
+контейнеры и тестовые volumes. Уже запущенный проект `biocad` сохраняется.
+
+Проверяются сборка/TypeScript, Ruff, pytest двух сервисов, настоящий PostgreSQL,
+AMQP round trip через durable queue с persistent message, SMTP → Mailpit,
+Vitest и Playwright Chromium для desktop/mobile. E2E пока проверяет стартовую страницу,
+proxy и отказ Assistant, а не бронирование или реальный LLM.
+
+Логи, `run.json`, Allure results и Playwright HTML/trace сохраняются отдельно
+в `artifacts/<UTC-run-id>/` (исключено из Git). SHA в отчёте — базовый HEAD;
+`working_tree=dirty` явно отмечает незакоммиченные изменения.
+
+`.github/workflows/ci.yaml` запускает эти проверки для PR в `develop`, полный
+доступный набор после push в `develop`, генерирует Allure HTML и загружает artifacts.
+Workflow подготовлен; успешный запуск GitHub Actions ещё не подтверждён.
+Публикация отчёта, staging, immutable release images и production — WB-08/WB-09.
 
 ## Begin here (VS Code + Codex)
 1. Unzip the handoff; open **`biocad-workspace`** as the VS Code workspace folder (`File → Open Folder`).
 2. Install/open the official **Codex IDE extension**, sign in using your ChatGPT account; or use Codex CLI from the workspace terminal.
 3. Open `START_HERE.md` and paste the text from `CODEX_FIRST_PROMPT.md` into Codex. The root `AGENTS.md` is its recurring task contract.
 4. Run `python scripts/verify_handoff.py` to confirm files and asset counts. This does not test a product.
-5. Let Codex perform a **read-only inventory and plan first**, then start WB-01 on its own branch. Continue task-by-task, not by pasting the full PRD into every chat.
+5. Read `CURRENT_STATE.md` and `PROGRESS.md`, then continue the next unfinished WB task on its own branch.
 6. Configure API keys and tokens **locally** using env files ignored by Git and GitHub Actions Secrets, never in chats or committed files.
 
 ## Canonical project contents
