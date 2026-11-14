@@ -11,6 +11,10 @@
 9. Secrets through environment injection and CI encrypted secrets, minimum token scopes. Manual approval required for pushing remote branches, creating infrastructure, releasing or production deployment; never echo token/credentials.
 10. `AI-LOG.md` records authored and agent contributions honestly; the README states time spent, decisions, limitations, C1/C2 and ADRs. Demo includes intentional broken race test against **isolated** DB only, then restore constraint; ship only passing version.
 
+Approved exception: on 2026-11-14 the user authorized WB-02 -> develop -> main
+through checked PRs before a release. See `docs/requirements/DECISIONS.md`.
+This does not publish a release or deploy; WB-03 branches from develop.
+
 ## Per-task change note template
 ```md
 # WB-XX · Summary

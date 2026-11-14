@@ -2,10 +2,10 @@ name: Checks
 
 on:
   pull_request:
-    branches: [develop]
+    branches: [develop, main]
     types: [opened, synchronize, reopened, edited]
   push:
-    branches: [develop]
+    branches: [develop, main]
   workflow_dispatch:
 
 permissions:
@@ -29,6 +29,7 @@ jobs:
       - name: Branch and security baseline
         env:
           PR_BRANCH: ${{ github.head_ref }}
+          PR_BASE_BRANCH: ${{ github.base_ref }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
