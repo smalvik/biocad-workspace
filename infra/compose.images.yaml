@@ -1,0 +1,81 @@
+# Disposable complete regression on the server. Prebuilt images, no published ports.
+# HTTP runs on an isolated Docker network; APP_ENV=local is deliberate for its cookie transport.
+# The persistent staging/production stack uses secure cookies and separate databases.
+x-report-env: &report-env
+  APP_ENV: local
+  REPORT_ENV: ${REPORT_ENV:-staging}
+  RUN_TYPE: ${RUN_TYPE:-regression}
+  GIT_SHA: ${GIT_SHA:?}
+  RELEASE_VERSION: ${RELEASE_VERSION:?}
+  WORKING_TREE: clean
+
+services:
+  postgres:
+    extends: { file: compose.release.yaml, service: postgres }
+  booking:
+    extends: { file: compose.release.yaml, service: booking }
+  assistant:
+    extends: { file: compose.release.yaml, service: assistant }
+  web:
+    extends: { file: compose.release.yaml, service: web }
+  rabbitmq:
+    extends: { file: compose.release.yaml, service: rabbitmq }
+  mailpit:
+    extends: { file: compose.release.yaml, service: mailpit }
+
+  booking-tests:
+    profiles: [test]
+    image: ${BOOKING_TESTS_IMAGE:?}
+    mem_limit: 768m
+    cpus: 1.0
+    environment:
+      <<: *report-env
+      DATABASE_URL: postgresql+asyncpg://biocad:${POSTGRES_PASSWORD:?}@postgres:5432/biocad
+      BOOKING_BASE_URL: http://booking:8000
+      RABBITMQ_URL: amqp://biocad:${RABBITMQ_PASSWORD:?}@rabbitmq:5672/
+      MAILPIT_SMTP_HOST: mailpit
+      MAILPIT_API_URL: http://mailpit:8025
+      ALLOW_DATABASE_TESTS: '1'
+      SESSION_SECRET: ${SESSION_SECRET:?}
+      SEED_DEMO_DATA: 'true'
+      DEMO_PASSWORD: demo-workspace
+    volumes:
+      - ${ARTIFACTS_DIR:?}/allure-results:/allure-results
+
+  assistant-tests:
+    profiles: [test]
+    image: ${ASSISTANT_TESTS_IMAGE:?}
+    mem_limit: 512m
+    cpus: 1.0
+    environment:
+      <<: *report-env
+      BOOKING_BASE_URL: http://booking:8000
+    volumes:
+      - ${ARTIFACTS_DIR:?}/allure-results:/allure-results
+
+  web-tests:
+    profiles: [test]
+    image: ${WEB_TESTS_IMAGE:?}
+    mem_limit: 768m
+    cpus: 1.0
+
+  e2e:
+    profiles: [test]
+    image: ${E2E_IMAGE:?}
+    init: true
+    shm_size: 256m
+    mem_limit: 1536m
+    cpus: 1.0
+    environment:
+      <<: *report-env
+      BASE_URL: http://web
+      CI: '1'
+    volumes:
+      - ${ARTIFACTS_DIR:?}/allure-results:/e2e/allure-results
+      - ${ARTIFACTS_DIR:?}/playwright-report:/e2e/playwright-report
+      - ${ARTIFACTS_DIR:?}/test-results:/e2e/test-results
+
+volumes:
+  pgdata:
+  rabbitdata:
+  maildata:

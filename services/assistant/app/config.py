@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     openrouter_primary_model: str = ""
     openrouter_fallback_model: str = ""
     git_sha: str = "dev"
+    release_version: str = "unreleased"
 
 
 @lru_cache

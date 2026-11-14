@@ -4,15 +4,21 @@ React/Vite, независимые FastAPI Booking и Assistant, PostgreSQL, Rab
 Mailpit и nginx. WB-01 интегрирован через PR #2 с успешным CI и post-merge regression.
 В WB-02 добавлен Booking API с демо-сессиями, миграцией и защитой PostgreSQL;
 результат его проверок — в [WB-02](docs/changes/WB-02.md).
-В WB-03 локально реализована интерактивная SVG-карта двух этажей с настоящим API,
+В WB-03 реализована интерактивная SVG-карта двух этажей с настоящим API,
 входом, фильтрами даты/времени и карточкой места. Форма подтверждения брони,
 поиск сотрудников/аватары, MCP/LLM и Notification Worker — следующие задачи.
 
 Статус и доказательства: [CURRENT_STATE](docs/context/CURRENT_STATE.md),
 [PROGRESS](docs/context/PROGRESS.md), [WB-01](docs/changes/WB-01.md).
 WB-02 и исправление WB-11 интегрированы в develop/main через проверенные PR.
-WB-03 пока в отдельной локальной ветке; [79 passed / evidence](docs/evidence/WB-03-local.md).
+WB-03 слита в develop через [PR #9](https://github.com/smalvik/biocad-workspace/pull/9);
+[post-merge regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923).
 Публичный deploy и опубликованные релизы пока не подтверждены.
+
+CI/CD WB-09: [runbook и фактический статус](docs/process/DELIVERY.md).
+Реализованы SHA/digest images, отдельные staging/production проекты, ограниченный SSH
+dispatcher, backup/rollback и Allure. Сервер обследован, BIOCAD admin/CI ключи созданы,
+ограниченный dispatcher установлен. Публикация и первый deploy ожидают проверенного PR.
 
 ## Локальный запуск
 

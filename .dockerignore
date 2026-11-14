@@ -6,6 +6,13 @@
 !docs/
 !docs/data/
 !docs/data/demo_fixture.json
+!scripts/
+!scripts/delivery_manifest.py
+!scripts/deploy_server.py
+!scripts/package_images.py
+!tests/
+!tests/delivery/
+!tests/delivery/**
 **/.venv
 **/__pycache__
 **/.pytest_cache

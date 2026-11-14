@@ -1,0 +1,112 @@
+# Runtime only: no source mounts, build instructions, public backend ports or shared networks.
+# Always supply an explicit biocad-staging / biocad-production project name.
+x-logging: &bounded-logs
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: '3'
+
+services:
+  postgres:
+    logging: *bounded-logs
+    image: postgres:16.6-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: biocad
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configure a unique environment password}
+      POSTGRES_DB: biocad
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    mem_limit: 512m
+    cpus: 1.0
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U biocad -d biocad']
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  booking:
+    logging: *bounded-logs
+    image: ${BOOKING_IMAGE:?Use the immutable candidate manifest}
+    restart: unless-stopped
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      TZ: UTC
+      GIT_SHA: ${GIT_SHA:?}
+      RELEASE_VERSION: ${RELEASE_VERSION:?}
+      DATABASE_URL: postgresql+asyncpg://biocad:${POSTGRES_PASSWORD:?}@postgres:5432/biocad
+      SESSION_SECRET: ${SESSION_SECRET:?Configure a unique environment secret}
+      SEED_DEMO_DATA: 'true'
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-demo-workspace}
+    depends_on:
+      postgres: { condition: service_healthy }
+    mem_limit: 384m
+    cpus: 1.0
+
+  assistant:
+    logging: *bounded-logs
+    image: ${ASSISTANT_IMAGE:?Use the immutable candidate manifest}
+    restart: unless-stopped
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      TZ: UTC
+      GIT_SHA: ${GIT_SHA:?}
+      RELEASE_VERSION: ${RELEASE_VERSION:?}
+      BOOKING_BASE_URL: http://booking:8000
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_PRIMARY_MODEL: ${OPENROUTER_PRIMARY_MODEL:-}
+      OPENROUTER_FALLBACK_MODEL: ${OPENROUTER_FALLBACK_MODEL:-}
+    mem_limit: 256m
+    cpus: 0.5
+
+  web:
+    logging: *bounded-logs
+    image: ${WEB_IMAGE:?Use the immutable candidate manifest}
+    restart: unless-stopped
+    depends_on:
+      booking: { condition: service_healthy }
+      assistant: { condition: service_healthy }
+    mem_limit: 128m
+    cpus: 0.5
+
+  rabbitmq:
+    logging: *bounded-logs
+    image: rabbitmq@sha256:e582c0bc7766f3342496d8485efb5a1df782b5ce3886ad017e2eaae442311f69
+    restart: unless-stopped
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: biocad
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?Configure a unique environment password}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: '+S 2:2 +SDcpu 1 +SDio 1'
+      RABBITMQ_CTL_ERL_ARGS: '+S 1:1 +SDcpu 1 +SDio 1'
+    volumes:
+      - rabbitdata:/var/lib/rabbitmq
+    mem_limit: 512m
+    cpus: 1.0
+    healthcheck:
+      test: [CMD, gosu, rabbitmq, rabbitmq-diagnostics, -q, ping]
+      start_period: 15s
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  mailpit:
+    logging: *bounded-logs
+    image: axllent/mailpit@sha256:aef2aacc11f075ec0fb6874275ee4a421e688e11a96ebb296134d1735c7761ce
+    restart: unless-stopped
+    environment:
+      MP_DATABASE: /data/mailpit.db
+    volumes:
+      - maildata:/data
+    mem_limit: 128m
+    cpus: 0.5
+    healthcheck:
+      test: [CMD, /mailpit, readyz]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  pgdata:
+  rabbitdata:
+  maildata:

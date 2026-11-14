@@ -5,7 +5,7 @@ test.beforeEach(async () => {
   await allure.suite(process.env.RUN_TYPE ?? "smoke");
   for (const [name, value] of Object.entries({
     run_type: process.env.RUN_TYPE ?? "smoke",
-    environment: process.env.APP_ENV ?? "local",
+    environment: process.env.REPORT_ENV ?? process.env.APP_ENV ?? "local",
     git_sha: process.env.GIT_SHA ?? "dev",
     working_tree: process.env.WORKING_TREE ?? "unknown",
     release_version: process.env.RELEASE_VERSION ?? "unreleased",

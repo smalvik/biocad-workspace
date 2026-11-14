@@ -1,0 +1,26 @@
+# Add a NEW virtual host only after inspecting the existing Nginx and certificate paths.
+# Do not replace nginx.conf, change existing virtual hosts, or restart the Docker daemon.
+server {
+    listen 80;
+    server_name biocad.smalvik.dev;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name biocad.smalvik.dev;
+    ssl_certificate     /etc/letsencrypt/live/biocad.smalvik.dev/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/biocad.smalvik.dev/privkey.pem;
+
+    client_max_body_size 1m;
+    location / {
+        proxy_pass http://127.0.0.1:18080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 95s;
+    }
+}
+# Validate with nginx -t before a graceful reload. Ports/certs must match the host inventory.
+# Staging (18081) stays private. PostgreSQL, RabbitMQ, Mailpit and both APIs publish no ports.

@@ -1,0 +1,5 @@
+# The shared host's existing Nginx proxies only to this loopback port.
+services:
+  web:
+    ports:
+      - '127.0.0.1:${WEB_HOST_PORT:?Choose an unused loopback port}:80'

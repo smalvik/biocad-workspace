@@ -5,11 +5,14 @@ import json
 import os
 import subprocess
 import sys
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
+from delivery_manifest import image_environment, load, verify_local_images
+
 ROOT = Path(__file__).resolve().parent.parent
+UTC = timezone.utc  # noqa: UP017 -- Ubuntu 22.04 server Python 3.10 compatibility
 
 
 def git_output(*args: str) -> str:
@@ -22,14 +25,19 @@ def main() -> int:
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run-type", choices=("smoke", "regression"), default="smoke")
+    parser.add_argument("--manifest", type=Path, help="Use only prebuilt digest images; never build")
+    parser.add_argument("--namespace", default="smalvik")
+    parser.add_argument("--environment", choices=("local", "staging"), default="local")
     args = parser.parse_args()
+    manifest = load(args.manifest, args.namespace) if args.manifest else None
     run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid4().hex[:6]
     project = "biocad-check-" + run_id.lower()
     output = ROOT / "artifacts" / run_id
     output.mkdir(parents=True)
     (output / "allure-results").mkdir()
-    sha = git_output("rev-parse", "HEAD")
-    dirty = "dirty" if git_output("status", "--porcelain") else "clean"
+    sha = manifest["source_sha"] if manifest else git_output("rev-parse", "HEAD")
+    dirty = "clean" if manifest else ("dirty" if git_output("status", "--porcelain") else "clean")
+    version = manifest["version"] if manifest else "unreleased"
     env = os.environ.copy()
     env.update(
         {
@@ -37,7 +45,8 @@ def main() -> int:
             "GIT_SHA": sha,
             "WORKING_TREE": dirty,
             "RUN_TYPE": args.run_type,
-            "RELEASE_VERSION": "unreleased",
+            "RELEASE_VERSION": version,
+            "REPORT_ENV": args.environment,
             "ARTIFACTS_DIR": output.as_posix(),
             "IMAGE_TAG": project,
             "POSTGRES_USER": "biocad",
@@ -54,6 +63,8 @@ def main() -> int:
             "SEED_DEMO_DATA": "true",
         }
     )
+    if manifest:
+        env.update(image_environment(manifest))
     compose = [
         "docker",
         "compose",
@@ -64,18 +75,21 @@ def main() -> int:
         "-p",
         project,
         "-f",
-        "infra/compose.yaml",
-        "-f",
-        "infra/compose.test.yaml",
+        "infra/compose.images.yaml" if manifest else "infra/compose.yaml",
         "--profile",
         "test",
     ]
+    if not manifest:
+        compose.extend(["-f", "infra/compose.test.yaml"])
     metadata = {
         "run_id": run_id,
         "project": project,
         "base_git_sha": sha,
         "working_tree": dirty,
         "run_type": args.run_type,
+        "environment": args.environment,
+        "release_version": version,
+        "image_digests": manifest["images"] if manifest else {},
         "commands": [],
     }
 
@@ -114,17 +128,21 @@ def main() -> int:
                 raise RuntimeError("Refusing to reuse an existing Compose project")
             owned = True
             run(*compose, "config", "--quiet")
-            run(
-                *compose,
-                "build",
-                "booking",
-                "assistant",
-                "web",
-                "booking-tests",
-                "assistant-tests",
-                "web-tests",
-                "e2e",
-            )
+            if manifest:
+                run(*compose, "pull")
+                verify_local_images(manifest)
+            else:
+                run(
+                    *compose,
+                    "build",
+                    "booking",
+                    "assistant",
+                    "web",
+                    "booking-tests",
+                    "assistant-tests",
+                    "web-tests",
+                    "e2e",
+                )
             run(
                 *compose,
                 "up",
@@ -181,8 +199,8 @@ def main() -> int:
             metadata["result"] = "passed" if success else "failed"
             (output / "run.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
             (output / "allure-results" / "environment.properties").write_text(
-                f"environment=local\nrun_type={args.run_type}\ngit_sha={sha}\n"
-                f"working_tree={dirty}\nrelease_version=unreleased\n",
+                f"environment={args.environment}\nrun_type={args.run_type}\ngit_sha={sha}\n"
+                f"working_tree={dirty}\nrelease_version={version}\n",
                 encoding="utf-8",
             )
     print(f"Evidence: {output.relative_to(ROOT)} ({metadata['result']})")
