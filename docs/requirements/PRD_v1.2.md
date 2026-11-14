@@ -212,10 +212,12 @@ flowchart LR
   RG --> G{Green?}
   G -->|Нет| FIX[Новая fix task/branch]
   FIX --> PR
-  G -->|Да| R[Tag v1.MINOR.PATCH; main + GitHub Release]
-  R --> P[Promote tested digests → v-tag и latest]
-  P --> PD[Signed deploy webhook → production pull/up]
-  PD --> SM[Post-deploy smoke + rollback при ошибке]
+  G -->|Да| R[PR develop → main]
+  R --> MC[Main regression → build main SHA once]
+  MC --> MS[Stage exact main candidate → server regression]
+  MS --> PD[Restricted SSH → production pull/up by digest]
+  PD --> SM[HTTPS smoke + image rollback при ошибке]
+  SM -->|Green| P[Promote digests → version/latest + GitHub Release]
 ```
 
 **Образы Docker Hub:** `organization/biocad-web`, `organization/biocad-booking`, `organization/biocad-assistant`, `organization/biocad-notifier`. Каждый релизный образ имеет теги `sha-<gitsha>`, `v1.x.y`, `latest` (только после приёмки) и OCI-label с Git SHA. **Нельзя повторно пересобирать** после staging-regression: добавление version/latest — продвижение проверенного digest. Для rollback хранить предыдущий digest/версию; `latest` — удобная ссылка, но для аудита и восстановления записывать digest, который действительно развёрнут.
