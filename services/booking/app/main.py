@@ -1,10 +1,15 @@
 from contextlib import asynccontextmanager
+from uuid import UUID, uuid4
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app import db
+from app.auth import router as auth_router
+from app.bookings import router as booking_router
 from app.config import get_settings
+from app.errors import ApiError
 
 API_PREFIX = "/api/v1"
 
@@ -25,6 +30,36 @@ def create_app() -> FastAPI:
         openapi_url="/api/openapi.json",
         lifespan=lifespan,
     )
+
+    @app.middleware("http")
+    async def request_id(request: Request, call_next):
+        try:
+            correlation = UUID(request.headers.get("X-Request-ID", ""))
+        except ValueError:
+            correlation = uuid4()
+        request.state.request_id = str(correlation)
+        response = await call_next(request)
+        response.headers["X-Request-ID"] = str(correlation)
+        response.headers["Cache-Control"] = "no-store"
+        return response
+
+    @app.exception_handler(ApiError)
+    async def api_error(_: Request, exc: ApiError):
+        return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status)
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_error(_: Request, exc: RequestValidationError):
+        details = [
+            {"loc": list(error["loc"]), "type": error["type"], "message": error["msg"]}
+            for error in exc.errors()
+        ]
+        return JSONResponse(
+            {"error": {"code": "VALIDATION_ERROR", "message": "Проверьте параметры", "details": details}},
+            status_code=422,
+        )
+
+    app.include_router(auth_router)
+    app.include_router(booking_router)
 
     @app.get("/healthz", tags=["ops"])
     @app.get(f"{API_PREFIX}/healthz", tags=["ops"], include_in_schema=False)

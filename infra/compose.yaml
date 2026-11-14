@@ -36,12 +36,14 @@ services:
       retries: 20
 
   booking:
-    build: { context: ../services/booking, target: runtime, args: *build-args }
+    build: { context: .., dockerfile: services/booking/Dockerfile, target: runtime, args: *build-args }
     image: biocad-booking:${IMAGE_TAG:-local}
     environment:
       <<: *backend-env
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-biocad}:${POSTGRES_PASSWORD:-biocad}@postgres:5432/${POSTGRES_DB:-biocad}
       SESSION_SECRET: ${SESSION_SECRET:-dev-only-insecure-secret}
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-demo-workspace}
     depends_on:
       postgres: { condition: service_healthy }
     ports:
@@ -103,7 +105,7 @@ services:
   # ---- test profile: runs against the real stack above ----
   booking-tests:
     profiles: ["test"]
-    build: { context: ../services/booking, target: test }
+    build: { context: .., dockerfile: services/booking/Dockerfile, target: test }
     environment:
       <<: *test-env
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-biocad}:${POSTGRES_PASSWORD:-biocad}@postgres:5432/${POSTGRES_DB:-biocad}
@@ -111,6 +113,9 @@ services:
       RABBITMQ_URL: amqp://${RABBITMQ_USER:-biocad}:${RABBITMQ_PASSWORD:-biocad-local}@rabbitmq:5672/
       MAILPIT_SMTP_HOST: mailpit
       MAILPIT_API_URL: http://mailpit:8025
+      ALLOW_DATABASE_TESTS: ${ALLOW_DATABASE_TESTS:-0}
+      SEED_DEMO_DATA: "true"
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-demo-workspace}
     volumes:
       - ${ARTIFACTS_DIR:-../artifacts/local}/allure-results:/allure-results
     depends_on:

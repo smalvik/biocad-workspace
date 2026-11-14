@@ -22,7 +22,7 @@
     {
       "id": "e03",
       "full_name": "Мария Соколова",
-      "job_title": "Биоаналитик",
+      "job_title": "Научный сотрудник",
       "department": "Лаборатория",
       "avatar_placeholder": "/assets/avatars/e03.png",
       "fictional": true
@@ -30,7 +30,7 @@
     {
       "id": "e04",
       "full_name": "Павел Громов",
-      "job_title": "Разработчик",
+      "job_title": "Инженер",
       "department": "Платформа",
       "avatar_placeholder": "/assets/avatars/e04.png",
       "fictional": true
@@ -164,7 +164,7 @@
     {
       "id": "D-07",
       "kind": "DESK",
-      "desk_mode": "FREEDESK",
+      "desk_mode": "DEDICATED",
       "floor_number": 2,
       "zone": "open-space",
       "x": 6,
@@ -375,7 +375,7 @@
       "employee_id": "e02"
     },
     {
-      "space_id": "D-05",
+      "space_id": "D-07",
       "employee_id": "e01"
     },
     {
@@ -418,7 +418,7 @@
     },
     {
       "id": "b-demo-3",
-      "space_id": "D-07",
+      "space_id": "D-08",
       "employee_id": "e02",
       "start_at": "2026-11-16T09:00:00+03:00",
       "end_at": "2026-11-16T12:00:00+03:00",

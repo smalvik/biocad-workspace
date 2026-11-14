@@ -1,0 +1,14 @@
+# Booking builds use the repository root only to package the canonical fixture.
+**
+!services/
+!services/booking/
+!services/booking/**
+!docs/
+!docs/data/
+!docs/data/demo_fixture.json
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/allure-results
+**/.env

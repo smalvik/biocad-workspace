@@ -62,4 +62,5 @@ docker run --rm -v "C:/projects/biocad-workspace/artifacts:/reports" -v biocad-a
 Неуспешные первые прогоны сохранены в `artifacts/20261114T124443Z-ae9416`
 (Windows cp1251/UnicodeEncodeError) и `artifacts/20261114T124614Z-84b575`
 (root healthcheck/Erlang cookie race). Ошибки исправлены перед зелёным прогоном.
-PR, code review, merge, staging, Docker Hub и release не выполнялись.
+На момент локального прогона PR, code review, merge, staging, Docker Hub и release
+ещё не выполнялись. Последующая публикация и merge отражены в [WB-01](../changes/WB-01.md).

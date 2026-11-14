@@ -36,3 +36,20 @@ GitHub repo smalvik/biocad-workspace; настроен origin. После про
 chore/wb-01-bootstrap. Созданы issue #1 и PR #2; CI запущен, его успех пока не заявляется.
 Для аутентификации локальный токен прочитан только в память и передан Docker
 через environment, без включения в argv/URL/log. Секреты не коммитились.
+
+WB-01: head CI `43598925846` прошёл; в PR явно зафиксирована самопроверка агента.
+PR #2 слит в develop как `e5bb0b5`, ветка сохранена; полный post-merge regression
+`43599195552` прошёл. Старый gh pr edit оказался несовместим с удалённым API;
+описание обновлено через gh api. Человеческое approval не заявляется.
+
+WB-02: issue #3, отдельная ветка от обновлённого develop. Агент реализовал
+Alembic/GiST, demo sessions/CSRF/scrypt, idempotent create/cancel, availability,
+transactional outbox и seed. Исправил расхождения D-07/ролей фикстуры по PRD;
+описал выбор в ADR-001. Регрессия `python scripts/check.py --run-type regression`:
+52 passed (41 Booking + 2 Assistant + 2 persistence + 2 Vitest + 5 Playwright),
+Allure 50 passed. Проверены 20 конкурентов, 20 повторов ключа, прямой SQL,
+инъекция outbox failure и реальные restart. Первые прогоны выявили ошибки
+event loop scope и whitespace header в harness; исправлены, логи сохранены.
+Изменения WB-02 пока локальны; их remote CI/merge/deploy не заявляются.
+Локальный Booking обновлён с сохранением volume; через nginx проверены login,
+availability, Swagger/CSRF inputs и logout, без создания пользовательских броней.
