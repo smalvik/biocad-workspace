@@ -3,6 +3,8 @@ import type { FormEvent, ReactNode } from "react";
 import { api, ApiError } from "./api";
 import { Avatar, PersonSummary } from "./Avatar";
 import { EmployeeSearch } from "./EmployeeSearch";
+import { BookingFlow } from "./BookingFlow";
+import { useBookingFlow } from "./useBookingFlow";
 import { useEmployeeLocation } from "./useEmployees";
 import {
   DEFAULT_FILTERS,
@@ -250,6 +252,7 @@ function Details({
   lookupActive = false,
   onChooseLocation,
   onShowAvailable,
+  onBook,
 }: {
   space?: Space;
   floor?: Floor;
@@ -260,6 +263,7 @@ function Details({
   lookupActive?: boolean;
   onChooseLocation?: (spaceId: string) => void;
   onShowAvailable?: () => void;
+  onBook: (space: Space, floor: Floor, window: TimeWindow) => void;
 }) {
   const panel = useRef<HTMLElement>(null);
   const [mobile, setMobile] = useState(
@@ -457,10 +461,24 @@ function Details({
                 )}
               </section>
             ) : space.is_available_for_full_interval ? (
-              <p className="free-note">
-                <Icon name="check" size={19} />
-                Доступно на весь выбранный интервал
-              </p>
+              <>
+                <p className="free-note">
+                  <Icon name="check" size={19} />
+                  Доступно на весь выбранный интервал
+                </p>
+                {Date.parse(window.from) <= Date.now() && (
+                  <p role="alert" className="error-message">
+                    Выберите начало бронирования в будущем.
+                  </p>
+                )}
+                <button
+                  className="primary-button booking-continue"
+                  disabled={Date.parse(window.from) <= Date.now()}
+                  onClick={() => onBook(space, floor, window)}
+                >
+                  Продолжить
+                </button>
+              </>
             ) : (
               <section
                 className="reservation-list"
@@ -634,6 +652,14 @@ function Workspace({
     window,
     onExpired,
   );
+  const [bookingRevision, setBookingRevision] = useState(0);
+  const refreshLookup = lookup.refresh;
+  const afterMutation = useCallback(() => {
+    refresh();
+    refreshLookup();
+    setBookingRevision((value) => value + 1);
+  }, [refresh, refreshLookup]);
+  const bookingFlow = useBookingFlow(session, onExpired, afterMutation);
   useEffect(() => {
     if (!lookup.data) return;
     const location =
@@ -727,12 +753,19 @@ function Workspace({
             Москва · МСК
           </span>
         </section>
+        <BookingFlow
+          flow={bookingFlow}
+          session={session}
+          onExpired={onExpired}
+          onMutated={afterMutation}
+        />
         <div className="workspace-grid">
           <aside className="filter-panel" aria-label="Фильтры карты">
             <EmployeeSearch
               window={window}
               selectedId={lookupEmployeeId}
               onExpired={onExpired}
+              revision={bookingRevision}
               onSelect={(id) => {
                 setSelectedId(null);
                 setLookupTarget(null);
@@ -1025,6 +1058,10 @@ function Workspace({
             window={window}
             employeeId={session.employee.id}
             onClose={closeDetails}
+            onBook={(space, floor, period) => {
+              closeDetails();
+              bookingFlow.begin(space, floor, period);
+            }}
             lookup={lookup}
             lookupActive={Boolean(lookupEmployeeId && window)}
             onChooseLocation={(id) => {

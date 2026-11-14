@@ -1,4 +1,7 @@
 import type {
+  Booking,
+  BookingPayload,
+  OwnBooking,
   EmployeeLocationResponse,
   EmployeeSearchResponse,
   Floor,
@@ -11,6 +14,7 @@ export class ApiError extends Error {
   constructor(
     message: string,
     readonly status = 0,
+    readonly code = "",
   ) {
     super(message);
   }
@@ -44,6 +48,7 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
         body?.error?.message ??
           "Не удалось загрузить данные. Повторите попытку.",
         response.status,
+        body?.error?.code ?? "",
       );
     }
     if (body === null)
@@ -63,6 +68,19 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
 }
 
 export const api = {
+  createBooking: (payload: BookingPayload, key: string, csrf: string) =>
+    request<Booking>("/api/v1/bookings", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: { "X-CSRF-Token": csrf, "Idempotency-Key": key },
+    }),
+  myBookings: (signal?: AbortSignal) =>
+    request<{ items: OwnBooking[] }>("/api/v1/bookings/me", { signal }),
+  cancelBooking: (id: string, csrf: string) =>
+    request<Booking>(`/api/v1/bookings/${encodeURIComponent(id)}/cancel`, {
+      method: "POST",
+      headers: { "X-CSRF-Token": csrf },
+    }),
   me: (signal?: AbortSignal) => request<Session>("/api/v1/auth/me", { signal }),
   login: (username: string, password: string) =>
     request<Session>("/api/v1/auth/login", {

@@ -137,6 +137,46 @@ async def test_equivalent_offsets_replay_same_confirmation(api):
     assert replay.json()["id"] == created.json()["id"]
 
 
+async def test_own_list_includes_safe_location_and_cancelled_state(api, login_as):
+    created = await book(api, slot("M-03"))
+    assert created.status_code == 201
+    booking_id = created.json()["id"]
+    listing = await api.get("/api/v1/bookings/me")
+    assert listing.status_code == 200
+    row = next(item for item in listing.json()["items"] if item["id"] == booking_id)
+    assert row["employee_id"] == "e01" and row["status"] == "confirmed"
+    assert row["resource"] == {
+        "kind": "MEETING_ROOM",
+        "floor_id": "floor-2",
+        "floor_name": "Этаж 2",
+        "office_name": "Москва, Корпус А",
+    }
+    assert not {"idempotency_key", "request_hash", "email", "csrf_token"} & row.keys()
+    other = await login_as("e02")
+    assert booking_id not in {item["id"] for item in (await other.get("/api/v1/bookings/me")).json()["items"]}
+    assert (await other.post(f"/api/v1/bookings/{booking_id}/cancel")).status_code == 403
+    assert (await api.post(f"/api/v1/bookings/{booking_id}/cancel")).status_code == 200
+    cancelled = next(
+        item for item in (await api.get("/api/v1/bookings/me")).json()["items"] if item["id"] == booking_id
+    )
+    assert cancelled["status"] == "cancelled" and cancelled["cancelled_at"]
+    assert cancelled["resource"] == row["resource"]
+
+
+async def test_own_list_requires_session_and_second_floor_location_is_correct(client, api):
+    assert (await client.get("/api/v1/bookings/me")).status_code == 401
+    created = await book(api, slot("D-32"))
+    assert created.status_code == 201
+    item = next(
+        row
+        for row in (await api.get("/api/v1/bookings/me")).json()["items"]
+        if row["id"] == created.json()["id"]
+    )
+    assert item["resource"]["floor_id"] == "floor-3"
+    assert item["resource"]["floor_name"] == "Этаж 3"
+    assert item["resource"]["kind"] == "DESK"
+
+
 async def test_foreign_cancellation_is_forbidden_and_own_list_is_scoped(login_as):
     owner, other = await login_as("e01"), await login_as("e02")
     created = await book(owner, slot("D-11"))

@@ -1,4 +1,4 @@
-# Actual implementation status — 2026-11-14
+# Actual implementation status — 2026-11-15
 
 | Item | Observed state |
 |---|---|
@@ -7,7 +7,7 @@
 | Static demos | HTML employee-map demo, release-history mock and visual viewer; **not deployed React application** |
 | Interview preparation | 72 draft Q&A, technical architecture decisions and sample release-note templates |
 | Demo employee data | Fictional employees and calendar scenario; see `docs/data/demo_fixture.json` |
-| React application | v1.1.0 live: map, employee search, selected-period portraits/timeline and initials fallback; no booking form |
+| React application | v1.1.0 live: map, employee search, selected-period portraits/timeline and initials fallback; WB-05 form/own bookings/cancel locally tested (157 passed), not deployed |
 | FastAPI services | Live Booking Core plus authenticated employee directory/location and batch public occupancy profiles; Assistant remains health/OpenAPI skeleton |
 | PostgreSQL schema/tests | Alembic core schema, GiST [start,end), per-user idempotency, atomic outbox and fictional seed; real concurrency + restart regression passed locally |
 | RabbitMQ/MCP/real LLM | Compose RabbitMQ + AMQP smoke implemented; application RPC/MCP/LLM not implemented |
@@ -33,7 +33,9 @@ Later WB-09 delivered that baseline as v1.0.0; [remote proof](../evidence/WB-09-
 WB-04 employee lookup/avatars shipped through [PR #16](https://github.com/smalvik/biocad-workspace/pull/16)
 and [main #17](https://github.com/smalvik/biocad-workspace/pull/17),
 [actual v1.1.0 evidence](../evidence/WB-04-remote.md).
-Next unimplemented product flow: WB-05 booking form.
+WB-05 form/own bookings/cancel is locally tested on its own branch, issue #18;
+the public application remains v1.1.0 until verified delivery.
+Next unimplemented product flow: WB-06 real Assistant/MCP/LLM.
 
 GitHub repo confirmed: https://github.com/smalvik/biocad-workspace.
 Docker Hub namespace and server access/deployment are verified; see [remote evidence](../evidence/WB-09-remote.md).

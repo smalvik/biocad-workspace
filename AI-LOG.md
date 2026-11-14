@@ -111,3 +111,28 @@ GitHub token читался в память и передавался через
   key/auth files, then real snapshots succeeded. Existing keys and server SSH settings
   untouched. Actual commands and evidence: `docs/evidence/WB-04-remote.md`.
   WB-05 form/own bookings/cancel remains the next unimplemented product task.
+
+- **WB-05 implementation, 2026-11-14/15:** issue #18, separate branch from develop
+  `a00f590`, carried only post-release WB-04 documentation (`7f5e82a`). Added frozen
+  explicit confirmation, CSRF/stable retry identity, persisted uncertain intent per
+  demo user, request guards, own-list and confirmed idempotent cancellation.
+  Own list adds safe joined resource location; no schema/write transaction changes.
+  Early tests exposed incorrect dedicated test resources, persistence DTO comparison,
+  HTTP-origin randomUUID unavailability, unmount focus restoration and a mobile
+  M-03 hit target obscured by zoom controls. Corrected each; obsolete test run was
+  intentionally aborted, failure artifacts retained. getRandomValues choice checked
+  against https://w3c.github.io/webcrypto/#crypto-interface and actual browser probe.
+  Existing dev upgrade preserved all seven booking records and account password rows;
+  live own-list/login/logout passed. Independent local form preview/own-list on
+  desktop/mobile passed with zero attempted booking writes. Final full regression
+  and remote delivery are pending; production remains v1.1.0.
+
+- **WB-05 local verified:** `20261114T210618Z-566c12`, base `7f5e82a` dirty,
+  full runner exit 0, every command exit 0. 157 passed: 76 Booking/delivery,
+  2 Assistant, 2 persistence, 25 Vitest, 52 Playwright; Allure 132.
+  Actual desktop confirmation and mobile M-03 cancellation screenshots inspected.
+  Existing-volume upgrade repeated after the map change: 7 complete booking records
+  and account password rows unchanged, live own-list/login/logout passed.
+  Command: `python artifacts/run_logged.py artifacts/WB-05-regression-complete.log python scripts/check.py --run-type regression`.
+  Local HTML tooling initially lacked npx; separate ignored Node/Java/Allure image
+  prepared. This did not change test results or runtime images. Remote delivery pending.
