@@ -4,11 +4,14 @@ React/Vite, независимые FastAPI Booking и Assistant, PostgreSQL, Rab
 Mailpit и nginx. WB-01 интегрирован через PR #2 с успешным CI и post-merge regression.
 В WB-02 добавлен Booking API с демо-сессиями, миграцией и защитой PostgreSQL;
 результат его проверок — в [WB-02](docs/changes/WB-02.md).
-Страница пока показывает статусы сервисов. Карта, форма бронирования,
-MCP/LLM и Notification Worker остаются следующими задачами.
+В WB-03 локально реализована интерактивная SVG-карта двух этажей с настоящим API,
+входом, фильтрами даты/времени и карточкой места. Форма подтверждения брони,
+поиск сотрудников/аватары, MCP/LLM и Notification Worker — следующие задачи.
 
 Статус и доказательства: [CURRENT_STATE](docs/context/CURRENT_STATE.md),
 [PROGRESS](docs/context/PROGRESS.md), [WB-01](docs/changes/WB-01.md).
+WB-02 и исправление WB-11 интегрированы в develop/main через проверенные PR.
+WB-03 пока в отдельной локальной ветке; [79 passed / evidence](docs/evidence/WB-03-local.md).
 Публичный deploy и опубликованные релизы пока не подтверждены.
 
 ## Локальный запуск
@@ -57,17 +60,21 @@ python scripts/check_policy.py
 
 Проверяются сборка/TypeScript, Ruff, pytest двух сервисов, настоящий PostgreSQL,
 AMQP round trip через durable queue с persistent message, SMTP → Mailpit,
-Vitest и Playwright Chromium для desktop/mobile. E2E пока проверяет стартовую страницу,
-proxy и отказ Assistant, а не бронирование или реальный LLM.
+Vitest и Playwright Chromium для desktop/mobile. E2E проверяет вход/выход, два
+этажа, календарные окна, фильтры, детали, клавиатуру, pan/zoom/fit, ошибки API,
+просроченную сессию и запоздалые ответы. Бронирование через UI и реальный LLM ещё не проверяются.
 
-Логи, `run.json`, Allure results и Playwright HTML/trace сохраняются отдельно
+Логи, `run.json`, Allure results, Playwright HTML и screenshots сохраняются отдельно
 в `artifacts/<UTC-run-id>/` (исключено из Git). SHA в отчёте — базовый HEAD;
 `working_tree=dirty` явно отмечает незакоммиченные изменения.
 
-`.github/workflows/ci.yaml` запускает эти проверки для PR в `develop`, полный
-доступный набор после push в `develop`, генерирует Allure HTML и загружает artifacts.
+Authenticated traces отключены: cookies/CSRF не сохраняются в network artifacts.
+`.github/workflows/ci.yaml` проверяет PR в `develop`/`main`, полный набор после push
+в обе ветки, генерирует Allure HTML и загружает artifacts.
 Для WB-01 подтверждены [PR CI](https://github.com/smalvik/biocad-workspace/actions/runs/43598925846)
 и [post-merge regression](https://github.com/smalvik/biocad-workspace/actions/runs/43599195552).
+WB-02: [develop regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604565825)
+и [main regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604855360) — PASS.
 Публикация отчёта, staging, immutable release images и production — WB-08/WB-09.
 
 ## Booking API — WB-02
@@ -95,14 +102,37 @@ proxy и отказ Assistant, а не бронирование или реал�
 чужая отмена/неверный CSRF — 403, некорректный период — 422. Новые брони в прошлом
 отклоняются; это локальное правило WB-02. Нужны даты в будущем относительно сервера.
 
-Время хранится/возвращается в UTC; отображение будущего интерфейса — Europe/Moscow.
+Время хранится/возвращается в UTC; карта показывает время Europe/Moscow.
 D-07 закреплён за Анной и не бронируется. D-03 имеет два фиксированных слота
-16.11.2026 (10–12 Мария, 14–16 Павел МСК); 12–14 свободно. Этаж 3 пока без ресурсов.
+16.11.2026 (10–12 Мария, 14–16 Павел МСК); 12–14 свободно.
 Поля reservations описывают бронь на время, не физическое присутствие.
 
 Outbox-событие сохраняется с бронью в одной транзакции; отправки через RabbitMQ
 и писем о пользовательских бронях пока нет. [ADR-001](docs/adr/001-booking-consistency.md).
 Runner проверяет сохранность после настоящего restart PostgreSQL и Booking.
+
+## Карта — WB-03
+
+Откройте http://localhost:8080/ и войдите (`e01`, `demo-workspace` по умолчанию).
+Основной план — 24 стола и 3 переговорные; второй — 12 столов и 2 переговорные.
+Офисные зоны, стены, двери, окна и вентиляция схематические и вымышленные.
+Положения ресурсов и статусы приходят из Booking API, а не из PNG.
+
+Выберите этаж, дату и интервал МСК; быстрые окна помогают проверить сценарий D-03.
+Поставьте фильтры типов/«Только свободные». Место выбирается кликом, Tab+Enter
+или через доступный список под картой; на мобильном карточка открывается снизу.
+Карту можно двигать за фон, приближать колесом/+ и возвращать кнопкой fit.
+При фокусе на схеме стрелки двигают её, Home возвращает исходный вид.
+
+Ручное обновление и polling 25 с получают новый snapshot. При смене периода
+старые статусы скрываются, прежний запрос отменяется; ответ другого периода
+не применяется. Карточка показывает все пересекающиеся брони и точное время.
+Это сведения о резервировании, не физическом присутствии. Авторы брони/аватары
+и поиск появятся в WB-04; форма подтверждения — WB-05. Сейчас карта не записывает бронь.
+
+Seed обновляет геометрию floor/space для демо; существующие брони, аккаунты
+и пароли сохраняются. Alembic `0002_floor_plan` добавляет поле плана без изменения
+bookings/exclusion. [Проверки и настоящие screenshots](docs/evidence/WB-03-local.md).
 
 ## Begin here (VS Code + Codex)
 1. Unzip the handoff; open **`biocad-workspace`** as the VS Code workspace folder (`File → Open Folder`).

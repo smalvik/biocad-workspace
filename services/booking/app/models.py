@@ -46,6 +46,7 @@ class Floor(Base):
     office_id: Mapped[str] = mapped_column(ForeignKey("offices.id"))
     number: Mapped[int]
     name: Mapped[str]
+    plan: Mapped[dict] = mapped_column(JSON, default=dict)
 
 
 class Space(Base):

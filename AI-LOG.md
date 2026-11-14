@@ -1,66 +1,47 @@
 # AI-LOG — фактическая работа, 2026-11-14
 
-Codex продолжил существующий незакоммиченный React/FastAPI-каркас, найденный на
-`chore/st-00-bootstrap`. Авторство исходного каркаса не установлено и агенту этой
-сессии не приписывается. Человеческое ревью новых изменений пока не проводилось.
+Codex продолжил найденный незакоммиченный React/FastAPI-каркас на
+`chore/st-00-bootstrap`; исходное авторство неизвестно. Новые изменения и тесты
+ниже выполнены агентом. Пользователь задавал порядок задач и явно разрешал push
+и продвижение WB-02 в develop/main. В PR отмечена самопроверка агента;
+человеческое approval/ревью не заявляется. Точный model id, стоимость и часы неизвестны.
 
-Агент прочитал AGENTS, WB-01, backlog, статус, релевантные разделы PRD и процесс.
-Создал локальную `chore/wb-01-bootstrap` от `develop`, сохранив исходные изменения.
-Добавил RabbitMQ/Mailpit, изолированный runner, инфраструктурные smoke-тесты,
-Allure metadata, CI workflow и документацию. `.env` и значения секретов не читались.
-Remote push, release и deploy не выполнялись.
+- **WB-01:** ветка от develop, Compose/PostgreSQL/RabbitMQ/Mailpit, независимые
+  образы, runner/CI/Allure. Исправлены cp1251 и Erlang-cookie healthcheck race.
+  17 локальных тестов; commit `bc283c7`, PR #2 -> `e5bb0b5`.
+  PR CI `43598925846` и post-merge `43599195552` прошли.
+- **WB-02:** Alembic/GiST `[start,end)`, signed DB sessions/CSRF/scrypt,
+  UTC/idempotent create/cancel, atomic outbox, seed. Несоответствия D-07/ролей
+  приведены к PRD. Commit `5f3f661`, 52 локальных теста, Allure 50; исправлены
+  loop-scope/invalid-header ошибки harness. PR #4 прошёл CI `43602548303` и
+  вошёл в develop `523c116`. Согласованное main-исключение записано в DECISIONS/PRD.
+- **WB-11:** реальный post-merge FAIL `43602959863` — HTTPX reuse закрывающегося
+  соединения после ожидаемого outbox 500, а не двойная бронь. Issue #7,
+  отдельная fix-ветка, `Connection: close` только у fault probe, проверки rollback/201
+  сохранены. 52 локальных теста, PR #8 (`bba451e` -> `34d4f7c`), CI `43604235478`
+  и полный regression develop `43604565825` прошли. Main PR #6 -> `59e4883`,
+  post-merge main `43604855360` прошёл. Ветки задач сохранены, релиз/deploy не создавался.
+- **WB-03:** issue #5, отдельная ветка от develop `34d4f7c` после main promotion.
+  Реализованы React SVG карта/логин/фильтры/панель, API geometry + Alembic 0002,
+  два этажа/41 ресурс, request cancellation и защита от stale snapshot,
+  keyboard/pan/zoom/fit, mobile bottom sheet и error/empty/retry/session states.
+  Локальный regression `20261114T143322Z-c7f947`: 79 passed = 43 Booking + 2 Assistant
+  + 2 persistence + 10 Vitest + 22 Playwright; Allure 69. Настоящие screenshots
+  desktop/mobile просмотрены. Traces отключены для защиты cookies/CSRF.
+  WB-03 пока локальна; профили/аватары и booking form оставлены WB-04/WB-05.
+  Dev-стек обновлён с сохранением volume; дополнительный desktop/mobile smoke — 2 passed.
+  Реализация сохранена локальным `a02a488`; SHA записан отдельным docs-коммитом той же задачи.
 
-Решения агента:
+Ключевые решения агента: реальный PostgreSQL constraint вместо SELECT/локального
+lock ([ADR-001](docs/adr/001-booking-consistency.md)); отдельный Compose-проект и
+volumes для проверок; SVG из API вместо bitmap и атомарная смена calendar snapshot.
+Альтернативы/ограничения и фактические evidence: [PROGRESS](docs/context/PROGRESS.md),
+[WB-01](docs/changes/WB-01.md), [WB-02](docs/changes/WB-02.md),
+[WB-11](docs/changes/WB-11.md), [WB-03](docs/evidence/WB-03-local.md).
 
-1. Проверять инфраструктуру в отдельном Compose-проекте с отдельными volumes
-   без host ports: сохраняет уже работающий локальный стенд.
-2. Использовать настоящий AMQP/SMTP/PostgreSQL; бизнес-RPC, worker и schema
-   оставить соответствующим WB-задачам.
-3. Сохранять SHA базового HEAD вместе с `working_tree=dirty`, отдельные artifacts
-   и реальные ошибки; не выдавать локальную проверку за GitHub CI или релиз.
-
-Команды: `git status --short --branch`, `git branch -avv`, чтение через `rg`
-и `Get-Content`, `git switch -c chore/wb-01-bootstrap develop`, `docker version`,
-`docker compose ... ps/build/run`, исходный pytest (4 passed), `uv lock`,
-`npm install --package-lock-only`, Ruff check/format, `python scripts/check.py`.
-Выявлены и исправлены Windows cp1251/UnicodeEncodeError и гонка root healthcheck
-с Erlang cookie RabbitMQ. Итоговые результаты: [WB-01](docs/changes/WB-01.md).
-Итог: 10 pytest + 2 Vitest + 5 Playwright прошли; Ruff, TypeScript/build,
-actionlint, policy/handoff checks прошли. Allure HTML с 15 результатами создан
-локально через `allure-commandline@2.32.0` и Java в Docker. Модель: Codex;
-точный model id, стоимость и человеческое время не установлены.
-
-Публикация WB-01 (новое поручение пользователя): проверен существующий пустой
-GitHub repo smalvik/biocad-workspace; настроен origin. После проверки staged paths
-и credential patterns создан `bc283c7` и отправлены main, develop,
-chore/wb-01-bootstrap. Созданы issue #1 и PR #2; CI запущен, его успех пока не заявляется.
-Для аутентификации локальный токен прочитан только в память и передан Docker
-через environment, без включения в argv/URL/log. Секреты не коммитились.
-
-WB-01: head CI `43598925846` прошёл; в PR явно зафиксирована самопроверка агента.
-PR #2 слит в develop как `e5bb0b5`, ветка сохранена; полный post-merge regression
-`43599195552` прошёл. Старый gh pr edit оказался несовместим с удалённым API;
-описание обновлено через gh api. Человеческое approval не заявляется.
-
-WB-02: issue #3, отдельная ветка от обновлённого develop. Агент реализовал
-Alembic/GiST, demo sessions/CSRF/scrypt, idempotent create/cancel, availability,
-transactional outbox и seed. Исправил расхождения D-07/ролей фикстуры по PRD;
-описал выбор в ADR-001. Регрессия `python scripts/check.py --run-type regression`:
-52 passed (41 Booking + 2 Assistant + 2 persistence + 2 Vitest + 5 Playwright),
-Allure 50 passed. Проверены 20 конкурентов, 20 повторов ключа, прямой SQL,
-инъекция outbox failure и реальные restart. Первые прогоны выявили ошибки
-event loop scope и whitespace header в harness; исправлены, логи сохранены.
-Изменения WB-02 пока локальны; их remote CI/merge/deploy не заявляются.
-Локальный Booking обновлён с сохранением volume; через nginx проверены login,
-availability, Swagger/CSRF inputs и logout, без создания пользовательских броней.
-Создан локальный `5f3f661` (`feat(booking)`), staged secret scan/policy/diff checks
-прошли. SHA и результаты записаны отдельным documentation commit той же WB-02;
-push второй ветки не выполнялся.
-
-Новое поручение: WB-02 отправлен, PR #4 прошёл CI `43602548303` и самопроверку,
-слит в develop `523c116`; main promotion PR #6 открыт. Явное разрешение пользователя
-на pre-release main snapshot отражено в DECISIONS/PRD; CI проверяет обе базы.
-Post-merge `43602959863` обнаружил ReadError при повторном использовании соединения
-после ожидаемого outbox 500. Создана issue #7 / fix/wb-11-outbox-probe: Connection: close
-только у аварийного probe; проверки rollback/201 сохранены. Локальная регрессия
-`20261114T141005Z-14493f`: 52 passed. Продуктовый race bug не заявляется.
+Реальные команды: git status/branch/diff/commit/fetch/push; gh issue/pr/run
+через Docker; uv lock/npm ci, Ruff, TypeScript/Vite/Vitest, actionlint,
+`python scripts/check.py --run-type regression`, Allure CLI в Docker/Java,
+локальный compose up с сохранением volumes. Секреты не коммитились/не выводились;
+GitHub token читался в память и передавался через environment, не argv/URL.
+Реальные персональные данные в OpenRouter не отправлялись; MCP/LLM ещё не реализованы.
