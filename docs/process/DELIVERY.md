@@ -4,11 +4,11 @@
 
 Implementation branch: `ci/wb-09-release-deploy`, [issue #10](https://github.com/smalvik/biocad-workspace/issues/10).
 Runtime Compose, restricted SSH dispatcher and Actions jobs are implemented and tested locally.
-**No remote deployment, Docker Hub publication or release has happened.**
-Owner supplied password access and renewed the PAT. Docker Hub login and dedicated
-administrator/limited CI key access are verified; bootstrap is installed.
-Registry/deployment gates are enabled only after those checks. First candidate PR and
-real staging/production validation are still pending; do not interpret skipped jobs as deployment.
+**Working in production:** [v1.0.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.0.0),
+https://biocad.smalvik.dev. Main workflow `43626386129` passed complete regression,
+real server staging/prod smoke, digest promotion and release/Allure publication.
+Registry/deployment gates are enabled after verified credentials/bootstrap.
+[Actual evidence and preservation of 23 existing containers](../evidence/WB-09-remote.md).
 
 ## Delivery contract
 

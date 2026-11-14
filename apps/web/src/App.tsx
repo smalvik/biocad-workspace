@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import { api, ApiError } from "./api";
+import { Avatar, PersonSummary } from "./Avatar";
+import { EmployeeSearch } from "./EmployeeSearch";
+import { useEmployeeLocation } from "./useEmployees";
 import {
   DEFAULT_FILTERS,
-  initials,
   matches,
   moscowDate,
   moscowTime,
@@ -53,9 +55,7 @@ function Header({
       </div>
       {session ? (
         <div className="user-menu">
-          <div className="avatar" aria-hidden="true">
-            {initials(session.employee.full_name)}
-          </div>
+          <Avatar person={session.employee} />
           <div className="user-name">
             <strong>{session.employee.full_name}</strong>
             <span>Демо-аккаунт</span>
@@ -246,12 +246,20 @@ function Details({
   window,
   employeeId,
   onClose,
+  lookup,
+  lookupActive = false,
+  onChooseLocation,
+  onShowAvailable,
 }: {
   space?: Space;
   floor?: Floor;
   window: TimeWindow | null;
   employeeId: string;
   onClose: () => void;
+  lookup?: ReturnType<typeof useEmployeeLocation>;
+  lookupActive?: boolean;
+  onChooseLocation?: (spaceId: string) => void;
+  onShowAvailable?: () => void;
 }) {
   const panel = useRef<HTMLElement>(null);
   const [mobile, setMobile] = useState(
@@ -266,7 +274,12 @@ function Details({
     query.addEventListener("change", change);
     return () => query.removeEventListener("change", change);
   }, []);
-  const modal = mobile && Boolean(space);
+  const person = lookup?.data?.employee;
+  const pendingLookup =
+    lookupActive &&
+    (lookup?.status !== "ready" ||
+      Boolean(lookup.data?.locations.length && !space));
+  const modal = mobile && Boolean(space || lookupActive);
   useEffect(() => {
     if (!modal || !panel.current) return;
     const previous = document.activeElement as HTMLElement | null;
@@ -306,7 +319,7 @@ function Details({
       document.removeEventListener("keydown", keys);
       previous?.focus();
     };
-  }, [modal, space?.id, onClose]);
+  }, [modal, space?.id, person?.id, onClose]);
   const status = space ? statusOf(space) : null;
   return (
     <>
@@ -315,13 +328,42 @@ function Details({
       )}
       <aside
         ref={panel}
-        className={`details-panel${space ? " has-selection" : ""}`}
-        aria-label="Детали места"
+        className={`details-panel${space || lookupActive ? " has-selection" : ""}`}
+        aria-label={
+          lookupActive && !space ? "Детали сотрудника" : "Детали места"
+        }
         role={modal ? "dialog" : undefined}
         aria-modal={modal || undefined}
       >
         <div className="panel-eyebrow">ДЕТАЛИ МЕСТА</div>
-        {space && status && floor && window ? (
+        {pendingLookup ? (
+          <>
+            <div className="details-title">
+              <h2 tabIndex={-1}>
+                {lookup?.status === "error"
+                  ? "Не удалось уточнить брони"
+                  : "Ищем брони и закрепления"}
+              </h2>
+              <button
+                className="icon-button"
+                aria-label="Закрыть карточку сотрудника"
+                onClick={onClose}
+              >
+                <Icon name="close" />
+              </button>
+            </div>
+            {lookup?.status === "error" ? (
+              <>
+                <p role="alert">{lookup.error}</p>
+                <button className="secondary-button" onClick={lookup.refresh}>
+                  Повторить поиск сотрудника
+                </button>
+              </>
+            ) : (
+              <p role="status">Загружаем сведения на выбранное время…</p>
+            )}
+          </>
+        ) : space && status && floor && window ? (
           <>
             <div className="details-title">
               <h2 tabIndex={-1}>
@@ -373,17 +415,47 @@ function Details({
               </p>
             )}
             {status === "dedicated" ? (
-              <p className="detail-note">
-                <Icon name="lock" size={18} />
-                <span>
-                  {space.assignments.some(
-                    (assignment) => assignment.employee_id === employeeId,
-                  )
-                    ? "Ваше постоянное место."
-                    : "Место закреплено постоянно."}{" "}
-                  Бронирование недоступно.
-                </span>
-              </p>
+              <section
+                className="assignment-list"
+                aria-label="Закрепления на выбранное время"
+              >
+                {space.assignments.map((assignment) => (
+                  <div
+                    key={`${assignment.employee_id}-${assignment.valid_from}`}
+                    className="assignment-person"
+                  >
+                    <span className="detail-overline">ЗАКРЕПЛЕНО ЗА</span>
+                    {assignment.person_public && (
+                      <PersonSummary person={assignment.person_public} />
+                    )}
+                    <p className="assignment-dates">
+                      С {moscowDate(assignment.valid_from)}
+                      {assignment.valid_to
+                        ? ` до ${moscowDate(assignment.valid_to)} ${moscowTime(assignment.valid_to)} МСК`
+                        : " · бессрочно"}
+                    </p>
+                  </div>
+                ))}
+                <p className="detail-note">
+                  <Icon name="lock" size={18} />
+                  <span>
+                    {space.assignments.some(
+                      (assignment) => assignment.employee_id === employeeId,
+                    )
+                      ? "Ваше постоянное место."
+                      : "Место закреплено постоянно."}{" "}
+                    Бронирование недоступно.
+                  </span>
+                </p>
+                {onShowAvailable && (
+                  <button
+                    className="secondary-button"
+                    onClick={onShowAvailable}
+                  >
+                    Показать свободные FreeDesk
+                  </button>
+                )}
+              </section>
             ) : space.is_available_for_full_interval ? (
               <p className="free-note">
                 <Icon name="check" size={19} />
@@ -403,10 +475,19 @@ function Details({
                   <div key={row.booking_id} className="reservation-row">
                     <span className="reservation-point" />
                     <div>
+                      {row.person_public && (
+                        <PersonSummary person={row.person_public} compact />
+                      )}
                       <strong>
                         {moscowTime(row.start_at)}–{moscowTime(row.end_at)} МСК
                       </strong>
                       <span>{moscowDate(row.start_at)}</span>
+                      {moscowDate(row.start_at) !== moscowDate(row.end_at) && (
+                        <span>
+                          Окончание: {moscowDate(row.end_at)}{" "}
+                          {moscowTime(row.end_at)} МСК
+                        </span>
+                      )}
                       <small>
                         {row.is_mine
                           ? "Ваша бронь"
@@ -423,8 +504,74 @@ function Details({
                 )}
               </section>
             )}
+            {space.is_available_for_full_interval && space.next_reservation && (
+              <div className="next-reservation">
+                <span>Следующая бронь</span>
+                <strong>
+                  {moscowDate(space.next_reservation.start_at)} ·{" "}
+                  {moscowTime(space.next_reservation.start_at)} МСК
+                </strong>
+              </div>
+            )}
+            {lookupActive &&
+              lookup?.data &&
+              lookup.data.locations.length > 1 && (
+                <section
+                  className="employee-location-options"
+                  aria-label="Брони и закрепления сотрудника"
+                >
+                  <h3>Брони и закрепления: {person?.full_name}</h3>
+                  {lookup.data.locations.map((location, index) => (
+                    <button
+                      key={`${location.space_id}-${index}`}
+                      className="location-option"
+                      aria-pressed={space.id === location.space_id}
+                      onClick={() => onChooseLocation?.(location.space_id)}
+                    >
+                      <strong>
+                        {location.space_id} · {location.floor_name}
+                      </strong>
+                      <span>
+                        {location.relation === "assignment"
+                          ? "Постоянное закрепление"
+                          : `${moscowDate(location.start_at!)} · ${moscowTime(location.start_at!)}–${moscowTime(location.end_at!)} МСК`}
+                      </span>
+                    </button>
+                  ))}
+                </section>
+              )}
             <p className="presence-note">
               Бронь или закрепление не подтверждает физическое присутствие.
+            </p>
+          </>
+        ) : lookupActive &&
+          person &&
+          window &&
+          lookup?.data?.locations.length === 0 ? (
+          <>
+            <div className="details-title">
+              <h2 tabIndex={-1}>{person.full_name}</h2>
+              <button
+                className="icon-button"
+                aria-label="Закрыть карточку сотрудника"
+                onClick={onClose}
+              >
+                <Icon name="close" />
+              </button>
+            </div>
+            <PersonSummary person={person} />
+            <div className="selected-period">
+              <strong>{moscowDate(window.from)}</strong>
+              <p>
+                {moscowTime(window.from)}–{moscowTime(window.to)} МСК
+              </p>
+            </div>
+            <p className="employee-empty-location">
+              Брони или закрепления на выбранный интервал не найдены.
+            </p>
+            <p className="presence-note">
+              Это не означает, что сотрудника нет в офисе: данные о физическом
+              присутствии не собираются.
             </p>
           </>
         ) : (
@@ -469,17 +616,36 @@ function Workspace({
     [end, setEnd] = useState("12:00");
   const [filters, setFilters] = useState<Filters>({ ...DEFAULT_FILTERS }),
     [selectedId, setSelectedId] = useState<string | null>(null);
+  const [lookupEmployeeId, setLookupEmployeeId] = useState<string | null>(null);
+  const [lookupTarget, setLookupTarget] = useState<string | null>(null);
   const window = useMemo(
     () => timeWindow(date, start, end),
     [date, start, end],
   );
-  const closeDetails = useCallback(() => setSelectedId(null), []);
+  const closeDetails = useCallback(() => {
+    setSelectedId(null);
+    setLookupEmployeeId(null);
+    setLookupTarget(null);
+  }, []);
+  const lookup = useEmployeeLocation(lookupEmployeeId, window, onExpired);
   const active = floors.find((floor) => floor.id === floorId);
   const { snapshot, status, error, refresh } = useSnapshot(
     floorId,
     window,
     onExpired,
   );
+  useEffect(() => {
+    if (!lookup.data) return;
+    const location =
+      lookup.data.locations.find((item) => item.space_id === lookupTarget) ??
+      lookup.data.locations[0];
+    if (location) {
+      setFilters({ ...DEFAULT_FILTERS });
+      setFloorId(location.floor_id);
+      setSelectedId(location.space_id);
+      refresh();
+    } else setSelectedId(null);
+  }, [lookup.data, lookupTarget, refresh]);
   useEffect(() => {
     const controller = new AbortController();
     setFloorLoading(true);
@@ -513,7 +679,15 @@ function Workspace({
   }, [floorRevision, onExpired]);
   const visible =
     snapshot?.items.filter((space) => matches(space, filters)) ?? [];
-  const selected = visible.find((space) => space.id === selectedId);
+  const selected =
+    lookupEmployeeId && lookup.status !== "ready"
+      ? undefined
+      : visible.find((space) => space.id === selectedId);
+  const selectSpace = (id: string | null) => {
+    setLookupEmployeeId(null);
+    setLookupTarget(null);
+    setSelectedId(id);
+  };
   const freeDesks =
     snapshot?.items.filter(
       (space) => space.kind === "DESK" && space.is_available_for_full_interval,
@@ -555,6 +729,17 @@ function Workspace({
         </section>
         <div className="workspace-grid">
           <aside className="filter-panel" aria-label="Фильтры карты">
+            <EmployeeSearch
+              window={window}
+              selectedId={lookupEmployeeId}
+              onExpired={onExpired}
+              onSelect={(id) => {
+                setSelectedId(null);
+                setLookupTarget(null);
+                setLookupEmployeeId(id);
+                lookup.refresh();
+              }}
+            />
             <div className="panel-eyebrow">ВАШ ОФИС</div>
             <label className="office-picker">
               Офис
@@ -806,14 +991,14 @@ function Workspace({
                   plan={active.plan}
                   spaces={visible}
                   selectedId={selectedId}
-                  onSelect={setSelectedId}
+                  onSelect={selectSpace}
                 />
                 <label className="accessible-picker">
                   Место на плане
                   <select
                     value={selectedId ?? ""}
                     onChange={(event) =>
-                      setSelectedId(event.target.value || null)
+                      selectSpace(event.target.value || null)
                     }
                   >
                     <option value="">Выберите место</option>
@@ -840,6 +1025,21 @@ function Workspace({
             window={window}
             employeeId={session.employee.id}
             onClose={closeDetails}
+            lookup={lookup}
+            lookupActive={Boolean(lookupEmployeeId && window)}
+            onChooseLocation={(id) => {
+              setLookupTarget(id);
+              lookup.refresh();
+            }}
+            onShowAvailable={() => {
+              closeDetails();
+              setFilters({
+                freedesk: true,
+                dedicated: false,
+                meeting: false,
+                availableOnly: true,
+              });
+            }}
           />
         </div>
         <footer className="app-footer">{FOOTNOTE}</footer>

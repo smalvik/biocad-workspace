@@ -42,14 +42,21 @@ async def seed():
                 )
             )
         for item in fixture["employees"]:
-            await add(
-                Employee,
+            employee_values = dict(
                 id=item["id"],
                 full_name=item["full_name"],
                 job_title=item["job_title"],
                 department=item["department"],
-                avatar_url=None,
+                avatar_url=item.get("avatar_url"),
                 fictional=True,
+            )
+            statement = insert(Employee).values(**employee_values)
+            await db.execute(
+                statement.on_conflict_do_update(
+                    index_elements=[Employee.id],
+                    set_={"avatar_url": statement.excluded.avatar_url},
+                    where=Employee.fictional.is_(True),
+                )
             )
             if await db.get(DemoAccount, item["id"]) is None:
                 await add(

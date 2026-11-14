@@ -1,4 +1,11 @@
-import type { Floor, Session, Snapshot, TimeWindow } from "./types";
+import type {
+  EmployeeLocationResponse,
+  EmployeeSearchResponse,
+  Floor,
+  Session,
+  Snapshot,
+  TimeWindow,
+} from "./types";
 
 export class ApiError extends Error {
   constructor(
@@ -76,5 +83,27 @@ export const api = {
       to: window.to,
     });
     return request<Snapshot>(`/api/v1/spaces?${params}`, { signal });
+  },
+  employees: (q: string, window: TimeWindow, signal?: AbortSignal) => {
+    const params = new URLSearchParams({ q, from: window.from, to: window.to });
+    return request<EmployeeSearchResponse>(`/api/v1/employees?${params}`, {
+      signal,
+    });
+  },
+  employeeLocation: async (
+    id: string,
+    window: TimeWindow,
+    signal?: AbortSignal,
+  ) => {
+    const params = new URLSearchParams({ from: window.from, to: window.to });
+    const result = await request<EmployeeLocationResponse>(
+      `/api/v1/employees/${encodeURIComponent(id)}/location?${params}`,
+      { signal },
+    );
+    if (result.employee?.id !== id)
+      throw new ApiError(
+        "Получены данные другого сотрудника. Повторите поиск.",
+      );
+    return result;
   },
 };
