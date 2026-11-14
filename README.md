@@ -145,7 +145,7 @@ Seed обновляет геометрию floor/space для демо; суще
 и пароли сохраняются. Alembic `0002_floor_plan` добавляет поле плана без изменения
 bookings/exclusion. [Проверки и настоящие screenshots](docs/evidence/WB-03-local.md).
 
-## Begin here (VS Code + Codex)
+## Поиск сотрудников — WB-04
 
 WB-04: поиск по ФИО/отделу переключает этаж и выбирает бронь/постоянное место.
 Период 16.11.2026 для D-03: Мария 10–12, свободно без лица 12–14,
@@ -156,6 +156,8 @@ WB-04: поиск по ФИО/отделу переключает этаж и в
 Без времени directory возвращает только профили, не предполагает текущую локацию.
 Портреты — собственные SVG-иллюстрации; отсутствие/ошибка картинки даёт инициалы.
 Проверки: [131 passed / реальные screenshots](docs/evidence/WB-04-local.md).
+
+## Begin here (VS Code + Codex)
 
 1. Unzip the handoff; open **`biocad-workspace`** as the VS Code workspace folder (`File → Open Folder`).
 2. Install/open the official **Codex IDE extension**, sign in using your ChatGPT account; or use Codex CLI from the workspace terminal.
