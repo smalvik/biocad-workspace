@@ -1,14 +1,16 @@
 # Actual implementation status — 2026-11-15
 
-**Current infrastructure follow-up:** issue #27 / `ci/wb-09-allure-web` adds direct
-browser viewing at `/allure/`. Local implementation/tests in progress; public reports
-currently remain GitHub download assets until checked deployment completes.
+**WB-09 follow-up #27 released v1.3.1:** [Allure opens in the browser](https://biocad.smalvik.dev/allure/),
+with immutable version URLs and [actual free-model report](https://biocad.smalvik.dev/allure/v1.3.0/live/).
+Main CI publishes after release and checks inline/type/source/checksum.
+[Actual evidence](../evidence/WB-09-allure-web.md); 4 public desktop/mobile report cases passed,
+zero downloads. Existing data and 23 unrelated containers preserved.
 
 **WB-06 and WB-11 planning fix released as v1.3.0.**
-Production: **https://biocad.smalvik.dev** ·
-[published release](https://github.com/smalvik/biocad-workspace/releases/tag/v1.3.0) ·
+Current production: **https://biocad.smalvik.dev** ·
+[published v1.3.1](https://github.com/smalvik/biocad-workspace/releases/tag/v1.3.1) ·
 [remote evidence](../evidence/WB-06-remote.md).
-Main/source **19a838808e6e15d6daeb00be63688221071fb1fa**; develop **887bcc1**.
+Main/source **8d8cf08f9f43c3568c6bd737053101bf8c80ac7d**; develop **fd81f82**.
 User pause was explicitly resumed; [historical handoff](PAUSE_HANDOFF.md).
 
 | Capability | Observed state |
@@ -21,17 +23,18 @@ User pause was explicitly resumed; [historical handoff](PAUSE_HANDOFF.md).
 | Rate/limits | Durable 3 requests/user/minute, bounded tools/rounds/time/input, one bounded same-model 429 retry; provider capacity is not guaranteed |
 | Mailpit/notifications | Mailpit and fictional SMTP smoke work; Notification Worker and booking event emails **not implemented (WB-07)** |
 | CI/CD | GitHub Actions → immutable Docker Hub digests → complete isolated server regression → staging/smoke → exact production digests/HTTPS smoke → aliases/release/Allure |
-| Deploy isolation | Separate `biocad-staging`/`biocad-production`; existing Traefik ingress; 23 unrelated containers preserved, backup/previous v1.2.0 retained |
+| Deploy isolation | Separate `biocad-staging`/`biocad-production`; existing Traefik ingress; 23 unrelated containers preserved, backup/previous v1.3.0 retained |
 | Requirements/visuals | PRD v1.2 + approved DECISIONS canonical; references/static HTML are concepts, not implementation evidence; official BIOCAD UI Kit/rights not provided |
 
-Main [workflow 43737645275](https://github.com/smalvik/biocad-workspace/actions/runs/43737645275)
-passed **189 checks** (79 Booking/delivery, 24 Assistant, 2 persistence, 26 Vitest
-and 58 Playwright); server Allure **165** (163 regression + stage/prod smoke),
+Main [workflow 43745466108](https://github.com/smalvik/biocad-workspace/actions/runs/43745466108)
+passed **209 checks** (97 Booking/delivery, 24 Assistant, 2 persistence, 26 Vitest
+and 60 Playwright); server Allure **185 raw results** (183 regression + stage/prod smoke),
 Vitest separately. CI provider is explicitly scripted; MCP/RabbitMQ/PostgreSQL real.
-Independent production actual-free acceptance: **3 API + 2 desktop/mobile browser cases**,
+Original v1.3.0 production actual-free acceptance: **3 API + 2 desktop/mobile browser cases**,
 all successful provider responses cost=0, no booking writes. Initial mobile provider
 429 is retained separately; final sequential repeat passed without runtime/model changes.
 Existing 7 bookings/12 accounts per environment and all 23 other containers preserved.
+The v1.3.1 follow-up made no new inference calls; it hosts those original live results.
 
 Next unfinished P0: **WB-07 email Notification Worker**, then WB-08 race/red-green
 evidence and remaining delivery docs. P1 comfort/quiz/failover/feedback and the actual

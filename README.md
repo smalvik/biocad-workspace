@@ -14,6 +14,8 @@ WB-06 (MCP/RabbitMQ/AI-чат) и исправление planning #24 выпущ
 Полная регрессия 189 passed; реальная production приёмка — 3 API + 2 browser passed,
 все успешные ответы cost=0. Free-провайдер может вернуть 429; ручная форма доступна.
 Notification Worker — WB-07.
+В v1.3.1 добавлен [просмотр Allure в браузере](https://biocad.smalvik.dev/allure/)
+с автоматическим обновлением после релиза и архивом версий.
 
 Статус и доказательства: [CURRENT_STATE](docs/context/CURRENT_STATE.md),
 [PROGRESS](docs/context/PROGRESS.md), [WB-01](docs/changes/WB-01.md).
@@ -21,18 +23,19 @@ WB-02 и исправление WB-11 интегрированы в develop/main
 WB-03 слита в develop через [PR #9](https://github.com/smalvik/biocad-workspace/pull/9);
 [post-merge regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923).
 Рабочее демо: **https://biocad.smalvik.dev** ·
-[v1.3.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.3.0) ·
-[Allure HTML](https://github.com/smalvik/biocad-workspace/releases/download/v1.3.0/index.html).
+[v1.3.1](https://github.com/smalvik/biocad-workspace/releases/tag/v1.3.1) ·
+[Allure в браузере](https://biocad.smalvik.dev/allure/).
 Вход: вымышленные `e01` … `e12`, пароль `demo-workspace`.
 
 CI/CD WB-09: [runbook и фактический статус](docs/process/DELIVERY.md).
 Реализованы SHA/digest images, отдельные staging/production проекты, ограниченный SSH
 dispatcher, backup/rollback и Allure. Сервер обследован, BIOCAD admin/CI ключи созданы,
-ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43737645275),
-189 regression / server Allure 165; отдельный
-[real free LLM Allure](https://github.com/smalvik/biocad-workspace/releases/download/v1.3.0/live-llm-allure.html).
+ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43745466108),
+209 regression / server Allure 185 raw results; отдельный
+[real free LLM Allure v1.3.0](https://biocad.smalvik.dev/allure/v1.3.0/live/).
+[Архив v1.3.0](https://biocad.smalvik.dev/allure/v1.3.0/).
 23 старых контейнера и существующие брони/аккаунты сохранились.
-[Фактические evidence и ограничения](docs/evidence/WB-06-remote.md).
+[Фактические evidence и ограничения](docs/evidence/WB-09-allure-web.md).
 
 ## Локальный запуск
 
