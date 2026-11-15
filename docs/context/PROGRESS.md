@@ -1,8 +1,17 @@
 # Development progress (fill with actual evidence)
 
+**2026-11-15: WB-06 + WB-11 planning fix released v1.3.0.**
+PRs #23/#25 merged develop 887bcc1; promotion #26 merged main 19a8388.
+[Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43737645275):
+189 regression / server Allure 165; actual free production API 3 + browser 2 passed,
+cost=0, no booking writes. Both environments updated; 23 other containers and existing
+7 bookings/12 accounts per environment preserved. [Evidence](../evidence/WB-06-remote.md).
+Historical pause/resume: [handoff](PAUSE_HANDOFF.md). Next P0: WB-07.
+
 **2026-11-14:** WB-01 continued from existing uncommitted React/FastAPI scaffolding.
 WB-01 is merged; WB-02 Booking API is implemented and verified locally.
-WB-03 map, WB-04 employee lookup/portraits and WB-05 booking/cancellation are live; AI remains TODO.
+Historical checkpoint before WB-06: WB-03 map, WB-04 employee lookup/portraits and
+WB-05 booking/cancellation were live; AI was still TODO at that checkpoint.
 WB-09 was delivered before WB-04 by explicit user instruction.
 WB-09 merged through PR #11 at `f3a6e8f`; PR CI/publication passed runs
 `43612515436` and `43613064726`. Actual local prebuilt-digest regression passed
@@ -23,8 +32,8 @@ Published [v1.0.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.0
 | WB-11 delivery | `fix/wb-11-candidate-serialization` | [#14 merged](https://github.com/smalvik/biocad-workspace/pull/14) | 92-case CI + actual two-event serialization/digest equality proof | v1.0.0 | Released |
 | WB-04 | `feat/wb-04-employee-locations` | [#16 merged develop](https://github.com/smalvik/biocad-workspace/pull/16), [#17 merged main](https://github.com/smalvik/biocad-workspace/pull/17), issue #15 | [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43636402995), 131 regression, Allure 116, public smoke 4 | v1.1.0 | Released; 23 previous containers preserved; [evidence](../evidence/WB-04-remote.md) |
 | WB-05 | `feat/wb-05-booking-flow` | [#19 merged develop](https://github.com/smalvik/biocad-workspace/pull/19), [#20 merged main](https://github.com/smalvik/biocad-workspace/pull/20), issue #18 | [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43690831879), 157 regression, Allure 134, final public smoke 4 + preview 2 | v1.2.0 | Released; 23 previous containers preserved; [evidence](../evidence/WB-05-remote.md) |
-| WB-06 | `feat/wb-06-assistant-mcp` | [#23 merged](https://github.com/smalvik/biocad-workspace/pull/23), issue #22 | [Develop/server CI PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43719293194), 188 checks, staging c85b8dc | — | Free-only; main promotion waits for WB-11 planning fix |
-| WB-11 free planning | `fix/wb-11-free-assistant-planning` | [issue #24](https://github.com/smalvik/biocad-workspace/issues/24) | Local full regression 189 / Allure 163 PASS; real free 3 cases / 4 zero-cost responses PASS | — | Final committed CI/server validation pending |
+| WB-06 | `feat/wb-06-assistant-mcp` | [#23 merged](https://github.com/smalvik/biocad-workspace/pull/23), [main #26](https://github.com/smalvik/biocad-workspace/pull/26), issue #22 | [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43737645275), 189 regression / Allure 165; real free 3 API + 2 browser passed | v1.3.0 | Released, free-only $0; [evidence](../evidence/WB-06-remote.md) |
+| WB-11 free planning | `fix/wb-11-free-assistant-planning` | [#25 merged](https://github.com/smalvik/biocad-workspace/pull/25), issue #24 | Local/committed/server full regression and real free staging/production passed | v1.3.0 | Fixed before main promotion; no separate patch release |
 | WB-07 … WB-18 (except WB-09/WB-11) | See backlog | — | — | — | TODO |
 | WB-11 browser access | `fix/wb-11-browser-access` | [issue #21 open](https://github.com/smalvik/biocad-workspace/issues/21) | Earlier direct/VPN difference retained; user now reports browser opens | None | Monitoring; no infrastructure fix applied; [evidence](../evidence/WB-11-browser-access.md) |
 
