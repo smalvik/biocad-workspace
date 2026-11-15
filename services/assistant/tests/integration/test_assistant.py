@@ -225,3 +225,15 @@ async def test_missing_fields_are_clarified_and_hallucinated_space_never_commits
     assert response.status_code == 200, response.text
     assert response.json()["proposal"] is None
     assert (await booking.get("/api/v1/bookings/me")).json()["items"] == before
+
+
+async def test_last_planning_round_finishes_proposal_without_an_extra_model_call(account):
+    booking, assistant, _, _ = account
+    before = (await booking.get("/api/v1/bookings/me")).json()["items"]
+    response = await chat(assistant, "предел раундов: найди FreeDesk")
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert data["proposal"] is not None
+    assert len(data["provider_calls"]) == 4
+    assert data["tools_used"] == ["search_employees"] * 3 + ["get_availability", "propose_booking"]
+    assert (await booking.get("/api/v1/bookings/me")).json()["items"] == before

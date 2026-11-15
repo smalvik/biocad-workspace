@@ -14,7 +14,13 @@ passed all 181 checks and immutable candidate publication. No staging/production
 The user approved **free models only**. Strict zero-price guards and
 `inclusionai/ling-3.2-flash:free` now pass local real-provider acceptance: 3 scenarios,
 8 successful responses all `cost=0`, no booking writes, run 20261115T131327Z-20b777.
-The source was a dirty pre-commit snapshot; refreshed PR CI/deploy are pending.
+WB-06 PR #23 merged to develop c85b8dc; CI/server regression and staging deployment
+passed run 43719293194. Real staging room lookup passed, but repeated employee search
+exhausted planning rounds in the near-Anna case. Separate fix issue #24 / branch
+`fix/wb-11-free-assistant-planning` is under verification before main promotion.
+Local fix regression passed 189 checks / Allure 163; actual free live run
+20261115T135746Z-0e5c21 passed 3 scenarios with 4 zero-cost provider responses.
+Production remains v1.2.0; no paid route is enabled.
 CI continues using a labelled scripted HTTP provider with real MCP/RabbitMQ/PostgreSQL;
 that deterministic regression is kept distinct from the actual real-provider proof.
 
