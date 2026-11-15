@@ -138,3 +138,25 @@ GitHub token читался в память и передавался через
   prepared. This did not change test results or runtime images. Remote delivery pending.
   Implementation committed as `7a28ec836562133ea8b540744858e99ed4b77fac`.
   Final standalone Allure generation with `biocad-allure:local` exited 0.
+
+- **WB-05 released, 2026-11-15:** final feature head `6554fc4`, PR #19 checks and
+  publication `43641919071` PASS; merged develop `b98a9a3`. Post-merge
+  `43642523912` PASS, server `20261114T212803Z-2b10a1` clean, Allure 133.
+  Artifact first download had transport unexpected EOF; fresh-directory retry succeeded.
+  Main PR #20 CI/publication `43642562977` PASS, explicitly agent self-reviewed,
+  merged `bddba67` after green server staging. Main `43690831879` all jobs PASS;
+  server `20261115T074307Z-84214e` clean: 157 regression cases, all 20 commands exit 0,
+  Allure 134 plus Vitest 25 separately. Published real v1.2.0 at 07:49:07 UTC / 10:49:07 MSK.
+  Both environments match the full main digest manifest, 12 BIOCAD containers healthy;
+  production backup 23,877 bytes and previous v1.1.0 retained. Fresh pre-main inventory
+  and original WB-09 inventory both confirm all 23 unrelated container IDs/images/start
+  timestamps unchanged, sample HTTP statuses preserved.
+  Initial external browser/host TLS connections timed out (browser 3 failed / 1 passed,
+  preview exit 1); preserved failure artifacts, inspected DNS/TCP/TLS and server listeners
+  read-only. Subsequent strict TLS probe returned 200 with expected source/version.
+  No server/runtime/network configuration changed during diagnosis. Final sequential
+  HTTPS browser repeats: 4 Playwright passed, plus 2 form/list previews passed,
+  both launchers exit 0, zero attempted booking writes in preview. Root cause of the
+  transient TLS timeouts is not asserted. Real release notes enhanced with delivered
+  capabilities; actual commands and links in `docs/evidence/WB-05-remote.md`.
+  Next unimplemented task: WB-06 real Assistant/MCP/LLM; SMTP worker remains WB-07.
