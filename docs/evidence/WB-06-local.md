@@ -46,3 +46,12 @@ Earlier outcomes retained:
 
 No WB-06 merge, server rollout or release is claimed. Model and spending approval
 are still required for real-provider acceptance; manual booking on v1.2.0 remains live.
+
+Committed implementation **89ad3d5b4e0ce195b85b646a12e6a8354e6cd0a3** passed
+[PR CI 43710246930](https://github.com/smalvik/biocad-workspace/actions/runs/43710246930):
+**181 checks** = 78 + 17 + 2 + 26 + 58, **155 Allure**. Run metadata
+`20261115T114304Z-dd647d`, working_tree clean. Check and seven immutable candidate
+publication jobs succeeded; staging/production job was correctly skipped on a draft
+feature PR. Artifacts: `checks-43710246930-1`, `candidate-43710246930`.
+Follow-up changes prepare the opt-in live acceptance CLI and record this evidence;
+they do not change the tested runtime behavior. CI for each later head is tracked separately.

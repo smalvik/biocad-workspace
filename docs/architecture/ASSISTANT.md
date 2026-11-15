@@ -109,6 +109,18 @@ using fictional users/requests and recording model/tool names, exact selection,
 status and cost metadata without API keys, cookies, CSRF or signed proposal tokens.
 Published Allure reports must distinguish deterministic regression from live proof.
 
+The prepared proposal-only command is:
+
+```powershell
+python scripts/check_live_assistant.py --base-url http://localhost:8080 --expected-model APPROVED_MODEL_ID --allow-paid
+```
+
+Run it only after approval and configuring the real local Assistant. It logs in as
+fictional e12, tests room capacity / near-Anna / clarification, verifies exact time
+and unchanged own bookings, writes sanitized run.json plus `live_llm` Allure results,
+then logs out. It never calls booking confirmation/cancellation. Without `--allow-paid`
+it exits before network requests. This prepared command is not evidence of execution.
+
 Primary references: [MCP Python SDK client](https://py.sdk.modelcontextprotocol.io/client/),
 [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk),
 [aio-pika RPC](https://docs.aio-pika.com/rabbitmq-tutorial/6-rpc.html),

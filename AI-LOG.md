@@ -205,3 +205,13 @@ GitHub token читался в память и передавался через
   mounted current-source Assistant unit tests passed **11**, exit 0. Evidence
   explicitly distinguishes the dirty full run from later review changes; final
   committed CI is still required. See docs/evidence/WB-06-local.md.
+  Implementation 89ad3d5 pushed, draft PR #23 opened. Actual run 43710246930 check
+  job succeeded; immutable publication is still in progress at this entry. Prepared
+  proposal-only live acceptance CLI with an explicit paid-call flag; its no-flag
+  refusal and Ruff were checked. No paid/live invocation occurred. PR remains draft
+  until real model/budget choice and live proof; no server deployment/merge claimed.
+  Run 43710246930 then completed **success**: clean committed 89ad3d5 passed
+  181 checks (78 + 17 + 2 + 26 + 58), Allure 155; all seven immutable candidates
+  published. Staging/production job skipped for draft feature PR, as intended.
+  Checked live acceptance CLI guard (refuses before any request without paid flag)
+  and Ruff; actual live acceptance still not executed.

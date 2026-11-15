@@ -8,6 +8,9 @@ the earlier direct/VPN difference remains an observation, not an established cau
 **WB-06 in progress:** issue #22, branch `feat/wb-06-assistant-mcp`. Local code now
 contains real SDK MCP over STDIO, RabbitMQ RPC, OpenRouter tool calling and an explicit
 proposal/confirmation UI. Regression and review are ongoing; this is **not deployed**.
+Implementation `89ad3d5` is pushed in [draft PR #23](https://github.com/smalvik/biocad-workspace/pull/23);
+first committed CI [43710246930](https://github.com/smalvik/biocad-workspace/actions/runs/43710246930)
+passed all 181 checks and immutable candidate publication. No staging/production rollout occurred.
 The configured OpenRouter key passed a read-only validity check. No inference calls
 have been made: model/budget approval is pending. CI uses an explicitly scripted HTTP
 provider with real MCP/RabbitMQ/PostgreSQL, not proof of a live LLM answer.
