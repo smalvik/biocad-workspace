@@ -1,5 +1,13 @@
 # Development progress (fill with actual evidence)
 
+**WB-08 #33 in progress:** `test/wb-08-regression-evidence` from develop 82d14a4,
+carried final WB-07 docs a2657f9. Its initial real red/green experiment exposed actual
+Booking deadlock handling defect #34. Separate `fix/wb-11-booking-deadlock` uses native
+ON CONFLICT arbitration plus at most three `40P01` transaction attempts; retry-only
+handling proved insufficient under 20-caller contention. Native full regression 240 PASS / Allure 214;
+WB-08 draft probe preserved separately. Production still v1.4.0.
+[Bug evidence](../evidence/WB-11-booking-deadlock.md).
+
 **2026-11-16 Moscow: WB-07 released v1.4.0**, issue #30 / `feat/wb-07-email-notifications`.
 Reviewed PR #31 merged develop 82d14a4, promotion #32 merged main 5decd64.
 Local/committed full 237 passed; real broker/SMTP recovery and old-image rollback passed.

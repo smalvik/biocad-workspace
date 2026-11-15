@@ -1,5 +1,12 @@
 # Actual implementation status — 2026-11-16 (Moscow)
 
+**WB-08 in progress / discovered WB-11 #34:** a real synchronized two-process probe
+found PostgreSQL deadlock `40P01` returning HTTP 500 in v1.4.0; exclusion still prevents
+double booking. Separate `fix/wb-11-booking-deadlock` adds native conflict arbitration
+and bounded complete-transaction retry. The retry-only probe passed but a 20-request
+full run exposed a deadlock cascade; native-path full 240 checks passed. No production update yet.
+[Actual bug evidence](../evidence/WB-11-booking-deadlock.md).
+
 **WB-07 released v1.4.0:** PR #31 → develop 82d14a4, #32 → main 5decd64.
 Outbox → RabbitMQ → independent durable Notification Worker → private Mailpit HTML/text
 emails work in staging and production. Full local/committed/server regression **237 passed**;

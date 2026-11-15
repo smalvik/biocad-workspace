@@ -4,7 +4,8 @@ from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Header, Query, Request, Response
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.exc import DBAPIError
 
 from app.auth import DB, User, Writer
 from app.errors import ApiError
@@ -57,45 +58,64 @@ async def create_booking(
         Booking.employee_id == employee_id,
         Booking.idempotency_key == idempotency_key,
     )
-    existing = await db.scalar(lookup)
-    # Replays remain valid even when the original interval is now past/cancelled.
-    if existing:
-        response.status_code = 200
-        return replay(existing, fingerprint)
-    space = await db.get(Space, body.space_id)
-    if space is None:
-        raise ApiError(404, "SPACE_NOT_FOUND", "Ресурс не найден")
-    if space.desk_mode == "DEDICATED":
-        raise ApiError(409, "SPACE_DEDICATED", "Постоянное место недоступно для бронирования")
-    if body.start_at <= datetime.now(UTC):
-        raise ApiError(422, "VALIDATION_ERROR", "Начало бронирования должно быть в будущем")
-    booking = Booking(
-        id=uuid4(),
-        employee_id=employee_id,
-        idempotency_key=idempotency_key,
-        request_hash=fingerprint,
-        **body.model_dump(),
-    )
-    db.add(booking)
-    try:
-        # PostgreSQL, rather than a preceding availability SELECT, decides the winner.
-        await db.flush()
-        db.add(await outbox(db, booking, "booking.created.v1", request.state.request_id))
-        await db.commit()
-    except IntegrityError as exc:
-        await db.rollback()
-        sqlstate = getattr(exc.orig, "sqlstate", None)
-        if sqlstate not in {"23P01", "23505"}:
-            raise
-        # A concurrent request with the same key may hit either exclusion or uniqueness.
+    for attempt in range(3):
         existing = await db.scalar(lookup)
+        # Replays remain valid even when the original interval is now past/cancelled.
         if existing:
             response.status_code = 200
             return replay(existing, fingerprint)
-        if sqlstate == "23P01":
-            raise ApiError(409, "BOOKING_CONFLICT", "Ресурс уже занят на выбранный интервал") from None
-        raise
-    return BookingView.model_validate(booking)
+        space = await db.get(Space, body.space_id)
+        if space is None:
+            raise ApiError(404, "SPACE_NOT_FOUND", "Ресурс не найден")
+        if space.desk_mode == "DEDICATED":
+            raise ApiError(409, "SPACE_DEDICATED", "Постоянное место недоступно для бронирования")
+        if body.start_at <= datetime.now(UTC):
+            raise ApiError(422, "VALIDATION_ERROR", "Начало бронирования должно быть в будущем")
+        try:
+            # Native conflict arbitration avoids ordinary GiST INSERT deadlock cascades.
+            # With no named target both exclusion and idempotency uniqueness participate.
+            booking = await db.scalar(
+                insert(Booking)
+                .values(
+                    id=uuid4(),
+                    employee_id=employee_id,
+                    idempotency_key=idempotency_key,
+                    request_hash=fingerprint,
+                    **body.model_dump(),
+                )
+                .on_conflict_do_nothing()
+                .returning(Booking)
+            )
+            if booking is None:
+                existing = await db.scalar(lookup)
+                if existing:
+                    response.status_code = 200
+                    return replay(existing, fingerprint)
+                raise ApiError(409, "BOOKING_CONFLICT", "Ресурс уже занят на выбранный интервал")
+            db.add(await outbox(db, booking, "booking.created.v1", request.state.request_id))
+            await db.commit()
+        except DBAPIError as exc:
+            await db.rollback()
+            sqlstate = getattr(exc.orig, "sqlstate", None)
+            if sqlstate == "40P01":
+                # Deadlock victims abort the whole transaction. Retry validation/INSERT
+                # with the same authenticated identity, fingerprint and idempotency key.
+                if attempt < 2:
+                    continue
+                raise ApiError(
+                    503, "BOOKING_RETRY", "Подтверждение временно недоступно. Повторите попытку"
+                ) from None
+            if sqlstate not in {"23P01", "23505"}:
+                raise
+            # A concurrent request with the same key may hit either exclusion or uniqueness.
+            existing = await db.scalar(lookup)
+            if existing:
+                response.status_code = 200
+                return replay(existing, fingerprint)
+            if sqlstate == "23P01":
+                raise ApiError(409, "BOOKING_CONFLICT", "Ресурс уже занят на выбранный интервал") from None
+            raise
+        return BookingView.model_validate(booking)
 
 
 @router.get("/bookings/me")

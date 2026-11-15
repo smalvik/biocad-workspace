@@ -35,6 +35,11 @@
   очереди пусты. Исходные 7 броней/12 аккаунтов на среду и 23 других контейнера сохранены;
   14 своих контейнеров healthy. SMTP ambiguous-commit window описан, exactly-once не обещан.
   Новых inference calls не было. [Evidence](docs/evidence/WB-07-remote.md).
+- **WB-08 / WB-11 #34:** настоящий red/green probe обнаружил PostgreSQL deadlock
+  `40P01` и HTTP 500 при сохранённом constraint. Retry-only прошёл probe, но full20
+  выявил каскад deadlock; fix-ветка добавляет native ON CONFLICT и максимум три полных
+  попытки с тем же ключом. Финальная локальная регрессия 240 PASS / Allure 214.
+  [Реальные FAIL/PASS](docs/evidence/WB-11-booking-deadlock.md). Production пока v1.4.0.
 
 Реальные команды: `scripts/check.py --run-type regression`, pytest/Ruff/Vitest/
 Playwright/Allure в Docker; `gh issue/pr/run/release`, `remote_delivery.py`,
