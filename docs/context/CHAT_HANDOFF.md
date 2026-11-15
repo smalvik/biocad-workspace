@@ -1,5 +1,12 @@
 # Conversation handoff — BIOCAD Workspace Booking
 
+**Resumed and completed on 2026-11-15:** WB-06 + fix #24 shipped as v1.3.0,
+main 19a8388, develop 887bcc1. Read CURRENT_STATE and
+[actual remote proof](../evidence/WB-06-remote.md). Free models only / $0.
+Next P0 is WB-07. Post-release evidence is committed on the retained fix branch;
+carry those documentation changes onto the next branch from develop before new work.
+The [pause record](PAUSE_HANDOFF.md) is historical, not an active stop instruction.
+
 This is an authored, curated summary of the **visible user requirements and created artifacts**, not a verbatim transcript or automatic transfer of ChatGPT private context. Resolve any conflict using the newest PRD v1.2 and explicit human updates.
 
 ## Original interview assignment

@@ -23,6 +23,7 @@ FILES = (
     "scripts/check.py",
     "scripts/delivery_manifest.py",
     "scripts/deploy_server.py",
+    "scripts/publish_allure.py",
     "infra/compose.release.yaml",
     "infra/compose.host.yaml",
     "infra/compose.images.yaml",
@@ -114,6 +115,9 @@ def main() -> None:
         )
     os.umask(0o077)
     ROOT.mkdir(mode=0o700, exist_ok=True)
+    public = ROOT / "public/allure"
+    public.mkdir(parents=True, exist_ok=True)
+    public.chmod(0o755)
     for name in FILES:
         destination = ROOT / "tooling" / name
         destination.parent.mkdir(parents=True, exist_ok=True)
