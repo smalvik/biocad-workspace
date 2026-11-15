@@ -227,3 +227,21 @@ GitHub token читался в память и передавался через
   Real live run 20261115T131327Z-20b777 passed 3 scenarios, 8 successful model
   responses all cost=0, zero booking writes; source base 01c0bf5 / dirty recorded.
   Read-only server baseline captured; no server runtime change at this point.
+  WB-06 final PR CI 43718787030 passed 188 checks / Allure 162 and publication.
+  PR #23 merged develop c85b8dc; post-merge/server/staging run 43719293194 succeeded,
+  server run 20261115T133603Z-d1c880 passed including 58 browser cases. Refreshed only
+  root-owned BIOCAD tooling and free-model config with budget 0; original DB/session/
+  broker/demo credentials preserved, no proxy/DNS/other-app change. Automatic review
+  rejected exporting production row IDs/digests to the workstation; no rejected command
+  executed. Replaced with server-only 0600 preservation snapshot in existing BIOCAD
+  backup area and exported only counts (7 bookings / 12 accounts per environment).
+  Real staging live run 20261115T134519Z-84d1f2: room passed, near-Anna failed because
+  repeated employee searches used the 4 model rounds before proposal. Costs stayed 0,
+  no booking writes. Preserved failure, created issue #24 and separate fix branch
+  from develop. Deterministic rechecked MCP proposal after availability, temperature 0
+  and clearer search/clarification instructions; added exact final-round regression.
+  Full local regression is now running. Main promotion/release remains pending.
+  WB-11 planning local run 20261115T135319Z-f781d9 completed **189 passed**,
+  Allure 163, all commands exit 0. Real free run 20261115T135746Z-0e5c21 passed
+  all 3 cases using exactly 4 successful provider responses, all cost=0 and
+  no booking writes. Recorded base c85b8dc/dirty; final-head CI remains required.

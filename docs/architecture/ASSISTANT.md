@@ -60,6 +60,14 @@ Expired tokens permit only recovery of the same already committed confirmation,
 for up to 8 hours, never a new write. Cross-day AI requests ask for one day in this
 demo; the independent Booking API remains unchanged.
 
+WB-11 planning fix: when `get_availability` returns nonempty server-filtered/ranked
+candidates, the controller calls MCP `propose_booking` for the first candidate and
+the canonical returned period immediately. That second read rechecks availability
+and signs a proposal; it does not write a booking. This finishes within the same
+planning round instead of spending another LLM round after availability, including
+at the 4-round boundary. Tool count remains bounded at 8. Temperature 0 and explicit
+name-fragment/clarification instructions reduce redundant model searches.
+
 The OpenRouter key is server-only. The model receives consented user text,
 fictional tool data and floor/time context, with at most 6 history messages,
 1500 characters per message, 24000 serialized input UTF-8 bytes, 768 output tokens,

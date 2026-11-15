@@ -25,7 +25,15 @@ async def completions(request: Request):
     context = json.loads(messages[0]["content"].split("\nContext: ")[1])["selected"]
     start, end = context["start_at"], context["end_at"]
     tool_results = [json.loads(m["content"]) for m in messages if m["role"] == "tool"]
-    if "уточни" in user:
+    if "предел раундов" in user:
+        if len(tool_results) < 3:
+            name, arguments = "search_employees", {"q": "Анна", "start_at": start, "end_at": end}
+        else:
+            name, arguments = (
+                "get_availability",
+                {"floor_id": context["floor_id"], "start_at": start, "end_at": end, "kind": "DESK"},
+            )
+    elif "уточни" in user:
         name, arguments = "ask_clarification", {"missing": ["date", "time"]}
     elif "несуществующее" in user:
         name, arguments = "propose_booking", {"space_id": "NO-SUCH-SPACE", "start_at": start, "end_at": end}
