@@ -4,12 +4,12 @@
 
 Implementation branch: `ci/wb-09-release-deploy`, [issue #10](https://github.com/smalvik/biocad-workspace/issues/10).
 Runtime Compose, restricted SSH dispatcher and Actions jobs are implemented and tested locally.
-**Working in production:** [v1.1.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.1.0),
-https://biocad.smalvik.dev. Main workflow `43636402995` passed complete regression,
+**Working in production:** [v1.2.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.2.0),
+https://biocad.smalvik.dev. Main workflow `43690831879` passed complete regression,
 real server staging/prod smoke, digest promotion and release/Allure publication.
 Registry/deployment gates are enabled after verified credentials/bootstrap.
 [Initial infrastructure evidence](../evidence/WB-09-remote.md),
-[v1.1.0 evidence and preservation of 23 existing containers](../evidence/WB-04-remote.md).
+[v1.2.0 evidence and preservation of 23 existing containers](../evidence/WB-05-remote.md).
 
 ## Delivery contract
 
