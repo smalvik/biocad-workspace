@@ -1,4 +1,4 @@
-# AI-LOG — фактическая работа Codex, 14–15 ноября 2026
+# AI-LOG — фактическая работа Codex, 14–16 ноября 2026 (МСК)
 
 Пользователь определял порядок задач, разрешил push/PR/merge/deploy и **только
 бесплатные модели, бюджет $0**. Codex продолжил найденный каркас, реализовал код,
@@ -15,36 +15,26 @@
 - **WB-04/v1.1.0, WB-05/v1.2.0:** поиск сотрудников, собственные вымышленные SVG-аватары,
   таймлайн выбранного периода, отдельное подтверждение, свои брони/отмена и retry/reload.
   Соответственно 131 и 157 regression checks; реальные desktop/mobile screenshots.
-- **WB-06/v1.3.0:** official MCP 2.3.0 STDIO, durable RabbitMQ RPC к тем же Booking
-  handlers, миграция лимитов, user-bound proposal/explicit confirm, React чат/карта.
-  После согласования free-only настроены Ling 3.2 Flash `:free`, проверка catalog,
-  нулевые price caps и отсутствие paid fallback. CI провайдер явно scripted;
-  настоящий LLM проверяется отдельно. Исправлены ошибки MCP schema/event loop,
-  mobile occlusion и реальный staging planning-round дефект #24 отдельным PR #25.
-  PR #23 → c85b8dc, #25 → 887bcc1; main #26 → **19a8388**.
-- Пользователь поставил работу на паузу; первый post-merge run отменён до deploy.
-  После явного «продолжай» полный rerun прошёл, затем main **43737645275 PASS**:
-  189 checks, 20 команд exit 0, server Allure 165. v1.3.0 опубликована 15.11 в
-  17:04:06 UTC. Production real free: 3 API + 2 browser cases passed, все успешные
-  ответы cost=0, без booking writes; первый mobile 429 сохранён отдельно.
-  7 броней/12 аккаунтов каждого окружения и 23 других контейнера сохранены.
-- **WB-09 follow-up #27:** пользователь запросил просмотр Allure в браузере.
-  От develop создана `ci/wb-09-allure-web`; перенесены WB-06 evidence.
-  Добавлены Nginx inline route, отдельный read-only public mount, проверяемая
-  атомарная публикация из stable GitHub release и CI smoke. Локальный фактический
-  download/checksum v1.3.0 прошёл; local full 209 checks / Allure 183, все команды exit 0.
-  Реальный Nginx + HTTP smoke и 4 desktop/mobile report UI checks прошли без download.
-  PR #28 → develop fd81f82, #29 → main 8d8cf08; main 43745466108 PASS,
-  server 209 checks / 185 raw Allure. v1.3.1 опубликована 18:26:47 UTC;
-  public HTTPS/inline/source/checksum smoke + 4 interactive browser cases PASS,
-  download events=0. Все исходные данные/23 других контейнера сохранены.
-  Новых LLM-вызовов не было. [Доказательства](docs/evidence/WB-09-allure-web.md).
-
-- **WB-07 #30:** ветка от develop fd81f82, перенесены Allure notes. Добавлены outbox
-  publisher, отдельный SQLite inbox Worker, Jinja2/Mailpit и схема манифеста2 с legacy
-  rollback. Local full 237 PASS / Allure 211; реальный v1.3.1 upgrade/rollback/resume PASS.
-  Финальная сверка добавила ФИО/контакт помощи в письма; повторный full run 237 PASS.
-  SMTP ambiguous-commit window явно описан; exactly-once не заявляется.
+- **WB-06/v1.3.0:** MCP 2.3.0 STDIO, RabbitMQ RPC, лимиты, user-bound proposal и
+  явное подтверждение. Ling 3.2 Flash `:free`, catalog/zero-price caps, без paid fallback;
+  CI явно scripted. Исправлены MCP schema/event loop, mobile occlusion и staging #24
+  через PR #25. После пользовательской паузы и явного resume: main 43737645275 PASS,
+  189 checks / server Allure 165; production real free 3 API + 2 browser PASS, cost=0,
+  без booking writes. Первый mobile 429 сохранён. [Evidence](docs/evidence/WB-06-remote.md).
+- **WB-09 follow-up/v1.3.1:** Nginx inline/read-only mount, атомарная публикация
+  проверенного release Allure. PR #28 → fd81f82, #29 → 8d8cf08; main 43745466108 PASS,
+  209 checks / server Allure 185, public HTTP + 4 report UI PASS, download=0.
+  [Evidence](docs/evidence/WB-09-allure-web.md). Новых LLM-вызовов не было.
+- **WB-07/v1.4.0:** outbox publisher, отдельный SQLite inbox Worker, Jinja2/Mailpit,
+  девять образов/schema 2 с legacy rollback. При review добавлены ФИО/контакт помощи,
+  убрана лишняя миграция. Реальный v1.3.1 upgrade/rollback/resume и повторный full 237 PASS;
+  первый import-path FAIL вспомогательного probe сохранён. PR #31 → develop 82d14a4,
+  #32 → main **5decd64**, main **43763748048 PASS**: 237 checks, 35 команд exit 0,
+  server Allure 213. Published 15.11 21:43:49 UTC / 16.11 00:43:49 МСК.
+  Public app 4/report UI 4 PASS, download=0; по 7 настоящих Mailpit писем в каждой среде,
+  очереди пусты. Исходные 7 броней/12 аккаунтов на среду и 23 других контейнера сохранены;
+  14 своих контейнеров healthy. SMTP ambiguous-commit window описан, exactly-once не обещан.
+  Новых inference calls не было. [Evidence](docs/evidence/WB-07-remote.md).
 
 Реальные команды: `scripts/check.py --run-type regression`, pytest/Ruff/Vitest/
 Playwright/Allure в Docker; `gh issue/pr/run/release`, `remote_delivery.py`,
@@ -56,5 +46,6 @@ Auto-review отклонил экспорт production IDs/fingerprints; зам�
 
 Подробные команды, исходные FAIL и ограничения: [PROGRESS](docs/context/PROGRESS.md),
 [WB-09](docs/evidence/WB-09-remote.md), [WB-04](docs/evidence/WB-04-remote.md),
-[WB-05](docs/evidence/WB-05-remote.md), [WB-06](docs/evidence/WB-06-remote.md).
-Следующая P0 — WB-07 Notification Worker; остальные PRD-возможности не объявляются готовыми.
+[WB-05](docs/evidence/WB-05-remote.md), [WB-06](docs/evidence/WB-06-remote.md),
+[WB-07](docs/evidence/WB-07-local.md).
+Следующая P0 — WB-08; остальные PRD-возможности не объявляются готовыми.

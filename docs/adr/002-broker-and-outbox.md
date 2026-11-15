@@ -1,6 +1,7 @@
 # ADR-002 — RabbitMQ outbox and worker-owned notification inbox
 
-Status: implemented for WB-06/WB-07; final WB-07 integration/release evidence pending.
+Status: implemented for WB-06/WB-07, released v1.4.0;
+[actual integration/delivery evidence](../evidence/WB-07-remote.md).
 
 Booking + PostgreSQL remain the only confirmed-booking authority. Assistant uses bounded
 RabbitMQ request/reply to the same authenticated Booking handlers. Booking confirmation
@@ -22,7 +23,7 @@ the single-worker demo: Booking never reads that volume, Worker never accesses B
 PostgreSQL. ACK follows inbox commit, so worker/broker restarts re-admit the same event
 without another job. SMTP delivery and completed-event deduplication live in that inbox.
 SQLite serializes sending; pending jobs retry with a bounded SMTP timeout and exponential
-delay capped at60 seconds, preserving order per booking while other bookings can progress.
+delay capped at 60 seconds, preserving order per booking while other bookings can progress.
 Pending jobs are retained through outages, not discarded after an arbitrary attempt count.
 Invalid contracts go to a separate durable dead-letter queue.
 
@@ -38,7 +39,7 @@ PostgreSQL dedup schema would require additional credentials/role management for
 single-instance demo. Horizontal workers on different hosts require migrating the private
 inbox to an appropriate shared transactional store, not copying separate SQLite files.
 
-Delivery manifest schema2 adds notification/runtime-test images; schema1 seven-image
+Delivery manifest schema 2 adds notification/runtime-test images; schema 1 seven-image
 releases remain valid for backup/rollback. Legacy rollback stops the worker, disables the
 publisher and preserves the notification volume and unchanged Booking schema. Never
 restore the booking database automatically or delete delivery state during image rollback.
