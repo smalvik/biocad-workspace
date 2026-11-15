@@ -13,7 +13,7 @@ COPY services/booking/pyproject.toml services/booking/uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-install-project
 COPY services/booking/ .
 COPY docs/data/demo_fixture.json ./data/demo_fixture.json
-COPY scripts/delivery_manifest.py scripts/deploy_server.py scripts/package_images.py /delivery/
+COPY scripts/delivery_manifest.py scripts/deploy_server.py scripts/package_images.py scripts/publish_allure.py /delivery/
 COPY tests/delivery/ ./tests/delivery/
 ENV PATH="/srv/.venv/bin:$PATH"
 CMD ["pytest", "-q", "--alluredir=/allure-results"]

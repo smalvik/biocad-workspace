@@ -1,5 +1,9 @@
 # Development progress (fill with actual evidence)
 
+**Current follow-up:** user requests browser viewing of Allure, issue #27,
+`ci/wb-09-allure-web` from develop 887bcc1. Local implementation and full regression
+in progress; WB-07 deferred until the requested public report route works.
+
 **2026-11-15: WB-06 + WB-11 planning fix released v1.3.0.**
 PRs #23/#25 merged develop 887bcc1; promotion #26 merged main 19a8388.
 [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43737645275):

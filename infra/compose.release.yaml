@@ -71,6 +71,8 @@ services:
     logging: *bounded-logs
     image: ${WEB_IMAGE:?Use the immutable candidate manifest}
     restart: unless-stopped
+    volumes:
+      - ${ALLURE_PUBLIC_DIR:-../artifacts/public-allure}:/srv/reports/allure:ro
     depends_on:
       booking: { condition: service_healthy }
       assistant: { condition: service_healthy }

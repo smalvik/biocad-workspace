@@ -28,6 +28,13 @@
   17:04:06 UTC. Production real free: 3 API + 2 browser cases passed, все успешные
   ответы cost=0, без booking writes; первый mobile 429 сохранён отдельно.
   7 броней/12 аккаунтов каждого окружения и 23 других контейнера сохранены.
+- **WB-09 follow-up #27:** пользователь запросил просмотр Allure в браузере.
+  От develop создана `ci/wb-09-allure-web`; перенесены WB-06 evidence.
+  Добавлены Nginx inline route, отдельный read-only public mount, проверяемая
+  атомарная публикация из stable GitHub release и CI smoke. Локальный фактический
+  download/checksum v1.3.0 прошёл; local full 209 checks / Allure 183, все команды exit 0.
+  Реальный Nginx + HTTP smoke и 4 desktop/mobile report UI checks прошли без download.
+  Remote CI/выкладка ещё не выполнены.
 
 Реальные команды: `scripts/check.py --run-type regression`, pytest/Ruff/Vitest/
 Playwright/Allure в Docker; `gh issue/pr/run/release`, `remote_delivery.py`,

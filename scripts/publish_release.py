@@ -26,7 +26,9 @@ notes = (
     f"(https://github.com/{os.environ['GITHUB_REPOSITORY']}/blob/{sha}/docs/context/CURRENT_STATE.md) "
     "are recorded at the exact source snapshot.\n\n"
     f"Source: `{sha}`. [Checks, staging regression, production smoke and Allure artifacts]({run_url}).\n\n"
-    f"[Application]({os.environ['PUBLIC_URL']}). Deployed images are the exact staging-tested digests:\n\n"
+    f"[Application]({os.environ['PUBLIC_URL']}). "
+    f"[View Allure in browser]({os.environ['PUBLIC_URL']}/allure/v{manifest['version']}/). "
+    "Deployed images are the exact staging-tested digests:\n\n"
     + "\n".join(f"- {service}: `{reference}`" for service, reference in manifest["images"].items())
     + "\n\nTask change notes included in this source snapshot:\n\n"
 )

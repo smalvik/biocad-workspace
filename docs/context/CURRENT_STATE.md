@@ -1,5 +1,9 @@
 # Actual implementation status — 2026-11-15
 
+**Current infrastructure follow-up:** issue #27 / `ci/wb-09-allure-web` adds direct
+browser viewing at `/allure/`. Local implementation/tests in progress; public reports
+currently remain GitHub download assets until checked deployment completes.
+
 **WB-06 and WB-11 planning fix released as v1.3.0.**
 Production: **https://biocad.smalvik.dev** ·
 [published release](https://github.com/smalvik/biocad-workspace/releases/tag/v1.3.0) ·
