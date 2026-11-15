@@ -17,6 +17,7 @@ from urllib.parse import urlsplit
 from uuid import uuid4
 
 from delivery_manifest import RUNTIME, SHA, image_environment, load, validate, verify_local_images
+from publish_allure import publish as publish_allure
 
 ROOT = Path("/opt/biocad")
 TOOLS = ROOT / "tooling"
@@ -40,7 +41,11 @@ def compose(environment: str, manifest: dict, settings: dict) -> tuple[list[str]
     env = os.environ.copy()
     env.update(secrets)
     env.update(image_environment(manifest))
-    env.update(APP_ENV=environment, WEB_HOST_PORT=str(settings[environment + "_port"]))
+    env.update(
+        APP_ENV=environment,
+        WEB_HOST_PORT=str(settings[environment + "_port"]),
+        ALLURE_PUBLIC_DIR=str(ROOT / "public/allure"),
+    )
     command = [
         "docker",
         "compose",
@@ -250,6 +255,11 @@ def stage(manifest: dict, settings: dict, report: Path) -> dict:
 
 def dispatch(request: dict, settings: dict) -> dict | None:
     action = request.get("action")
+    if action == "publish-allure" and set(request) == {"action", "manifest"}:
+        manifest = validate(request["manifest"], settings["namespace"])
+        if load(ROOT / "production/current.json", settings["namespace"]) != manifest:
+            raise ValueError("Only the current production release report can be published")
+        return publish_allure(manifest, ROOT / "public/allure")
     if action in {"stage", "production"}:
         if set(request) != {"action", "manifest"}:
             raise ValueError("Unexpected deploy request fields")

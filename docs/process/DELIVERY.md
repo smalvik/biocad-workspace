@@ -1,15 +1,31 @@
 # WB-09 delivery runbook
 
+## Browser Allure follow-up (issue #27, local implementation)
+
+Desired URLs: `/allure/` latest server report; `/allure/v1.3.0/` version archive;
+`/allure/v1.3.0/live/` separately verified real-provider acceptance. Pending checked deployment.
+Nginx serves `text/html` with `Content-Disposition: inline`, no SPA fallback or directory listing.
+Only `/opt/biocad/public/allure` is mounted read-only into Web; raw private report trees,
+server backups, credentials and raw traces are never mounted.
+
+Main CI calls `remote_delivery.py publish-allure` after publishing a successful release,
+then `check_public_allure.py` verifies HTML/inline headers, manifest and body checksums.
+Restricted server operation accepts only the current production manifest; fixed GitHub repo,
+published stable release, complete manifest equality and SHA256/size bounds are enforced.
+Versioned HTML is immutable, latest changes atomically after successful downloads.
+A later `live-llm-allure.html` asset can be appended once by repeating that operation;
+it cannot replace previously published report content. Previous versions remain available.
+
 ## Actual status
 
 Implementation branch: `ci/wb-09-release-deploy`, [issue #10](https://github.com/smalvik/biocad-workspace/issues/10).
 Runtime Compose, restricted SSH dispatcher and Actions jobs are implemented and tested locally.
-**Working in production:** [v1.2.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.2.0),
-https://biocad.smalvik.dev. Main workflow `43690831879` passed complete regression,
+**Working in production:** [v1.3.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.3.0),
+https://biocad.smalvik.dev. Main workflow `43737645275` passed complete regression,
 real server staging/prod smoke, digest promotion and release/Allure publication.
 Registry/deployment gates are enabled after verified credentials/bootstrap.
 [Initial infrastructure evidence](../evidence/WB-09-remote.md),
-[v1.2.0 evidence and preservation of 23 existing containers](../evidence/WB-05-remote.md).
+[v1.3.0 evidence and preservation of 23 existing containers](../evidence/WB-06-remote.md).
 
 ## Delivery contract
 

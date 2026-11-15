@@ -8,9 +8,11 @@ Mailpit и nginx. WB-01 интегрирован через PR #2 с успеш�
 входом, фильтрами даты/времени и карточкой места. В WB-04 опубликованы поиск
 сотрудников, оригинальные вымышленные аватары и таймлайн владельцев по интервалу.
 WB-05 (форма, «Мои бронирования», отмена) выпущена в v1.2.0, 157 regression passed.
-WB-06 (MCP/RabbitMQ/AI-чат) реализуется в отдельной ветке, ещё не опубликована.
-Пользователь разрешил только бесплатную модель: Ling 3.2 Flash free прошла 3 live
-сценария с нулевой стоимостью; CI/выкладка обновлённой ветки ещё выполняются.
+WB-06 (MCP/RabbitMQ/AI-чат) и исправление planning #24 выпущены в **v1.3.0**.
+Работает настоящая `inclusionai/ling-3.2-flash:free`, только бесплатно, бюджет $0,
+без платного fallback. AI предлагает ресурс, отдельное подтверждение создаёт бронь.
+Полная регрессия 189 passed; реальная production приёмка — 3 API + 2 browser passed,
+все успешные ответы cost=0. Free-провайдер может вернуть 429; ручная форма доступна.
 Notification Worker — WB-07.
 
 Статус и доказательства: [CURRENT_STATE](docs/context/CURRENT_STATE.md),
@@ -19,17 +21,18 @@ WB-02 и исправление WB-11 интегрированы в develop/main
 WB-03 слита в develop через [PR #9](https://github.com/smalvik/biocad-workspace/pull/9);
 [post-merge regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923).
 Рабочее демо: **https://biocad.smalvik.dev** ·
-[v1.2.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.2.0) ·
-[Allure HTML](https://github.com/smalvik/biocad-workspace/releases/download/v1.2.0/index.html).
+[v1.3.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.3.0) ·
+[Allure HTML](https://github.com/smalvik/biocad-workspace/releases/download/v1.3.0/index.html).
 Вход: вымышленные `e01` … `e12`, пароль `demo-workspace`.
 
 CI/CD WB-09: [runbook и фактический статус](docs/process/DELIVERY.md).
 Реализованы SHA/digest images, отдельные staging/production проекты, ограниченный SSH
 dispatcher, backup/rollback и Allure. Сервер обследован, BIOCAD admin/CI ключи созданы,
-ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43690831879),
-157 regression / server Allure 134; final public desktop/mobile smoke — 4 passed,
-form/list preview — 2 passed, без production booking writes.
-23 старых контейнера сохранились. [Фактические evidence и история TLS-таймаутов](docs/evidence/WB-05-remote.md).
+ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43737645275),
+189 regression / server Allure 165; отдельный
+[real free LLM Allure](https://github.com/smalvik/biocad-workspace/releases/download/v1.3.0/live-llm-allure.html).
+23 старых контейнера и существующие брони/аккаунты сохранились.
+[Фактические evidence и ограничения](docs/evidence/WB-06-remote.md).
 
 ## Локальный запуск
 
@@ -49,7 +52,11 @@ API/БД/почта опубликованы только на loopback; RabbitM
 Для собственных настроек скопируйте `.env.example` в игнорируемый `.env` и используйте
 `--env-file .env` вместо `--env-file .env.example`. Не меняйте пароль уже созданного
 PostgreSQL volume только через env: это не изменит пароль роли в БД.
-LLM-ключи для WB-01 не требуются. Значения по умолчанию подходят только локальному демо.
+Без OpenRouter-ключа ручное бронирование работает; для AI укажите в ignored `.env`
+`OPENROUTER_API_KEY`, `OPENROUTER_PRIMARY_MODEL=inclusionai/ling-3.2-flash:free`,
+`ASSISTANT_FREE_ONLY=true`, `ASSISTANT_BUDGET_USD=0` и длинный
+`ASSISTANT_PROPOSAL_SECRET`. Платные модели/fallback не разрешены.
+Значения по умолчанию подходят только локальному демо.
 Booking при запуске выполняет Alembic `upgrade head`. Локальный Compose включает
 `SEED_DEMO_DATA=true`: вымышленные данные из `docs/data/demo_fixture.json` загружаются
 идемпотентно, без перезаписи существующих броней. Вне локального окружения нужен
@@ -82,8 +89,8 @@ AMQP round trip через durable queue с persistent message, SMTP → Mailpit
 Vitest и Playwright Chromium для desktop/mobile. E2E проверяет вход/выход, два
 этажа, календарные окна, фильтры, детали, клавиатуру, pan/zoom/fit, ошибки API,
 просроченную сессию и запоздалые ответы, создание/отмену через UI и AI-предложение
-с отдельным подтверждением. Реальный OpenRouter проверяется отдельно после согласования
-модели/лимита; scripted regression не считается доказательством live LLM.
+с отдельным подтверждением. Реальный OpenRouter проверяется отдельно с разрешённой
+бесплатной моделью и бюджетом $0; scripted regression не считается доказательством live LLM.
 
 Логи, `run.json`, Allure results, Playwright HTML и screenshots сохраняются отдельно
 в `artifacts/<UTC-run-id>/` (исключено из Git). SHA в отчёте — базовый HEAD;
@@ -96,9 +103,10 @@ Authenticated traces отключены: cookies/CSRF не сохраняютс�
 и [post-merge regression](https://github.com/smalvik/biocad-workspace/actions/runs/43599195552).
 WB-02: [develop regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604565825)
 и [main regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604855360) — PASS.
-Публикация отчёта, staging, immutable release images и production — WB-08/WB-09.
+Публикация отчёта, staging, immutable release images и production реализованы в WB-09;
+дополнительные race/red-green evidence остаются WB-08.
 
-## Assistant — WB-06 (в разработке)
+## Assistant — WB-06 (v1.3.0)
 
 Для нового Assistant-кода смотрите [контракт и настройки WB-06](docs/architecture/ASSISTANT.md).
 В `.env` требуются реальный ключ, `OPENROUTER_PRIMARY_MODEL=inclusionai/ling-3.2-flash:free`,
@@ -108,7 +116,7 @@ WB-02: [develop regression](https://github.com/smalvik/biocad-workspace/actions/
 Кнопка «AI-ассистент» запрашивает согласие на отправку текста в OpenRouter.
 AI только предлагает ресурс/период; кнопка «Проверить предложение AI» открывает
 обычное точное подтверждение. Ручная форма работает независимо от AI/брокера.
-Эти изменения пока относятся к ветке WB-06, текущий public release — v1.2.0.
+Доступно в public v1.3.0; [реальные проверки и Allure](docs/evidence/WB-06-remote.md).
 
 ## Booking API — WB-02
 

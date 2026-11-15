@@ -14,7 +14,9 @@ from delivery_manifest import load
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("stage", "production", "report", "status", "rollback"))
+    parser.add_argument(
+        "action", choices=("stage", "production", "report", "status", "rollback", "publish-allure")
+    )
     parser.add_argument("--manifest", type=Path, default=Path("artifacts/candidate.json"))
     parser.add_argument("--namespace", default="smalvik")
     parser.add_argument("--environment", choices=("staging", "production"), default="production")
@@ -24,7 +26,7 @@ def main() -> None:
     if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9.-]*", host) or not re.fullmatch(r"[a-z_][a-z0-9_-]*", user):
         parser.error("Invalid host/user")
     request = {"action": args.action}
-    if args.action in {"stage", "production", "report"}:
+    if args.action in {"stage", "production", "report", "publish-allure"}:
         manifest = load(args.manifest, args.namespace)
         request.update(
             {"source_sha": manifest["source_sha"]} if args.action == "report" else {"manifest": manifest}
