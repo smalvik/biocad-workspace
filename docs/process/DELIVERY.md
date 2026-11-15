@@ -21,14 +21,14 @@ it cannot replace previously published report content. Previous versions remain 
 
 ## Actual status
 
-Current branch: `ci/wb-09-allure-web`, [issue #27](https://github.com/smalvik/biocad-workspace/issues/27);
+Latest delivery branch: `feat/wb-07-email-notifications`, [issue #30](https://github.com/smalvik/biocad-workspace/issues/30);
 original infrastructure issue #10. Runtime Compose, restricted SSH dispatcher and Actions are live.
-**Working in production:** [v1.3.1](https://github.com/smalvik/biocad-workspace/releases/tag/v1.3.1),
-https://biocad.smalvik.dev. Main workflow `43745466108` passed complete regression,
+**Working in production:** [v1.4.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.0),
+https://biocad.smalvik.dev. Main workflow `43763748048` passed complete regression,
 real server staging/prod smoke, digest promotion and release/Allure publication.
 Registry/deployment gates are enabled after verified credentials/bootstrap.
 [Initial infrastructure evidence](../evidence/WB-09-remote.md),
-[current report hosting and preservation of 23 existing containers](../evidence/WB-09-allure-web.md).
+[current notification delivery and preservation of 23 existing containers](../evidence/WB-07-remote.md).
 
 ## Delivery contract
 
@@ -44,8 +44,8 @@ WB-07 adds `smalvik/biocad-notification` to runtime repositories `biocad-web`,
 `biocad-booking`, `biocad-assistant`, and `biocad-notification-tests` to separate test
 runners `biocad-web-tests`, `biocad-booking-tests`, `biocad-assistant-tests`, `biocad-e2e`.
 All nine use `sha-<40-character-source-sha>` candidates. Four runtime services receive
-`v1.MINOR.PATCH` / `latest` aliases after production validation. WB-07 delivery is pending;
-the production v1.3.1 manifest still has seven images and three runtime services.
+`v1.MINOR.PATCH` / `latest` aliases after production validation. Production v1.4.0
+has nine images and four runtime services; previous v1.3.1 has seven/three.
 
 The first checked incremental delivery starts at `v1.0.0`. Subsequent published snapshots bump MINOR if their commits include `feat`, otherwise PATCH.
 This does not version every PR. The GitHub Release is created only after production smoke, with exact digests, source, task-note links, `CHANGELOG.md`, `releases.json`, and a standalone Allure HTML asset.

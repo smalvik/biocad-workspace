@@ -59,7 +59,8 @@ Worker journal/volume persists while legacy processing is stopped.
 Screenshots render the actual SMTP-captured message, not a conceptual mock.
 The first helper attempt failed before application checks because its Python import path
 was missing; [failure retained](../../artifacts/WB-07-upgrade-rollback.log), corrected
-and rerun successfully. Final committed CI/server validation remains pending.
+and rerun successfully. This local checkpoint preceded committed CI/server validation;
+the completed [remote delivery evidence](WB-07-remote.md) is recorded separately.
 
 Repeated with final reviewed-source images from **20261115T205358Z-5ee75a** using
 `python artifacts/wb07_compat_driver.py artifacts/20261115T205358Z-5ee75a/run.json reviewed`:
@@ -69,7 +70,7 @@ unchanged original records/revision and one captured message after duplicate rep
 [reviewed log](../../artifacts/WB-07-upgrade-rollback-reviewed.log),
 [final actual HTML](../../artifacts/WB-07-upgrade-rollback-reviewed/legacy-booking-notification.html).
 
-Schema2 complete nine-image manifests and old schema1 seven-image rollback contracts
+Schema 2 complete nine-image manifests and old schema 1 seven-image rollback contracts
 are unit-tested. Worker owns a private SQLite WAL inbox, never Booking PostgreSQL.
 SMTP acceptance/local sent-state commit remains an explicit ambiguous duplicate window;
 durable completed-event replay deduplication is verified, exactly-once SMTP is not claimed.
