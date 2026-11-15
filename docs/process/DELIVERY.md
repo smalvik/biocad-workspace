@@ -1,9 +1,12 @@
 # WB-09 delivery runbook
 
-## Browser Allure follow-up (issue #27, local implementation)
+## Browser Allure follow-up (issue #27, released v1.3.1)
 
-Desired URLs: `/allure/` latest server report; `/allure/v1.3.0/` version archive;
-`/allure/v1.3.0/live/` separately verified real-provider acceptance. Pending checked deployment.
+Public URLs: [latest](https://biocad.smalvik.dev/allure/),
+[v1.3.0 archive](https://biocad.smalvik.dev/allure/v1.3.0/),
+[actual free-model acceptance](https://biocad.smalvik.dev/allure/v1.3.0/live/).
+Public HTTP/source/checksum and four desktop/mobile interactive report cases passed,
+zero browser download events. [Actual delivery evidence](../evidence/WB-09-allure-web.md).
 Nginx serves `text/html` with `Content-Disposition: inline`, no SPA fallback or directory listing.
 Only `/opt/biocad/public/allure` is mounted read-only into Web; raw private report trees,
 server backups, credentials and raw traces are never mounted.
@@ -18,14 +21,14 @@ it cannot replace previously published report content. Previous versions remain 
 
 ## Actual status
 
-Implementation branch: `ci/wb-09-release-deploy`, [issue #10](https://github.com/smalvik/biocad-workspace/issues/10).
-Runtime Compose, restricted SSH dispatcher and Actions jobs are implemented and tested locally.
-**Working in production:** [v1.3.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.3.0),
-https://biocad.smalvik.dev. Main workflow `43737645275` passed complete regression,
+Current branch: `ci/wb-09-allure-web`, [issue #27](https://github.com/smalvik/biocad-workspace/issues/27);
+original infrastructure issue #10. Runtime Compose, restricted SSH dispatcher and Actions are live.
+**Working in production:** [v1.3.1](https://github.com/smalvik/biocad-workspace/releases/tag/v1.3.1),
+https://biocad.smalvik.dev. Main workflow `43745466108` passed complete regression,
 real server staging/prod smoke, digest promotion and release/Allure publication.
 Registry/deployment gates are enabled after verified credentials/bootstrap.
 [Initial infrastructure evidence](../evidence/WB-09-remote.md),
-[v1.3.0 evidence and preservation of 23 existing containers](../evidence/WB-06-remote.md).
+[current report hosting and preservation of 23 existing containers](../evidence/WB-09-allure-web.md).
 
 ## Delivery contract
 
