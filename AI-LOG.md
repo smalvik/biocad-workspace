@@ -176,3 +176,32 @@ GitHub token читался в память и передавался через
   Exact direct-path cause is not asserted. User now requests requirements for a separate
   public HTTPS ingress; resource/provider/DNS access is still missing. Issue remains open,
   no fix/release claimed. Evidence: docs/evidence/WB-11-browser-access.md.
+
+- **WB-06 started, issue #22:** user reports the site opens again and requests the
+  next planned task; alternate ingress is deferred, incident #21 remains monitoring.
+  Created `feat/wb-06-assistant-mcp` from develop b98a9a3, carried post-release and
+  incident evidence as 2c2e6f7 / 04a0da2. Read task/PRD/UI/process; no subagents used.
+  Added Booking RabbitMQ RPC reusing in-process authenticated handlers, additive
+  migration 0003 for durable rate/budget limits, official mcp==2.3.0 STDIO discovery
+  and read/propose tools, bounded OpenRouter tool-calling client, signed user-bound
+  proposal/explicit confirmation/replay and React chat/map integration. Real MCP
+  rejects plain dict structured output; corrected annotations to dict[str, Any]
+  and explicit structured_output=True after inspecting installed SDK and actual calls.
+  First `python scripts/check.py --run-type regression` failed MCP output / test
+  event-loop scope. Second: backend 78, Assistant 13, persistence 2, Vitest 26 passed;
+  Playwright 57 passed / 1 mobile button occlusion failure. Corrected AI selection
+  to use its own proposal card while retaining map highlight. Third run
+  20261115T112714Z-54bd2c passed 179 checks (78 + 15 + 2 + 26 + 58), exit 0;
+  latest expanded cross-user/conflict/tool checks are still running. No fabricated
+  live-model pass: regression uses a labelled scripted HTTP provider with real
+  PostgreSQL/RabbitMQ/STDIO MCP. Read-only provider key validation succeeded,
+  `inference_requests_made=0`; pending async question asks model/spending limit.
+  Ruff and TypeScript/Vitest executed in local containers. Removed only accidental
+  formatter changes to unrelated scripts/verify_handoff.py; no unrelated work kept.
+  No server/DNS/proxy change, paid inference, WB-06 deploy or release yet.
+  Expanded full run 20261115T113244Z-e7d765 passed **180** checks / Allure **154**,
+  all 20 commands exit 0. Generated standalone Allure with biocad-allure:local.
+  Final review tightened known-key/explicit-ISO validation and hidden error inputs;
+  mounted current-source Assistant unit tests passed **11**, exit 0. Evidence
+  explicitly distinguishes the dirty full run from later review changes; final
+  committed CI is still required. See docs/evidence/WB-06-local.md.

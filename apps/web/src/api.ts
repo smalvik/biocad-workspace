@@ -8,6 +8,8 @@ import type {
   Session,
   Snapshot,
   TimeWindow,
+  ChatResponse,
+  ChatMessage,
 } from "./types";
 
 export class ApiError extends Error {
@@ -20,7 +22,11 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
+async function request<T>(
+  url: string,
+  options: RequestInit = {},
+  timeout = 12_000,
+): Promise<T> {
   const controller = new AbortController();
   const external = options.signal;
   const abort = () => controller.abort();
@@ -30,7 +36,7 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
   const deadline = setTimeout(() => {
     timedOut = true;
     controller.abort();
-  }, 12_000);
+  }, timeout);
   try {
     const response = await fetch(url, {
       ...options,
@@ -68,6 +74,42 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
 }
 
 export const api = {
+  chat: (
+    message: string,
+    history: ChatMessage[],
+    context: {
+      floor_id: string;
+      start_at: string;
+      end_at: string;
+      floors: { id: string; name: string; number: number }[];
+    },
+    csrf: string,
+    signal: AbortSignal,
+  ) =>
+    request<ChatResponse>(
+      "/api/v1/assistant/chat",
+      {
+        method: "POST",
+        body: JSON.stringify({ message, history, context, consent: true }),
+        headers: { "X-CSRF-Token": csrf },
+        signal,
+      },
+      70_000,
+    ),
+  confirmProposal: (
+    proposal_token: string,
+    idempotency_key: string,
+    csrf: string,
+  ) =>
+    request<Booking>(
+      "/api/v1/assistant/confirm",
+      {
+        method: "POST",
+        body: JSON.stringify({ proposal_token, idempotency_key }),
+        headers: { "X-CSRF-Token": csrf },
+      },
+      20_000,
+    ),
   createBooking: (payload: BookingPayload, key: string, csrf: string) =>
     request<Booking>("/api/v1/bookings", {
       method: "POST",

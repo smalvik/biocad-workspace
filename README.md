@@ -8,7 +8,8 @@ Mailpit и nginx. WB-01 интегрирован через PR #2 с успеш�
 входом, фильтрами даты/времени и карточкой места. В WB-04 опубликованы поиск
 сотрудников, оригинальные вымышленные аватары и таймлайн владельцев по интервалу.
 WB-05 (форма, «Мои бронирования», отмена) выпущена в v1.2.0, 157 regression passed.
-MCP/LLM и Notification Worker — следующие задачи.
+WB-06 (MCP/RabbitMQ/AI-чат) реализуется в отдельной ветке, ещё не опубликована.
+Live LLM-проверка ожидает согласованных модели и бюджета. Notification Worker — WB-07.
 
 Статус и доказательства: [CURRENT_STATE](docs/context/CURRENT_STATE.md),
 [PROGRESS](docs/context/PROGRESS.md), [WB-01](docs/changes/WB-01.md).
@@ -69,14 +70,18 @@ python scripts/check_policy.py
 ```
 
 Каждый прогон создаёт отдельный Compose-проект без host ports и отдельные volumes;
-использует `.env.example`, а LLM-ключи отключает. После проверки удаляет только свои
+использует `.env.example`, не читает локальные LLM-ключи и запускает явно scripted
+HTTP-провайдер без платных запросов. MCP SDK, RabbitMQ и PostgreSQL настоящие.
+После проверки удаляет только свои
 контейнеры и тестовые volumes. Уже запущенный проект `biocad` сохраняется.
 
 Проверяются сборка/TypeScript, Ruff, pytest двух сервисов, настоящий PostgreSQL,
 AMQP round trip через durable queue с persistent message, SMTP → Mailpit,
 Vitest и Playwright Chromium для desktop/mobile. E2E проверяет вход/выход, два
 этажа, календарные окна, фильтры, детали, клавиатуру, pan/zoom/fit, ошибки API,
-просроченную сессию и запоздалые ответы. Бронирование через UI и реальный LLM ещё не проверяются.
+просроченную сессию и запоздалые ответы, создание/отмену через UI и AI-предложение
+с отдельным подтверждением. Реальный OpenRouter проверяется отдельно после согласования
+модели/лимита; scripted regression не считается доказательством live LLM.
 
 Логи, `run.json`, Allure results, Playwright HTML и screenshots сохраняются отдельно
 в `artifacts/<UTC-run-id>/` (исключено из Git). SHA в отчёте — базовый HEAD;
@@ -90,6 +95,16 @@ Authenticated traces отключены: cookies/CSRF не сохраняютс�
 WB-02: [develop regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604565825)
 и [main regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604855360) — PASS.
 Публикация отчёта, staging, immutable release images и production — WB-08/WB-09.
+
+## Assistant — WB-06 (в разработке)
+
+Для нового Assistant-кода смотрите [контракт и настройки WB-06](docs/architecture/ASSISTANT.md).
+В `.env` требуются реальный ключ, выбранная tool-calling модель, отдельный секрет
+предложений и согласованный `ASSISTANT_BUDGET_USD`; значение 0 блокирует inference.
+Кнопка «AI-ассистент» запрашивает согласие на отправку текста в OpenRouter.
+AI только предлагает ресурс/период; кнопка «Проверить предложение AI» открывает
+обычное точное подтверждение. Ручная форма работает независимо от AI/брокера.
+Эти изменения пока относятся к ветке WB-06, текущий public release — v1.2.0.
 
 ## Booking API — WB-02
 

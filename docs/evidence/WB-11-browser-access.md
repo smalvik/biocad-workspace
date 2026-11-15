@@ -1,6 +1,10 @@
 # WB-11 browser access incident — issue #21, 2026-11-15
 
-**Status: diagnosed network-path difference; stable public ingress remediation pending.**
+**Status: monitoring; user reports browser access restored, no remediation applied.**
+The latest instruction is to continue WB-06. No alternate ingress/DNS/cloud resource
+was created. This user observation does not establish the cause or prove a permanent fix.
+
+Historical diagnosis:
 User reports `ERR_CONNECTION_RESET` for https://biocad.smalvik.dev.
 This is not marked fixed or released. Branch `fix/wb-11-browser-access` starts from
 develop b98a9a3 and carries only WB-05 post-release evidence (dc8bd17).

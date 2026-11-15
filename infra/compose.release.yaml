@@ -38,6 +38,10 @@ services:
       SESSION_SECRET: ${SESSION_SECRET:?Configure a unique environment secret}
       SEED_DEMO_DATA: 'true'
       DEMO_PASSWORD: ${DEMO_PASSWORD:-demo-workspace}
+      RABBITMQ_URL: amqp://biocad:${RABBITMQ_PASSWORD:?}@rabbitmq:5672/
+      ASSISTANT_BUDGET_USD: ${ASSISTANT_BUDGET_USD:-0}
+      ASSISTANT_BUDGET_EPOCH: ${ASSISTANT_BUDGET_EPOCH:-demo-v1}
+      ASSISTANT_REQUESTS_PER_MINUTE: ${ASSISTANT_REQUESTS_PER_MINUTE:-3}
     depends_on:
       postgres: { condition: service_healthy }
     mem_limit: 384m
@@ -52,11 +56,14 @@ services:
       TZ: UTC
       GIT_SHA: ${GIT_SHA:?}
       RELEASE_VERSION: ${RELEASE_VERSION:?}
-      BOOKING_BASE_URL: http://booking:8000
+      RABBITMQ_URL: amqp://biocad:${RABBITMQ_PASSWORD:?}@rabbitmq:5672/
+      ASSISTANT_PROPOSAL_SECRET: ${ASSISTANT_PROPOSAL_SECRET:?Configure a separate signing secret}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
       OPENROUTER_PRIMARY_MODEL: ${OPENROUTER_PRIMARY_MODEL:-}
       OPENROUTER_FALLBACK_MODEL: ${OPENROUTER_FALLBACK_MODEL:-}
-    mem_limit: 256m
+      OPENROUTER_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      ENABLE_LLM_TEST_FIXTURE: ${ENABLE_LLM_TEST_FIXTURE:-false}
+    mem_limit: 384m
     cpus: 0.5
 
   web:

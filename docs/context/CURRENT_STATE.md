@@ -1,10 +1,16 @@
 # Actual implementation status — 2026-11-15
 
-**Open access incident #21:** direct browser TLS resets/timeouts are reproduced from
-the workstation. The same v1.2.0 origin passes strict TLS and two browser preview
-checks through the VPN route. Stable public entry without client settings needs
-another ingress endpoint/DNS control; [actual diagnosis](../evidence/WB-11-browser-access.md).
-Earlier passing external checks were point-in-time results, not evidence of stable reachability.
+**Access incident #21, monitoring:** the user reports the browser now opens the site
+and requested continuing the backlog. No DNS/proxy/route remediation was applied;
+the earlier direct/VPN difference remains an observation, not an established cause.
+[Actual diagnosis](../evidence/WB-11-browser-access.md). A new public ingress is deferred.
+
+**WB-06 in progress:** issue #22, branch `feat/wb-06-assistant-mcp`. Local code now
+contains real SDK MCP over STDIO, RabbitMQ RPC, OpenRouter tool calling and an explicit
+proposal/confirmation UI. Regression and review are ongoing; this is **not deployed**.
+The configured OpenRouter key passed a read-only validity check. No inference calls
+have been made: model/budget approval is pending. CI uses an explicitly scripted HTTP
+provider with real MCP/RabbitMQ/PostgreSQL, not proof of a live LLM answer.
 
 | Item | Observed state |
 |---|---|
