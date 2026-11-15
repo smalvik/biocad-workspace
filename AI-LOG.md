@@ -160,3 +160,19 @@ GitHub token читался в память и передавался через
   transient TLS timeouts is not asserted. Real release notes enhanced with delivered
   capabilities; actual commands and links in `docs/evidence/WB-05-remote.md`.
   Next unimplemented task: WB-06 real Assistant/MCP/LLM; SMTP worker remains WB-07.
+
+- **WB-11 access incident #21:** user reported ERR_CONNECTION_RESET after v1.2.0.
+  Reproduced direct TCP success followed by TLS timeout, including another host name
+  on the same IP; SSH banner succeeds but key exchange EOFs/times out. Read-only
+  routing inspection showed active AmneziaVPN with the server IP taking Wi-Fi.
+  A simultaneous strict-TLS comparison to the same endpoint failed direct and passed
+  via per-socket VPN selection in 0.78 s (200 / bddba67 / 1.2.0). VPN-routed SSH retained
+  original host-key pinning and dedicated admin key; server read-only health check
+  showed 200 and no sampled resource exhaustion. Ephemeral loopback-only single-site
+  CONNECT relay kept TLS end to end; actual browser form/list preview passed on
+  desktop/mobile, exit 0, zero attempted booking writes. Diagnostic relay stopped
+  after verification. No global client route/browser setting or server/DNS changed.
+  Created separate branch from develop and carried WB-05 evidence (dc8bd17).
+  Exact direct-path cause is not asserted. User now requests requirements for a separate
+  public HTTPS ingress; resource/provider/DNS access is still missing. Issue remains open,
+  no fix/release claimed. Evidence: docs/evidence/WB-11-browser-access.md.
