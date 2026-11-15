@@ -1,5 +1,11 @@
 # Actual implementation status — 2026-11-15
 
+**Open access incident #21:** direct browser TLS resets/timeouts are reproduced from
+the workstation. The same v1.2.0 origin passes strict TLS and two browser preview
+checks through the VPN route. Stable public entry without client settings needs
+another ingress endpoint/DNS control; [actual diagnosis](../evidence/WB-11-browser-access.md).
+Earlier passing external checks were point-in-time results, not evidence of stable reachability.
+
 | Item | Observed state |
 |---|---|
 | Product requirements | PRD v1.2 written (Markdown/Word), with WB-01…WB-18 backlog |
