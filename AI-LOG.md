@@ -39,7 +39,11 @@
   `40P01` и HTTP 500 при сохранённом constraint. Retry-only прошёл probe, но full20
   выявил каскад deadlock; fix-ветка добавляет native ON CONFLICT и максимум три полных
   попытки с тем же ключом. Финальная локальная регрессия 240 PASS / Allure 214.
-  [Реальные FAIL/PASS](docs/evidence/WB-11-booking-deadlock.md). Production пока v1.4.0.
+  [Реальные FAIL/PASS](docs/evidence/WB-11-booking-deadlock.md). PR #35 CI PASS, develop 75f661f.
+- **WB-08:** отдельный child DB, два HTTP-процесса, настоящий pytest red 2 failed /
+  восстановленный green 3 passed, одинаковый source hash oracle, исходные логи/результаты
+  в Allure. Guards/cleanup и отсутствие probe/pytest в runtime проверены. Full local
+  248 PASS / 222 raw Allure, 35 команд exit 0. Production пока v1.4.0; доставка ожидается.
 
 Реальные команды: `scripts/check.py --run-type regression`, pytest/Ruff/Vitest/
 Playwright/Allure в Docker; `gh issue/pr/run/release`, `remote_delivery.py`,

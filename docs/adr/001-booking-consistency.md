@@ -28,6 +28,14 @@ Tests use real PostgreSQL over real HTTP, including 20 competing requests,
 20 retries with one key, direct SQL rejection, adjacent intervals, injected outbox
 failure and PostgreSQL/service restarts. No SQLite correctness claim is made.
 
+WB-08 adds a real mutation sensitivity gate in a new owned child database: two HTTP
+processes, observed PostgreSQL INSERT barrier, genuine failed single-winner oracle with
+exclusion removed, then the exact restored constraint and passing identical oracle.
+Actual [RED](../evidence/concurrency-red.md) / [GREEN](../evidence/concurrency-green.md).
+It exposed native GiST INSERT deadlocks; separate WB-11 uses PostgreSQL ON CONFLICT
+DO NOTHING plus bounded residual-deadlock retry, retaining all original constraints.
+[Actual defect/fix evidence](../evidence/WB-11-booking-deadlock.md).
+
 Consequence: PostgreSQL-specific DDL is intentional. Docker/database migrations
 are required for local use. HTTP 409 is an expected outcome when a slot changes
 between an availability read and confirmation.

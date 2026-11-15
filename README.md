@@ -109,7 +109,11 @@ Authenticated traces отключены: cookies/CSRF не сохраняютс�
 WB-02: [develop regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604565825)
 и [main regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604855360) — PASS.
 Публикация отчёта, staging, immutable release images и production реализованы в WB-09;
-дополнительные race/red-green evidence остаются WB-08.
+WB-08 реализован и проверен локально: 248 outer checks, подлинный red 2 failed /
+restored green 3 passed в отдельной временной БД. [RED](docs/evidence/concurrency-red.md),
+[GREEN](docs/evidence/concurrency-green.md). Probe/pytest отсутствуют в runtime-образе;
+сами логи и исходные результаты child pytest вложены в Allure. Доставка WB-08 ожидается;
+реально найденный deadlock исправлен отдельно в WB-11 PR #35.
 
 ## Уведомления — WB-07 (v1.4.0)
 
