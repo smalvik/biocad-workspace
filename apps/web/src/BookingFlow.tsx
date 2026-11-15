@@ -5,7 +5,7 @@ import { moscowDate, moscowTime } from "./domain";
 import type { OwnBooking, Session } from "./types";
 import type { BookingIntent, useBookingFlow } from "./useBookingFlow";
 
-function Dialog({
+export function Dialog({
   title,
   busy = false,
   close,

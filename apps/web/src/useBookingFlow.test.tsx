@@ -35,6 +35,30 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+it("retries AI confirmation with the same signed proposal and key after reload", async () => {
+  const manual = vi.spyOn(api, "createBooking");
+  const confirm = vi
+    .spyOn(api, "confirmProposal")
+    .mockRejectedValueOnce(new ApiError("Нет ответа"))
+    .mockResolvedValue(booked);
+  const first = renderHook(() => useBookingFlow(session, vi.fn(), vi.fn()));
+  act(() =>
+    first.result.current.begin(space, floor, period, "signed-proposal"),
+  );
+  expect(confirm).not.toHaveBeenCalled();
+  await act(() => first.result.current.confirm());
+  const key = first.result.current.intent!.key;
+  first.unmount();
+  const second = renderHook(() => useBookingFlow(session, vi.fn(), vi.fn()));
+  await act(() => second.result.current.confirm());
+  expect(confirm.mock.calls).toEqual([
+    ["signed-proposal", key, session.csrf_token],
+    ["signed-proposal", key, session.csrf_token],
+  ]);
+  expect(manual).not.toHaveBeenCalled();
+  expect(second.result.current.result?.id).toBe(booked.id);
+});
+
 it("supports the isolated HTTP origin where randomUUID is unavailable", () => {
   const getRandomValues = crypto.getRandomValues.bind(crypto);
   vi.stubGlobal("crypto", { getRandomValues });

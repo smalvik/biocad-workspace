@@ -31,3 +31,20 @@ Main merge builds its own SHA candidate once, verifies it on staging, deploys ex
 to production and performs HTTPS smoke. Version/latest aliases and GitHub release follow
 successful production smoke. Baseline v1.0.0 is an honestly scoped incremental demo release,
 not completion of all PRD tasks. No rebuild occurs between staging and production.
+
+## 2026-11-15 — WB-06: free OpenRouter models only
+
+The user's explicit answer is **«Только бесплатная модель»**. This authorizes real
+free-model verification and configuration; it does not authorize paid inference,
+paid fallback or purchasing credits. Keep the monetary cap at 0 USD.
+
+Use an explicit `:free` model whose official current catalog confirms zero pricing
+and tool calling. Before each chat check the catalog, and enforce provider
+`max_price` prompt/completion/request all 0 on every attempt. Paid model IDs are
+rejected by settings. Free requests retain durable per-user rate limits without
+monetary reservations; the runtime rejects paid reservation requests.
+
+The initial Gemma free probe returned provider 429. Ling 3.2 Flash free returned
+real tool calls with `usage.cost=0`; it is the selected primary pending complete
+live acceptance. One bounded same-model 429 retry may respect Retry-After, but no
+automatic model switch or paid route is permitted. Manual bookings remain usable.

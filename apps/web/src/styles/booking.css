@@ -153,3 +153,54 @@
     font-size: 14px;
   }
 }
+.assistant-navigation {
+  margin: -4px 0 20px;
+}
+.assistant-proposal {
+  background: #f0f8f4;
+  border: 1px solid #b7dcca;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.assistant-messages {
+  max-height: 32vh;
+  overflow-y: auto;
+  margin: 16px 0;
+}
+.assistant-message {
+  padding: 12px;
+  border-radius: 10px;
+  background: #f4f6fb;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.assistant-message.user {
+  background: #f0f8f4;
+}
+.assistant-form {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+.assistant-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  padding: 12px;
+  border: 1px solid #aeb7c9;
+  border-radius: 8px;
+  resize: vertical;
+  margin-top: 8px;
+}
+.assistant-consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.assistant-consent input {
+  margin-top: 4px;
+  flex: 0 0 auto;
+}
