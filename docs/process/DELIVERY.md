@@ -40,16 +40,22 @@ Registry/deployment gates are enabled after verified credentials/bootstrap.
 | Merge into main | Full regression; build one candidate set for the main SHA; server regression + staging smoke; promote those exact digests into production; HTTPS/session smoke. Only then add version/latest aliases and publish GitHub Release/evidence. |
 
 Main's merge commit is a new source SHA. Its candidate is built once, then never rebuilt between staging and production.
-Candidate repositories: `smalvik/biocad-web`, `biocad-booking`, `biocad-assistant`.
-Test runners have separate `biocad-web-tests`, `biocad-booking-tests`, `biocad-assistant-tests`, `biocad-e2e` repositories.
-All use `sha-<40-character-source-sha>` candidates. Only the three existing runtime services receive `v1.MINOR.PATCH` / `latest` aliases.
-Notification Worker does not exist yet; no placeholder notifier image is published.
+WB-07 adds `smalvik/biocad-notification` to runtime repositories `biocad-web`,
+`biocad-booking`, `biocad-assistant`, and `biocad-notification-tests` to separate test
+runners `biocad-web-tests`, `biocad-booking-tests`, `biocad-assistant-tests`, `biocad-e2e`.
+All nine use `sha-<40-character-source-sha>` candidates. Four runtime services receive
+`v1.MINOR.PATCH` / `latest` aliases after production validation. WB-07 delivery is pending;
+the production v1.3.1 manifest still has seven images and three runtime services.
 
 The first checked incremental delivery starts at `v1.0.0`. Subsequent published snapshots bump MINOR if their commits include `feat`, otherwise PATCH.
 This does not version every PR. The GitHub Release is created only after production smoke, with exact digests, source, task-note links, `CHANGELOG.md`, `releases.json`, and a standalone Allure HTML asset.
 Release publication is evidence of that incremental version, not a claim that all PRD capabilities are implemented.
 
-`scripts/delivery_manifest.py` accepts only the complete seven-image set, allowed Docker Hub repositories, immutable SHA256 digests and strict source/version fields.
+`scripts/delivery_manifest.py` accepts the complete nine-image schema 2 set or complete
+legacy seven-image schema 1 set, allowed Docker Hub repositories, immutable SHA256
+digests and strict source/version fields. Notification runs only for schema 2 deployments.
+Legacy rollback stops its processing and preserves its private state volume. WB-07 adds
+no Booking DB migration; actual v1.3.1 upgrade/rollback/resume was checked locally.
 After pulling, both runtime and regression paths verify public OCI source/revision labels. Environment variables cannot disguise an older image as the new source revision.
 
 ## Bootstrap on the existing shared host
@@ -89,7 +95,10 @@ If inventory is smaller, stop and choose a reviewed resource plan; do not remove
 Complete candidate regression uses `scripts/check.py --manifest ... --environment staging --run-type regression` with prebuilt runtime/test digests.
 It creates disposable `biocad-check-<unique-id>` storage/network, exposes no ports, and never uses the persistent production DB for fault injection or direct SQL tests.
 The regression transport is internal HTTP with `APP_ENV=local`; `REPORT_ENV=staging` labels the execution environment. This deliberate test configuration permits HTTP cookies without weakening persistent staging/production, which use Secure cookies.
-Production additionally verifies real HTTPS login/me/floors/logout, Secure/HttpOnly/SameSite attributes, readiness and source SHA of all three services. Staging's loopback smoke checks login issuance/cookie flags and readiness.
+Production additionally verifies real HTTPS login/me/floors/logout, Secure/HttpOnly/SameSite attributes,
+readiness and source SHA of all three HTTP services; deployment checks OCI revision labels of
+all runtime containers, including Notification, plus its private heartbeat healthcheck.
+Staging's loopback smoke checks login issuance/cookie flags and readiness.
 
 Fictional seed is repeatable and preserves bookings/accounts/passwords. No real profiles or LLM credentials enter regression.
 Allure result directories, browser screenshots and logs are fetched through the report-only dispatcher operation and uploaded as run-specific Actions artifacts (30 days for delivery).

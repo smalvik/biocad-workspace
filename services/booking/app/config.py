@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     seed_demo_data: bool = False
     demo_password: str = "demo-workspace"
     rabbitmq_url: SecretStr = SecretStr("")
+    notifications_enabled: bool = False
     assistant_budget_usd: float = Field(default=0, ge=0, le=1000)
     assistant_free_only: bool = True
     assistant_budget_epoch: str = Field(default="demo-v1", pattern=r"^[a-zA-Z0-9._-]{1,64}$")

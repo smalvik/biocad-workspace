@@ -1,0 +1,15 @@
+BIOCAD Workspace · Demo
+
+{{ title }}
+Здравствуйте, {{ employee_name }}!
+{{ resource }} {{ space_id }}
+{{ office }} · {{ floor }}
+{{ address }}
+{{ period }}
+Код брони: {{ booking_id }}
+
+Открыть Workspace: {{ public_url }}
+
+Помощь в демо: support@example.test (вымышленный контакт).
+
+Демонстрационное письмо: профиль, адрес и данные вымышлены. Перехвачено Mailpit.

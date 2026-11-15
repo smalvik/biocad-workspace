@@ -1,5 +1,11 @@
 # Actual implementation status — 2026-11-15
 
+**WB-07 in progress:** issue #30, `feat/wb-07-email-notifications` from develop fd81f82.
+Outbox publisher, private durable notification inbox and branded Mailpit emails implemented
+locally; final reviewed-source regression passed 237 checks / 211 raw Allure results.
+Real upgrade/rollback passed; final committed-head CI and delivery remain pending.
+Production remains v1.3.1 until checked delivery; no notifications release claimed yet.
+
 **WB-09 follow-up #27 released v1.3.1:** [Allure opens in the browser](https://biocad.smalvik.dev/allure/),
 with immutable version URLs and [actual free-model report](https://biocad.smalvik.dev/allure/v1.3.0/live/).
 Main CI publishes after release and checks inline/type/source/checksum.
@@ -21,7 +27,7 @@ User pause was explicitly resumed; [historical handoff](PAUSE_HANDOFF.md).
 | Real LLM | OpenRouter `inclusionai/ling-3.2-flash:free`; free-only consent, budget $0, catalog zero-price checks and per-request zero caps; no paid fallback |
 | AI booking | User consent, live read/propose tools, map highlight, signed user-bound 10-minute proposal, separate exact confirmation; no automatic booking; AI failure leaves manual form available |
 | Rate/limits | Durable 3 requests/user/minute, bounded tools/rounds/time/input, one bounded same-model 429 retry; provider capacity is not guaranteed |
-| Mailpit/notifications | Mailpit and fictional SMTP smoke work; Notification Worker and booking event emails **not implemented (WB-07)** |
+| Mailpit/notifications | WB-07 implemented/tested locally: outbox → RabbitMQ → independent durable Worker → HTML/text Mailpit emails. PR/release pending; production remains v1.3.1 |
 | CI/CD | GitHub Actions → immutable Docker Hub digests → complete isolated server regression → staging/smoke → exact production digests/HTTPS smoke → aliases/release/Allure |
 | Deploy isolation | Separate `biocad-staging`/`biocad-production`; existing Traefik ingress; 23 unrelated containers preserved, backup/previous v1.3.0 retained |
 | Requirements/visuals | PRD v1.2 + approved DECISIONS canonical; references/static HTML are concepts, not implementation evidence; official BIOCAD UI Kit/rights not provided |

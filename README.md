@@ -13,7 +13,9 @@ WB-06 (MCP/RabbitMQ/AI-чат) и исправление planning #24 выпущ
 без платного fallback. AI предлагает ресурс, отдельное подтверждение создаёт бронь.
 Полная регрессия 189 passed; реальная production приёмка — 3 API + 2 browser passed,
 все успешные ответы cost=0. Free-провайдер может вернуть 429; ручная форма доступна.
-Notification Worker — WB-07.
+WB-07 реализован локально: независимый Notification Worker отправляет письма о создании
+и отмене через RabbitMQ в Mailpit. Проверены 237 случаев и реальный откат v1.3.1;
+финальная проверка шаблонов также прошла. Доставка через PR ещё ожидается.
 В v1.3.1 добавлен [просмотр Allure в браузере](https://biocad.smalvik.dev/allure/)
 с автоматическим обновлением после релиза и архивом версий.
 
@@ -87,7 +89,7 @@ HTTP-провайдер без платных запросов. MCP SDK, RabbitM
 После проверки удаляет только свои
 контейнеры и тестовые volumes. Уже запущенный проект `biocad` сохраняется.
 
-Проверяются сборка/TypeScript, Ruff, pytest двух сервисов, настоящий PostgreSQL,
+Проверяются сборка/TypeScript, Ruff, pytest трёх сервисов, настоящий PostgreSQL,
 AMQP round trip через durable queue с persistent message, SMTP → Mailpit,
 Vitest и Playwright Chromium для desktop/mobile. E2E проверяет вход/выход, два
 этажа, календарные окна, фильтры, детали, клавиатуру, pan/zoom/fit, ошибки API,
@@ -108,6 +110,23 @@ WB-02: [develop regression](https://github.com/smalvik/biocad-workspace/actions/
 и [main regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604855360) — PASS.
 Публикация отчёта, staging, immutable release images и production реализованы в WB-09;
 дополнительные race/red-green evidence остаются WB-08.
+
+## Уведомления — WB-07 (локально, доставка ожидается)
+
+Подтверждение и отмена сохраняют событие в той же транзакции PostgreSQL. Отдельный
+publisher отправляет его с подтверждением RabbitMQ; Worker сохраняет собственный
+SQLite inbox в volume `notificationdata` перед ACK и отправляет HTML/text через Mailpit.
+У Worker нет доступа к Booking DB. Сбои RabbitMQ/SMTP не откатывают бронь; доставка
+повторяется с задержкой до 60 секунд, состояние переживает перезапуск.
+
+Письмо содержит вымышленные ФИО/адрес, ресурс/этаж, точный интервал МСК, код брони
+и ссылку на приложение. Локально откройте http://localhost:8025 после бронирования.
+На сервере Mailpit остаётся внутренним; письма и их HTML проверяются в Allure.
+Разрешены только адреса `@example.test` и демо SMTP. Готовые события дедуплицируются;
+сбой между принятием SMTP и локальным commit может привести к повтору — SMTP exactly-once
+не обещается. Миграция Booking DB не требуется; старые события обогащаются при публикации.
+[ADR и ограничения](docs/adr/002-broker-and-outbox.md),
+[реальные проверки и откат](docs/evidence/WB-07-local.md).
 
 ## Assistant — WB-06 (v1.3.0)
 

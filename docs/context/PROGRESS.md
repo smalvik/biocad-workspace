@@ -1,5 +1,11 @@
 # Development progress (fill with actual evidence)
 
+**WB-07 current task:** issue #30 / `feat/wb-07-email-notifications`, from develop fd81f82
+with carried browser-Allure notes. Local full 237 passed, including real broker/SMTP
+failure recovery; four-phase v1.3.1 upgrade/rollback passed. Final template-review run
+also passed 237 checks / 211 raw Allure. [Local evidence](../evidence/WB-07-local.md).
+Committed-head CI and delivery pending; production remains v1.3.1.
+
 **2026-11-15: browser Allure #27 released v1.3.1.** PR #28 → develop fd81f82,
 promotion #29 → main 8d8cf08; [main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43745466108),
 209 regression / 185 raw Allure results; public HTTP smoke + 4 desktop/mobile report cases

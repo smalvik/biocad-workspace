@@ -40,6 +40,12 @@
   download events=0. Все исходные данные/23 других контейнера сохранены.
   Новых LLM-вызовов не было. [Доказательства](docs/evidence/WB-09-allure-web.md).
 
+- **WB-07 #30:** ветка от develop fd81f82, перенесены Allure notes. Добавлены outbox
+  publisher, отдельный SQLite inbox Worker, Jinja2/Mailpit и схема манифеста2 с legacy
+  rollback. Local full 237 PASS / Allure 211; реальный v1.3.1 upgrade/rollback/resume PASS.
+  Финальная сверка добавила ФИО/контакт помощи в письма; повторный full run 237 PASS.
+  SMTP ambiguous-commit window явно описан; exactly-once не заявляется.
+
 Реальные команды: `scripts/check.py --run-type regression`, pytest/Ruff/Vitest/
 Playwright/Allure в Docker; `gh issue/pr/run/release`, `remote_delivery.py`,
 `promote_images.py`, `publish_release.py`, `check_live_assistant.py`;

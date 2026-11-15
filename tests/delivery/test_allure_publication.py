@@ -20,7 +20,7 @@ pytestmark = [allure.suite("regression"), allure.feature("delivery-allure")]
 @pytest.fixture
 def release(tmp_path, monkeypatch):
     manifest = {
-        "schema": 1,
+        "schema": 2,
         "source_sha": "a" * 40,
         "version": "1.3.0",
         "images": {name: f"smalvik/biocad-{name}@sha256:{'b' * 64}" for name in SERVICES},

@@ -13,6 +13,7 @@ from app.bookings import router as booking_router
 from app.config import get_settings
 from app.employees import router as employee_router
 from app.errors import ApiError
+from app.outbox import OutboxPublisher
 from app.rpc import RpcServer
 
 API_PREFIX = "/api/v1"
@@ -21,13 +22,15 @@ API_PREFIX = "/api/v1"
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     worker = RpcServer(app, get_settings().rabbitmq_url.get_secret_value())
-    task = asyncio.create_task(worker.run())
+    tasks = [asyncio.create_task(worker.run()), asyncio.create_task(OutboxPublisher().run())]
     try:
         yield
     finally:
-        task.cancel()
-        with suppress(asyncio.CancelledError):
-            await task
+        for task in tasks:
+            task.cancel()
+        for task in tasks:
+            with suppress(asyncio.CancelledError):
+                await task
         await db.dispose()
 
 

@@ -17,6 +17,8 @@ BUILDS = {
     "assistant-tests": ("services/assistant", "services/assistant/Dockerfile", "test"),
     "web-tests": ("apps/web", "apps/web/Dockerfile", "test"),
     "e2e": ("tests/e2e", "tests/e2e/Dockerfile", None),
+    "notification": ("services/notification", "services/notification/Dockerfile", "runtime"),
+    "notification-tests": ("services/notification", "services/notification/Dockerfile", "test"),
 }
 
 
@@ -50,7 +52,7 @@ def main() -> None:
         parser.error("Only a committed source tree may be packaged")
     sha, version = git("rev-parse", "HEAD"), release_version()
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    manifest = {"schema": 1, "source_sha": sha, "version": version, "images": {}}
+    manifest = {"schema": 2, "source_sha": sha, "version": version, "images": {}}
     for service in SERVICES:
         repository = f"{args.namespace}/biocad-{service}"
         tag = f"{repository}:sha-{sha}"

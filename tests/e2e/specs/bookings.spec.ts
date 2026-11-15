@@ -75,6 +75,28 @@ async function choose(page: Page, info: TestInfo, resource = "D-15") {
 }
 const confirmation = (page: Page) =>
   page.getByRole("dialog", { name: "Подтверждение бронирования", exact: true });
+async function capturedMail(page: Page, bookingId: string, title: string) {
+  const mailbox = process.env.MAILPIT_API_URL ?? "http://localhost:8025";
+  let messages: Array<{ ID: string; Subject: string }> = [];
+  await expect.poll(async () => {
+    const response = await page.request.get(`${mailbox}/api/v1/search`, {
+      params: { query: `subject:"${bookingId}"` },
+    });
+    expect(response.ok()).toBe(true);
+    messages = (await response.json()).messages.filter((row: { Subject: string }) => row.Subject.startsWith(title));
+    return messages.length;
+  }, { timeout: 30000 }).toBe(1);
+  const detail = await page.request.get(`${mailbox}/api/v1/message/${messages[0].ID}`);
+  expect(detail.ok()).toBe(true);
+  const message = await detail.json();
+  expect(message.To[0].Address).toBe("e01@example.test");
+  expect(message.Text).toContain(bookingId);
+  expect(message.HTML).toContain("Демонстрационный проезд");
+  expect(message.Text).toContain("МСК");
+  expect(message.Text).toContain("Анна Смирнова");
+  expect(message.HTML).toContain("support@example.test");
+  await allure.attachment(`Mailpit: ${title}`, message.HTML, "text/html");
+}
 async function create(page: Page, ids: string[]) {
   const reply = page.waitForResponse(
     (response) =>
@@ -120,6 +142,7 @@ for (const resource of ["D-15", "M-03"])
     await page.getByTestId(`space-${resource}`).click();
     await page.getByRole("button", { name: "Продолжить", exact: true }).click();
     const booking = await create(page, created);
+    await capturedMail(page, booking.id, "Бронь подтверждена");
     expect(writes).toBe(1);
     await page.getByRole("button", { name: "Готово", exact: true }).click();
     await expect(page.getByTestId(`space-${resource}`)).toHaveAttribute(
@@ -154,6 +177,7 @@ for (const resource of ["D-15", "M-03"])
     ).toBeVisible();
     await list.getByRole("button", { name: "Отменённые", exact: true }).click();
     await expect(row).toContainText("Отменена");
+    await capturedMail(page, booking.id, "Бронь отменена");
     await expect(
       row.getByRole("button", { name: /Отменить бронь/ }),
     ).toHaveCount(0);
