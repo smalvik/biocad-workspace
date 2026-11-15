@@ -5,8 +5,15 @@ import re
 import subprocess
 from pathlib import Path
 
-SERVICES = ("booking", "assistant", "web", "booking-tests", "assistant-tests", "web-tests", "e2e")
-RUNTIME = ("booking", "assistant", "web")
+LEGACY_SERVICES = ("booking", "assistant", "web", "booking-tests", "assistant-tests", "web-tests", "e2e")
+SERVICES = (*LEGACY_SERVICES, "notification", "notification-tests")
+RUNTIME = ("booking", "assistant", "web", "notification")
+
+
+def runtime_services(manifest: dict):
+    return tuple(name for name in RUNTIME if name in manifest["images"])
+
+
 SHA = re.compile(r"[0-9a-f]{40}")
 VERSION = re.compile(r"1\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)")
 NAMESPACE = re.compile(r"[a-z0-9][a-z0-9_-]{1,38}")
@@ -19,14 +26,15 @@ def validate(manifest: dict, namespace: str) -> dict:
         raise ValueError("Unexpected manifest fields")
     if (
         type(manifest["schema"]) is not int
-        or manifest["schema"] != 1
+        or manifest["schema"] not in {1, 2}
         or not isinstance(manifest["source_sha"], str)
         or not SHA.fullmatch(manifest["source_sha"])
     ):
         raise ValueError("Invalid source SHA")
     if not isinstance(manifest["version"], str) or not VERSION.fullmatch(manifest["version"]):
         raise ValueError("Expected SemVer 1.MINOR.PATCH without leading zeros")
-    if not isinstance(manifest["images"], dict) or set(manifest["images"]) != set(SERVICES):
+    expected_services = SERVICES if manifest["schema"] == 2 else LEGACY_SERVICES
+    if not isinstance(manifest["images"], dict) or set(manifest["images"]) != set(expected_services):
         raise ValueError("Expected the complete runtime and regression image set")
     for service, reference in manifest["images"].items():
         expected = rf"{re.escape(namespace)}/biocad-{service}@sha256:[0-9a-f]{{64}}"
@@ -47,9 +55,9 @@ def image_environment(manifest: dict) -> dict[str, str]:
     }
 
 
-def verify_local_images(manifest: dict, services=SERVICES) -> None:
+def verify_local_images(manifest: dict, services=None) -> None:
     """Inspect only public OCI labels; never dump Config.Env or container secrets."""
-    for service in services:
+    for service in manifest["images"] if services is None else services:
         labels = (
             json.loads(
                 subprocess.check_output(

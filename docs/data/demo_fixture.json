@@ -2,6 +2,7 @@
   "disclaimer": "Fictional demonstration fixture; not employee records, not measured environmental conditions",
   "timezone": "Europe/Moscow",
   "office": "Москва, Корпус А",
+  "office_address": "Москва, Демонстрационный проезд, 1, Корпус А (вымышленный адрес)",
   "employees": [
     {
       "id": "e01",

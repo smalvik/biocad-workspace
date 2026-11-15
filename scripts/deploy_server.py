@@ -16,7 +16,7 @@ from urllib.error import URLError
 from urllib.parse import urlsplit
 from uuid import uuid4
 
-from delivery_manifest import RUNTIME, SHA, image_environment, load, validate, verify_local_images
+from delivery_manifest import SHA, image_environment, load, runtime_services, validate, verify_local_images
 from publish_allure import publish as publish_allure
 
 ROOT = Path("/opt/biocad")
@@ -45,6 +45,8 @@ def compose(environment: str, manifest: dict, settings: dict) -> tuple[list[str]
         APP_ENV=environment,
         WEB_HOST_PORT=str(settings[environment + "_port"]),
         ALLURE_PUBLIC_DIR=str(ROOT / "public/allure"),
+        NOTIFICATIONS_ENABLED="true" if "notification" in manifest["images"] else "false",
+        NOTIFICATION_PUBLIC_URL=settings["production_url"],
     )
     command = [
         "docker",
@@ -66,6 +68,8 @@ def compose(environment: str, manifest: dict, settings: dict) -> tuple[list[str]
             PUBLIC_HOST=urlsplit(settings["production_url"]).hostname,
         )
         command.extend(["-f", str(TOOLS / "infra/compose.traefik.yaml")])
+    if "notification" in manifest["images"]:
+        command.extend(["--profile", "notifications"])
     return command, env
 
 
@@ -181,7 +185,9 @@ def deploy(environment: str, manifest: dict, settings: dict, report: Path) -> di
     backup_name = backup(environment, previous or manifest, settings)
     # Pull failure does not change running services.
     run([*command, "pull"], env, stdout=sys.stderr)
-    verify_local_images(manifest, RUNTIME)
+    verify_local_images(manifest, runtime_services(manifest))
+    if "notification" not in manifest["images"]:
+        run([*command, "stop", "notification"], env, stdout=sys.stderr)
     url = (
         settings["production_url"]
         if environment == "production"
@@ -193,6 +199,8 @@ def deploy(environment: str, manifest: dict, settings: dict, report: Path) -> di
     except Exception:
         if previous:
             old_command, old_env = compose(environment, previous, settings)
+            if "notification" not in previous["images"]:
+                run([*old_command, "stop", "notification"], old_env, stdout=sys.stderr)
             run(
                 [*old_command, "up", "-d", "--no-build", "--wait", "--wait-timeout", "180"],
                 old_env,
