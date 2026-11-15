@@ -7,8 +7,11 @@ Mailpit и nginx. WB-01 интегрирован через PR #2 с успеш�
 В WB-03 реализована интерактивная SVG-карта двух этажей с настоящим API,
 входом, фильтрами даты/времени и карточкой места. В WB-04 опубликованы поиск
 сотрудников, оригинальные вымышленные аватары и таймлайн владельцев по интервалу.
-WB-05 (форма, «Мои бронирования», отмена) локально проверена, 157 passed;
-public пока v1.1.0. MCP/LLM и Notification Worker — следующие задачи.
+WB-05 (форма, «Мои бронирования», отмена) выпущена в v1.2.0, 157 regression passed.
+WB-06 (MCP/RabbitMQ/AI-чат) реализуется в отдельной ветке, ещё не опубликована.
+Пользователь разрешил только бесплатную модель: Ling 3.2 Flash free прошла 3 live
+сценария с нулевой стоимостью; CI/выкладка обновлённой ветки ещё выполняются.
+Notification Worker — WB-07.
 
 Статус и доказательства: [CURRENT_STATE](docs/context/CURRENT_STATE.md),
 [PROGRESS](docs/context/PROGRESS.md), [WB-01](docs/changes/WB-01.md).
@@ -16,16 +19,17 @@ WB-02 и исправление WB-11 интегрированы в develop/main
 WB-03 слита в develop через [PR #9](https://github.com/smalvik/biocad-workspace/pull/9);
 [post-merge regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923).
 Рабочее демо: **https://biocad.smalvik.dev** ·
-[v1.1.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.1.0) ·
-[Allure HTML](https://github.com/smalvik/biocad-workspace/releases/download/v1.1.0/index.html).
+[v1.2.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.2.0) ·
+[Allure HTML](https://github.com/smalvik/biocad-workspace/releases/download/v1.2.0/index.html).
 Вход: вымышленные `e01` … `e12`, пароль `demo-workspace`.
 
 CI/CD WB-09: [runbook и фактический статус](docs/process/DELIVERY.md).
 Реализованы SHA/digest images, отдельные staging/production проекты, ограниченный SSH
 dispatcher, backup/rollback и Allure. Сервер обследован, BIOCAD admin/CI ключи созданы,
-ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43636402995),
-131 regression / Allure 116; public desktop/mobile smoke — 4 passed;
-23 старых контейнера сохранились. [Фактические evidence](docs/evidence/WB-04-remote.md).
+ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43690831879),
+157 regression / server Allure 134; final public desktop/mobile smoke — 4 passed,
+form/list preview — 2 passed, без production booking writes.
+23 старых контейнера сохранились. [Фактические evidence и история TLS-таймаутов](docs/evidence/WB-05-remote.md).
 
 ## Локальный запуск
 
@@ -68,14 +72,18 @@ python scripts/check_policy.py
 ```
 
 Каждый прогон создаёт отдельный Compose-проект без host ports и отдельные volumes;
-использует `.env.example`, а LLM-ключи отключает. После проверки удаляет только свои
+использует `.env.example`, не читает локальные LLM-ключи и запускает явно scripted
+HTTP-провайдер без платных запросов. MCP SDK, RabbitMQ и PostgreSQL настоящие.
+После проверки удаляет только свои
 контейнеры и тестовые volumes. Уже запущенный проект `biocad` сохраняется.
 
 Проверяются сборка/TypeScript, Ruff, pytest двух сервисов, настоящий PostgreSQL,
 AMQP round trip через durable queue с persistent message, SMTP → Mailpit,
 Vitest и Playwright Chromium для desktop/mobile. E2E проверяет вход/выход, два
 этажа, календарные окна, фильтры, детали, клавиатуру, pan/zoom/fit, ошибки API,
-просроченную сессию и запоздалые ответы. Бронирование через UI и реальный LLM ещё не проверяются.
+просроченную сессию и запоздалые ответы, создание/отмену через UI и AI-предложение
+с отдельным подтверждением. Реальный OpenRouter проверяется отдельно после согласования
+модели/лимита; scripted regression не считается доказательством live LLM.
 
 Логи, `run.json`, Allure results, Playwright HTML и screenshots сохраняются отдельно
 в `artifacts/<UTC-run-id>/` (исключено из Git). SHA в отчёте — базовый HEAD;
@@ -89,6 +97,18 @@ Authenticated traces отключены: cookies/CSRF не сохраняютс�
 WB-02: [develop regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604565825)
 и [main regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604855360) — PASS.
 Публикация отчёта, staging, immutable release images и production — WB-08/WB-09.
+
+## Assistant — WB-06 (в разработке)
+
+Для нового Assistant-кода смотрите [контракт и настройки WB-06](docs/architecture/ASSISTANT.md).
+В `.env` требуются реальный ключ, `OPENROUTER_PRIMARY_MODEL=inclusionai/ling-3.2-flash:free`,
+отдельный секрет предложений и `ASSISTANT_BUDGET_USD=0`. Разрешены только бесплатные
+модели: актуальный каталог и каждый provider request проверяют нулевую цену;
+платного fallback нет. Rate limits бесплатного провайдера могут временно ограничить чат.
+Кнопка «AI-ассистент» запрашивает согласие на отправку текста в OpenRouter.
+AI только предлагает ресурс/период; кнопка «Проверить предложение AI» открывает
+обычное точное подтверждение. Ручная форма работает независимо от AI/брокера.
+Эти изменения пока относятся к ветке WB-06, текущий public release — v1.2.0.
 
 ## Booking API — WB-02
 
@@ -141,8 +161,8 @@ Runner проверяет сохранность после настоящего
 старые статусы скрываются, прежний запрос отменяется; ответ другого периода
 не применяется. Карточка показывает все пересекающиеся брони и точное время.
 Это сведения о резервировании, не физическом присутствии. Авторы брони/аватары
-и поиск реализованы в WB-04. В локальной WB-05 карта уже поддерживает запись
-после отдельного подтверждения; public v1.1.0 пока только читает данные.
+и поиск реализованы в WB-04. В WB-05 карта поддерживает запись
+после отдельного подтверждения; доступно в public v1.2.0.
 
 Seed обновляет геометрию floor/space для демо; существующие брони, аккаунты
 и пароли сохраняются. Alembic `0002_floor_plan` добавляет поле плана без изменения
@@ -161,13 +181,14 @@ WB-04: поиск по ФИО/отделу переключает этаж и в
 Проверки: [131 passed / реальные screenshots](docs/evidence/WB-04-local.md),
 [выпуск v1.1.0 / сервер / public smoke](docs/evidence/WB-04-remote.md).
 
-## Бронирование — WB-05 (локально проверено)
+## Бронирование — WB-05
 
-WB-05 local: свободное место/переговорная → «Продолжить» → проверка точного
+Свободное место/переговорная → «Продолжить» → проверка точного
 ресурса/офиса/этажа/МСК → «Подтвердить бронирование». До этого записи нет.
 «Мои бронирования» показывает свои confirmed/cancelled записи; отмена тоже
 требует подтверждения. При потере ответа повторяет исходную операцию, включая
-после reload вкладки. [Проверки WB-05](docs/evidence/WB-05-local.md).
+после reload вкладки. [Локальные проверки](docs/evidence/WB-05-local.md),
+[реальный release/server/public smoke](docs/evidence/WB-05-remote.md).
 
 ## Begin here (VS Code + Codex)
 

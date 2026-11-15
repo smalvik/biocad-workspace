@@ -102,6 +102,27 @@ export type BookingPayload = {
   start_at: string;
   end_at: string;
 };
+export type AssistantProposal = {
+  token: string;
+  selection: BookingPayload;
+  space: Pick<
+    Space,
+    | "id"
+    | "floor_id"
+    | "kind"
+    | "desk_mode"
+    | "capacity"
+    | "is_available_for_full_interval"
+  >;
+  floor: Pick<Floor, "id" | "name" | "office_name" | "number" | "office_id">;
+  snapshot_at: string;
+  expires_in_seconds: number;
+};
+export type ChatMessage = { role: "user" | "assistant"; content: string };
+export type ChatResponse = {
+  reply: string;
+  proposal: AssistantProposal | null;
+};
 export type Booking = BookingPayload & {
   id: string;
   employee_id: string;

@@ -4,6 +4,7 @@ import { api, ApiError } from "./api";
 import { Avatar, PersonSummary } from "./Avatar";
 import { EmployeeSearch } from "./EmployeeSearch";
 import { BookingFlow } from "./BookingFlow";
+import { AssistantChat, ProposalSummary } from "./AssistantChat";
 import { useBookingFlow } from "./useBookingFlow";
 import { useEmployeeLocation } from "./useEmployees";
 import {
@@ -24,6 +25,7 @@ import type {
   Space,
   SpaceStatus,
   TimeWindow,
+  AssistantProposal,
 } from "./types";
 import { useSnapshot } from "./useSnapshot";
 
@@ -660,6 +662,39 @@ function Workspace({
     setBookingRevision((value) => value + 1);
   }, [refresh, refreshLookup]);
   const bookingFlow = useBookingFlow(session, onExpired, afterMutation);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [assistantProposal, setAssistantProposal] =
+    useState<AssistantProposal | null>(null);
+  const applyProposal = (proposal: AssistantProposal) => {
+    closeDetails();
+    setFilters({ ...DEFAULT_FILTERS });
+    setFloorId(proposal.floor.id);
+    setDate(
+      new Intl.DateTimeFormat("sv-SE", {
+        timeZone: "Europe/Moscow",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date(proposal.selection.start_at)),
+    );
+    setStart(moscowTime(proposal.selection.start_at));
+    setEnd(moscowTime(proposal.selection.end_at));
+    setSelectedId(proposal.selection.space_id);
+    setAssistantProposal(proposal);
+    refresh();
+  };
+  useEffect(() => {
+    if (
+      assistantProposal &&
+      (!window ||
+        floorId !== assistantProposal.floor.id ||
+        Date.parse(window.from) !==
+          Date.parse(assistantProposal.selection.start_at) ||
+        Date.parse(window.to) !==
+          Date.parse(assistantProposal.selection.end_at))
+    )
+      setAssistantProposal(null);
+  }, [assistantProposal, floorId, window]);
   useEffect(() => {
     if (!lookup.data) return;
     const location =
@@ -710,6 +745,7 @@ function Workspace({
       ? undefined
       : visible.find((space) => space.id === selectedId);
   const selectSpace = (id: string | null) => {
+    setAssistantProposal(null);
     setLookupEmployeeId(null);
     setLookupTarget(null);
     setSelectedId(id);
@@ -724,10 +760,12 @@ function Workspace({
     ).entries(),
   );
   const selectFloor = (id: string) => {
+    setAssistantProposal(null);
     setFloorId(id);
     closeDetails();
   };
   const filter = (key: keyof Filters, checked: boolean) => {
+    setAssistantProposal(null);
     setFilters((current) => ({ ...current, [key]: checked }));
     closeDetails();
   };
@@ -759,6 +797,61 @@ function Workspace({
           onExpired={onExpired}
           onMutated={afterMutation}
         />
+        <div className="assistant-navigation">
+          <button
+            className="secondary-button"
+            disabled={!active || !window || bookingFlow.busy}
+            onClick={() => {
+              setAssistantProposal(null);
+              setChatOpen(true);
+            }}
+          >
+            AI-ассистент
+          </button>
+        </div>
+        {assistantProposal && (
+          <section className="assistant-proposal" aria-label="Предложение AI">
+            <ProposalSummary proposal={assistantProposal} />
+            <div className="booking-actions">
+              <button
+                className="secondary-button"
+                onClick={() => setAssistantProposal(null)}
+              >
+                Отклонить предложение
+              </button>
+              <button
+                className="primary-button"
+                onClick={() => {
+                  const proposal = assistantProposal;
+                  setAssistantProposal(null);
+                  closeDetails();
+                  bookingFlow.begin(
+                    proposal.space,
+                    proposal.floor,
+                    {
+                      from: proposal.selection.start_at,
+                      to: proposal.selection.end_at,
+                    },
+                    proposal.token,
+                  );
+                }}
+              >
+                Проверить предложение AI
+              </button>
+            </div>
+          </section>
+        )}
+        {chatOpen && active && window && (
+          <AssistantChat
+            session={session}
+            floor={active}
+            floors={floors}
+            window={window}
+            close={() => setChatOpen(false)}
+            onExpired={onExpired}
+            onProposal={applyProposal}
+          />
+        )}
         <div className="workspace-grid">
           <aside className="filter-panel" aria-label="Фильтры карты">
             <EmployeeSearch
@@ -767,6 +860,7 @@ function Workspace({
               onExpired={onExpired}
               revision={bookingRevision}
               onSelect={(id) => {
+                setAssistantProposal(null);
                 setSelectedId(null);
                 setLookupTarget(null);
                 setLookupEmployeeId(id);
@@ -1053,7 +1147,7 @@ function Workspace({
             </div>
           </section>
           <Details
-            space={selected}
+            space={assistantProposal ? undefined : selected}
             floor={active}
             window={window}
             employeeId={session.employee.id}

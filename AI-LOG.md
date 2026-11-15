@@ -138,3 +138,92 @@ GitHub token читался в память и передавался через
   prepared. This did not change test results or runtime images. Remote delivery pending.
   Implementation committed as `7a28ec836562133ea8b540744858e99ed4b77fac`.
   Final standalone Allure generation with `biocad-allure:local` exited 0.
+
+- **WB-05 released, 2026-11-15:** final feature head `6554fc4`, PR #19 checks and
+  publication `43641919071` PASS; merged develop `b98a9a3`. Post-merge
+  `43642523912` PASS, server `20261114T212803Z-2b10a1` clean, Allure 133.
+  Artifact first download had transport unexpected EOF; fresh-directory retry succeeded.
+  Main PR #20 CI/publication `43642562977` PASS, explicitly agent self-reviewed,
+  merged `bddba67` after green server staging. Main `43690831879` all jobs PASS;
+  server `20261115T074307Z-84214e` clean: 157 regression cases, all 20 commands exit 0,
+  Allure 134 plus Vitest 25 separately. Published real v1.2.0 at 07:49:07 UTC / 10:49:07 MSK.
+  Both environments match the full main digest manifest, 12 BIOCAD containers healthy;
+  production backup 23,877 bytes and previous v1.1.0 retained. Fresh pre-main inventory
+  and original WB-09 inventory both confirm all 23 unrelated container IDs/images/start
+  timestamps unchanged, sample HTTP statuses preserved.
+  Initial external browser/host TLS connections timed out (browser 3 failed / 1 passed,
+  preview exit 1); preserved failure artifacts, inspected DNS/TCP/TLS and server listeners
+  read-only. Subsequent strict TLS probe returned 200 with expected source/version.
+  No server/runtime/network configuration changed during diagnosis. Final sequential
+  HTTPS browser repeats: 4 Playwright passed, plus 2 form/list previews passed,
+  both launchers exit 0, zero attempted booking writes in preview. Root cause of the
+  transient TLS timeouts is not asserted. Real release notes enhanced with delivered
+  capabilities; actual commands and links in `docs/evidence/WB-05-remote.md`.
+  Next unimplemented task: WB-06 real Assistant/MCP/LLM; SMTP worker remains WB-07.
+
+- **WB-11 access incident #21:** user reported ERR_CONNECTION_RESET after v1.2.0.
+  Reproduced direct TCP success followed by TLS timeout, including another host name
+  on the same IP; SSH banner succeeds but key exchange EOFs/times out. Read-only
+  routing inspection showed active AmneziaVPN with the server IP taking Wi-Fi.
+  A simultaneous strict-TLS comparison to the same endpoint failed direct and passed
+  via per-socket VPN selection in 0.78 s (200 / bddba67 / 1.2.0). VPN-routed SSH retained
+  original host-key pinning and dedicated admin key; server read-only health check
+  showed 200 and no sampled resource exhaustion. Ephemeral loopback-only single-site
+  CONNECT relay kept TLS end to end; actual browser form/list preview passed on
+  desktop/mobile, exit 0, zero attempted booking writes. Diagnostic relay stopped
+  after verification. No global client route/browser setting or server/DNS changed.
+  Created separate branch from develop and carried WB-05 evidence (dc8bd17).
+  Exact direct-path cause is not asserted. User now requests requirements for a separate
+  public HTTPS ingress; resource/provider/DNS access is still missing. Issue remains open,
+  no fix/release claimed. Evidence: docs/evidence/WB-11-browser-access.md.
+
+- **WB-06 started, issue #22:** user reports the site opens again and requests the
+  next planned task; alternate ingress is deferred, incident #21 remains monitoring.
+  Created `feat/wb-06-assistant-mcp` from develop b98a9a3, carried post-release and
+  incident evidence as 2c2e6f7 / 04a0da2. Read task/PRD/UI/process; no subagents used.
+  Added Booking RabbitMQ RPC reusing in-process authenticated handlers, additive
+  migration 0003 for durable rate/budget limits, official mcp==2.3.0 STDIO discovery
+  and read/propose tools, bounded OpenRouter tool-calling client, signed user-bound
+  proposal/explicit confirmation/replay and React chat/map integration. Real MCP
+  rejects plain dict structured output; corrected annotations to dict[str, Any]
+  and explicit structured_output=True after inspecting installed SDK and actual calls.
+  First `python scripts/check.py --run-type regression` failed MCP output / test
+  event-loop scope. Second: backend 78, Assistant 13, persistence 2, Vitest 26 passed;
+  Playwright 57 passed / 1 mobile button occlusion failure. Corrected AI selection
+  to use its own proposal card while retaining map highlight. Third run
+  20261115T112714Z-54bd2c passed 179 checks (78 + 15 + 2 + 26 + 58), exit 0;
+  latest expanded cross-user/conflict/tool checks are still running. No fabricated
+  live-model pass: regression uses a labelled scripted HTTP provider with real
+  PostgreSQL/RabbitMQ/STDIO MCP. Read-only provider key validation succeeded,
+  `inference_requests_made=0`; pending async question asks model/spending limit.
+  Ruff and TypeScript/Vitest executed in local containers. Removed only accidental
+  formatter changes to unrelated scripts/verify_handoff.py; no unrelated work kept.
+  No server/DNS/proxy change, paid inference, WB-06 deploy or release yet.
+  Expanded full run 20261115T113244Z-e7d765 passed **180** checks / Allure **154**,
+  all 20 commands exit 0. Generated standalone Allure with biocad-allure:local.
+  Final review tightened known-key/explicit-ISO validation and hidden error inputs;
+  mounted current-source Assistant unit tests passed **11**, exit 0. Evidence
+  explicitly distinguishes the dirty full run from later review changes; final
+  committed CI is still required. See docs/evidence/WB-06-local.md.
+  Implementation 89ad3d5 pushed, draft PR #23 opened. Actual run 43710246930 check
+  job succeeded; immutable publication is still in progress at this entry. Prepared
+  proposal-only live acceptance CLI with an explicit paid-call flag; its no-flag
+  refusal and Ruff were checked. No paid/live invocation occurred. PR remains draft
+  until real model/budget choice and live proof; no server deployment/merge claimed.
+  Run 43710246930 then completed **success**: clean committed 89ad3d5 passed
+  181 checks (78 + 17 + 2 + 26 + 58), Allure 155; all seven immutable candidates
+  published. Staging/production job skipped for draft feature PR, as intended.
+  Checked live acceptance CLI guard (refuses before any request without paid flag)
+  and Ruff; actual live acceptance still not executed.
+  User then explicitly selected **only a free model**. Added fail-closed :free
+  settings/catalog checks and zero provider price caps; no paid route/fallback.
+  Runtime Booking rejects paid reservations but allows zero-price calls under the
+  durable user rate limit with budget 0. Free Gemma probe returned 429; Ling 3.2
+  Flash free returned tool calls and cost 0. First end-to-end live run failed on
+  provider 429; retained evidence, diagnosed safely in an isolated test process.
+  Added one bounded same-model retry respecting short Retry-After, enum clarification
+  schema and model/provider/cost metadata. Current Assistant unit 17 passed.
+  Full local free regression 20261115T130029Z-ef921e passed 186 checks / Allure 160.
+  Real live run 20261115T131327Z-20b777 passed 3 scenarios, 8 successful model
+  responses all cost=0, zero booking writes; source base 01c0bf5 / dirty recorded.
+  Read-only server baseline captured; no server runtime change at this point.

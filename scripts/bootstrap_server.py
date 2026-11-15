@@ -132,6 +132,10 @@ def main() -> None:
                 "DEMO_PASSWORD": "demo-workspace",
             }
             write(directory / "secrets.json", json.dumps(values, indent=2) + "\n", 0o600)
+        values = json.loads((directory / "secrets.json").read_text())
+        if "ASSISTANT_PROPOSAL_SECRET" not in values:
+            values["ASSISTANT_PROPOSAL_SECRET"] = secrets.token_urlsafe(48)
+            write(directory / "secrets.json", json.dumps(values, indent=2) + "\n", 0o600)
     write(ROOT / "settings.json", json.dumps(settings, indent=2) + "\n", 0o600)
     write(
         Path("/usr/local/sbin/biocad-deploy"),

@@ -16,6 +16,7 @@ export type BookingIntent = {
   office: string;
   floor: string;
   attempted: boolean;
+  proposalToken?: string;
 };
 
 function restored(storageKey: string): BookingIntent | null {
@@ -25,6 +26,9 @@ function restored(storageKey: string): BookingIntent | null {
       value &&
       /^(?:[0-9a-f]{32}|[0-9a-f-]{36})$/.test(value.key) &&
       value.attempted === true &&
+      (value.proposalToken === undefined ||
+        (typeof value.proposalToken === "string" &&
+          value.proposalToken.length <= 2048)) &&
       typeof value.payload?.space_id === "string" &&
       value.payload.space_id.length <= 64 &&
       Number.isFinite(Date.parse(value.payload.start_at)) &&
@@ -72,7 +76,15 @@ export function useBookingFlow(
       /* Private browsing/quota failures must not prevent booking. */
     }
   };
-  const begin = (space: Space, floor: Floor, window: TimeWindow) => {
+  const begin = (
+    space: Pick<
+      Space,
+      "id" | "kind" | "desk_mode" | "is_available_for_full_interval"
+    >,
+    floor: Pick<Floor, "office_name" | "name">,
+    window: TimeWindow,
+    proposalToken?: string,
+  ) => {
     if (locked.current) return;
     if (intent?.attempted && uncertain) {
       setError(
@@ -97,6 +109,7 @@ export function useBookingFlow(
       office: floor.office_name,
       floor: floor.name,
       attempted: false,
+      ...(proposalToken ? { proposalToken } : {}),
     });
     setResult(null);
     setError("");
@@ -113,11 +126,13 @@ export function useBookingFlow(
     setIntent(frozen);
     save(frozen);
     try {
-      const booking = await api.createBooking(
-        frozen.payload,
-        frozen.key,
-        session.csrf_token,
-      );
+      const booking = await (frozen.proposalToken
+        ? api.confirmProposal(
+            frozen.proposalToken,
+            frozen.key,
+            session.csrf_token,
+          )
+        : api.createBooking(frozen.payload, frozen.key, session.csrf_token));
       if (
         booking.space_id !== frozen.payload.space_id ||
         Date.parse(booking.start_at) !== Date.parse(frozen.payload.start_at) ||

@@ -50,6 +50,8 @@ services:
     environment:
       <<: *report-env
       BOOKING_BASE_URL: http://booking:8000
+      ASSISTANT_BASE_URL: http://assistant:8001
+      RABBITMQ_URL: amqp://biocad:${RABBITMQ_PASSWORD:?}@rabbitmq:5672/
     volumes:
       - ${ARTIFACTS_DIR:?}/allure-results:/allure-results
 
@@ -58,6 +60,20 @@ services:
     image: ${WEB_TESTS_IMAGE:?}
     mem_limit: 768m
     cpus: 1.0
+
+  llm-fixture:
+    profiles: [test]
+    image: ${ASSISTANT_TESTS_IMAGE:?}
+    mem_limit: 256m
+    cpus: 0.5
+    command: [uvicorn, tests.llm_fixture:app, --host, '0.0.0.0', --port, '8090', --no-access-log]
+    environment:
+      APP_ENV: local
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8090/healthz')"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
 
   e2e:
     profiles: [test]

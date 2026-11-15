@@ -45,6 +45,11 @@ services:
       SESSION_SECRET: ${SESSION_SECRET:-dev-only-insecure-secret}
       SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
       DEMO_PASSWORD: ${DEMO_PASSWORD:-demo-workspace}
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-biocad}:${RABBITMQ_PASSWORD:-biocad-local}@rabbitmq:5672/
+      ASSISTANT_BUDGET_USD: ${ASSISTANT_BUDGET_USD:-0}
+      ASSISTANT_FREE_ONLY: 'true'
+      ASSISTANT_BUDGET_EPOCH: ${ASSISTANT_BUDGET_EPOCH:-demo-v1}
+      ASSISTANT_REQUESTS_PER_MINUTE: ${ASSISTANT_REQUESTS_PER_MINUTE:-3}
     depends_on:
       postgres: { condition: service_healthy }
     ports:
@@ -55,10 +60,13 @@ services:
     image: biocad-assistant:${IMAGE_TAG:-local}
     environment:
       <<: *backend-env
-      BOOKING_BASE_URL: http://booking:8000
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-biocad}:${RABBITMQ_PASSWORD:-biocad-local}@rabbitmq:5672/
+      ASSISTANT_PROPOSAL_SECRET: ${ASSISTANT_PROPOSAL_SECRET:-local-only-proposal-secret-change-me}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
       OPENROUTER_PRIMARY_MODEL: ${OPENROUTER_PRIMARY_MODEL:-}
       OPENROUTER_FALLBACK_MODEL: ${OPENROUTER_FALLBACK_MODEL:-}
+      OPENROUTER_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      ENABLE_LLM_TEST_FIXTURE: ${ENABLE_LLM_TEST_FIXTURE:-false}
     ports:
       - "127.0.0.1:${ASSISTANT_HOST_PORT:-8001}:8001"
 
@@ -115,6 +123,7 @@ services:
       MAILPIT_SMTP_HOST: mailpit
       MAILPIT_API_URL: http://mailpit:8025
       ALLOW_DATABASE_TESTS: ${ALLOW_DATABASE_TESTS:-0}
+      SESSION_SECRET: ${SESSION_SECRET:-dev-only-insecure-secret}
       SEED_DEMO_DATA: "true"
       DEMO_PASSWORD: ${DEMO_PASSWORD:-demo-workspace}
     volumes:
@@ -126,12 +135,27 @@ services:
 
   assistant-tests:
     profiles: ["test"]
+    image: biocad-assistant-tests:${IMAGE_TAG:-local}
     build: { context: ../services/assistant, target: test }
     environment:
       <<: *test-env
       BOOKING_BASE_URL: http://booking:8000
+      ASSISTANT_BASE_URL: http://assistant:8001
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-biocad}:${RABBITMQ_PASSWORD:-biocad-local}@rabbitmq:5672/
     volumes:
       - ${ARTIFACTS_DIR:-../artifacts/local}/allure-results:/allure-results
+
+  llm-fixture:
+    profiles: ["test"]
+    image: biocad-assistant-tests:${IMAGE_TAG:-local}
+    command: ["uvicorn", "tests.llm_fixture:app", "--host", "0.0.0.0", "--port", "8090", "--no-access-log"]
+    environment:
+      APP_ENV: local
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/healthz')"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
 
   web-tests:
     profiles: ["test"]

@@ -44,4 +44,5 @@ First local HTML renderer attempt used a GH-only tool image without `npx`; test 
 were unaffected. A separate ignored Node/Java/Allure tooling image supplies report rendering.
 Final command `docker run --rm -v ...:/data biocad-allure:local generate /data/allure-results --single-file --clean -o /data/allure-report` exited 0.
 No secrets, session cookies or authenticated network traces were written into these artifacts.
-Production is still v1.1.0 at this local verification stage; remote evidence is recorded separately.
+Production was v1.1.0 at this local verification stage; subsequent v1.2.0 delivery
+and external checks are recorded separately in [remote evidence](WB-05-remote.md).
