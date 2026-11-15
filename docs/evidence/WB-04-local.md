@@ -19,4 +19,5 @@ Run **20261114T193248Z-b8b531**, base `0f20a58`, working tree **dirty**, result 
 
 Allure labels include local environment/run type/source/dirty tree; authenticated traces remain disabled.
 Runtime images and tests contain only fictional fixture data and original SVG portraits. No real personal data/LLM calls.
-This is local evidence, not a claim of WB-04 remote merge/deployment. Production v1.0.0 evidence is separate.
+This file records the initial local verification. Subsequent merge, production v1.1.0
+and public smoke are recorded separately in [remote evidence](WB-04-remote.md).

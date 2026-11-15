@@ -2,8 +2,8 @@
 
 **2026-11-14:** WB-01 continued from existing uncommitted React/FastAPI scaffolding.
 WB-01 is merged; WB-02 Booking API is implemented and verified locally.
-WB-03 map is merged into develop; employee lookup, booking form and AI remain TODO.
-WB-09 is being delivered before WB-04 by explicit user instruction.
+WB-03 map and WB-04 employee lookup/portraits are live; booking form and AI remain TODO.
+WB-09 was delivered before WB-04 by explicit user instruction.
 WB-09 merged through PR #11 at `f3a6e8f`; PR CI/publication passed runs
 `43612515436` and `43613064726`. Actual local prebuilt-digest regression passed
 `20261114T160232Z-24d3b1` (92 cases, no builds). Server staging and production are complete.
@@ -21,8 +21,9 @@ Published [v1.0.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.0
 | WB-03 | `feat/wb-03-interactive-map` | [#9 merged](https://github.com/smalvik/biocad-workspace/pull/9) | [PR PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608443234), [post-merge PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923) | v1.0.0 | In develop at af00fa1 |
 | WB-09 | `ci/wb-09-release-deploy` | [#11](https://github.com/smalvik/biocad-workspace/pull/11), [main #12](https://github.com/smalvik/biocad-workspace/pull/12) | [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43626386129), [remote evidence](../evidence/WB-09-remote.md) | v1.0.0 | Released, existing apps preserved |
 | WB-11 delivery | `fix/wb-11-candidate-serialization` | [#14 merged](https://github.com/smalvik/biocad-workspace/pull/14) | 92-case CI + actual two-event serialization/digest equality proof | v1.0.0 | Released |
-| WB-04 | `feat/wb-04-employee-locations` | [PR #16](https://github.com/smalvik/biocad-workspace/pull/16), issue #15 | [Local 131 passed / Allure 114](../evidence/WB-04-local.md), dev volume upgrade PASS | Unreleased | CI running, remote delivery pending |
-| WB-05 … WB-18 (except WB-09/WB-11) | See backlog | — | — | — | TODO |
+| WB-04 | `feat/wb-04-employee-locations` | [#16 merged develop](https://github.com/smalvik/biocad-workspace/pull/16), [#17 merged main](https://github.com/smalvik/biocad-workspace/pull/17), issue #15 | [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43636402995), 131 regression, Allure 116, public smoke 4 | v1.1.0 | Released; 23 previous containers preserved; [evidence](../evidence/WB-04-remote.md) |
+| WB-05 | `feat/wb-05-booking-flow` | [issue #18](https://github.com/smalvik/biocad-workspace/issues/18) | [Local 157 passed / Allure 132](../evidence/WB-05-local.md), 52 E2E, dev records preserved | Unreleased | Locally tested; PR/server delivery pending |
+| WB-06 … WB-18 (except WB-09/WB-11) | See backlog | — | — | — | TODO |
 
 For each completed task, add the real branch, SHA, PR URL, command output summary, Allure run/report URL, merge SHA, staging verification and release (if any). Keep unfinished items TODO, never fabricate completed results.
 

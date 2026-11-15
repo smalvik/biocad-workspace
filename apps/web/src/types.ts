@@ -97,6 +97,26 @@ export type Session = {
   csrf_token: string;
 };
 export type TimeWindow = { from: string; to: string };
+export type BookingPayload = {
+  space_id: string;
+  start_at: string;
+  end_at: string;
+};
+export type Booking = BookingPayload & {
+  id: string;
+  employee_id: string;
+  status: "confirmed" | "cancelled";
+  created_at: string;
+  cancelled_at: string | null;
+};
+export type OwnBooking = Booking & {
+  resource: {
+    kind: "DESK" | "MEETING_ROOM";
+    floor_id: string;
+    floor_name: string;
+    office_name: string;
+  };
+};
 export type SpaceStatus = "free" | "booked" | "dedicated" | "mine";
 export type Filters = {
   freedesk: boolean;

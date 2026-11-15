@@ -9,11 +9,13 @@ export function EmployeeSearch({
   selectedId,
   onSelect,
   onExpired,
+  revision = 0,
 }: {
   window: TimeWindow | null;
   selectedId: string | null;
   onSelect: (id: string) => void;
   onExpired: () => void;
+  revision?: number;
 }) {
   const [open, setOpen] = useState(
     () =>
@@ -26,6 +28,7 @@ export function EmployeeSearch({
     query,
     open ? window : null,
     onExpired,
+    revision,
   );
   return (
     <section className="employee-search" aria-label="Поиск сотрудников">
