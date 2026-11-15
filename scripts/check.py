@@ -30,6 +30,7 @@ def main() -> int:
     parser.add_argument("--environment", choices=("local", "staging"), default="local")
     args = parser.parse_args()
     manifest = load(args.manifest, args.namespace) if args.manifest else None
+    notifications = manifest is None or "notification" in manifest["images"]
     run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid4().hex[:6]
     project = "biocad-check-" + run_id.lower()
     output = ROOT / "artifacts" / run_id
@@ -67,6 +68,8 @@ def main() -> int:
             "ALLOW_DATABASE_TESTS": "1",
             "DEMO_PASSWORD": "demo-workspace",
             "SEED_DEMO_DATA": "true",
+            "NOTIFICATIONS_ENABLED": "true" if notifications else "false",
+            "NOTIFICATION_PUBLIC_URL": "http://web",
         }
     )
     if manifest:
@@ -87,6 +90,8 @@ def main() -> int:
     ]
     if not manifest:
         compose.extend(["-f", "infra/compose.test.yaml"])
+    if notifications:
+        compose.extend(["--profile", "notifications"])
     metadata = {
         "run_id": run_id,
         "project": project,
@@ -149,6 +154,7 @@ def main() -> int:
                     "assistant-tests",
                     "web-tests",
                     "e2e",
+                    *(["notification", "notification-tests"] if notifications else []),
                 )
             run(
                 *compose,
@@ -165,8 +171,13 @@ def main() -> int:
                 "booking",
                 "assistant",
                 "web",
+                *(["notification"] if notifications else []),
             )
-            for service in ("booking-tests", "assistant-tests"):
+            for service in (
+                "booking-tests",
+                "assistant-tests",
+                *(["notification-tests"] if notifications else []),
+            ):
                 run(*compose, "run", "--rm", "--no-deps", service, "ruff", "check", ".")
                 run(*compose, "run", "--rm", "--no-deps", service, "ruff", "format", "--check", ".")
                 run(*compose, "run", "--rm", "--no-deps", service)
@@ -190,6 +201,31 @@ def main() -> int:
                     "tests/integration/persistence_check.py",
                     "--alluredir=/allure-results",
                 )
+            if notifications:
+                # Real faults affect only this disposable project's broker/SMTP services.
+                recovery = [
+                    "booking-tests",
+                    "pytest",
+                    "-q",
+                    "tests/integration/notifications_recovery.py",
+                    "--alluredir=/allure-results",
+                ]
+
+                def notification_phase(phase):
+                    run(*compose, "run", "--rm", "--no-deps", "-e", f"NOTIFICATION_PHASE={phase}", *recovery)
+
+                run(*compose, "stop", "rabbitmq", "notification")
+                notification_phase("broker_down")
+                run(*compose, "up", "-d", "--no-build", "--wait", "rabbitmq", "notification")
+                notification_phase("broker_recovered")
+                run(*compose, "restart", "notification")
+                run(*compose, "up", "-d", "--no-build", "--wait", "notification")
+                notification_phase("duplicate_after_restart")
+                run(*compose, "stop", "mailpit")
+                notification_phase("smtp_down")
+                run(*compose, "restart", "notification")
+                run(*compose, "up", "-d", "--no-build", "--wait", "notification", "mailpit")
+                notification_phase("smtp_recovered")
             run(*compose, "run", "--rm", "--no-deps", "web-tests")
             run(*compose, "run", "--rm", "--no-deps", "e2e", "npx", "tsc", "--noEmit")
             run(*compose, "run", "--rm", "--no-deps", "e2e")

@@ -16,6 +16,8 @@ services:
     extends: { file: compose.release.yaml, service: booking }
   assistant:
     extends: { file: compose.release.yaml, service: assistant }
+  notification:
+    extends: { file: compose.release.yaml, service: notification }
   web:
     extends: { file: compose.release.yaml, service: web }
   rabbitmq:
@@ -55,6 +57,16 @@ services:
     volumes:
       - ${ARTIFACTS_DIR:?}/allure-results:/allure-results
 
+  notification-tests:
+    profiles: [notifications]
+    image: ${NOTIFICATION_TESTS_IMAGE:-biocad-notification-tests:disabled}
+    mem_limit: 512m
+    cpus: 1.0
+    environment:
+      <<: *report-env
+    volumes:
+      - ${ARTIFACTS_DIR:?}/allure-results:/allure-results
+
   web-tests:
     profiles: [test]
     image: ${WEB_TESTS_IMAGE:?}
@@ -85,6 +97,7 @@ services:
     environment:
       <<: *report-env
       BASE_URL: http://web
+      MAILPIT_API_URL: http://mailpit:8025
       CI: '1'
     volumes:
       - ${ARTIFACTS_DIR:?}/allure-results:/e2e/allure-results
@@ -95,3 +108,4 @@ volumes:
   pgdata:
   rabbitdata:
   maildata:
+  notificationdata:

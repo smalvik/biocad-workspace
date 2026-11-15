@@ -5,7 +5,7 @@ import json
 import subprocess
 from pathlib import Path
 
-from delivery_manifest import RUNTIME, load
+from delivery_manifest import load, runtime_services
 
 
 def inspect(reference: str) -> str | None:
@@ -23,7 +23,7 @@ def main() -> None:
     parser.add_argument("--namespace", default="smalvik")
     args = parser.parse_args()
     manifest = load(args.manifest, args.namespace)
-    for service in RUNTIME:
+    for service in runtime_services(manifest):
         reference = manifest["images"][service]
         repository, digest = reference.split("@")
         tag = f"{repository}:v{manifest['version']}"
@@ -31,7 +31,7 @@ def main() -> None:
         if existing and existing != digest:
             raise SystemExit(f"Refusing to overwrite existing version {tag}")
     for suffix in ("v" + manifest["version"], "latest"):
-        for service in RUNTIME:
+        for service in runtime_services(manifest):
             reference = manifest["images"][service]
             repository, digest = reference.split("@")
             tag = repository + ":" + suffix

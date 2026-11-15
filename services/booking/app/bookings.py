@@ -9,6 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from app.auth import DB, User, Writer
 from app.errors import ApiError
 from app.models import Booking, Employee, Floor, Office, OutboxEvent, PermanentAssignment, Space
+from app.outbox import notification_snapshot
 from app.people import person_public
 from app.schemas import BookingRequest, BookingView, OffsetDateTime
 
@@ -16,7 +17,7 @@ router = APIRouter(prefix="/api/v1", tags=["booking"])
 Key = Annotated[str, Header(alias="Idempotency-Key", pattern=r"^[A-Za-z0-9._:-]{1,128}$")]
 
 
-def outbox(booking: Booking, event_type: str, request_id: str) -> OutboxEvent:
+async def outbox(db, booking: Booking, event_type: str, request_id: str) -> OutboxEvent:
     event_id, now = uuid4(), datetime.now(UTC)
     return OutboxEvent(
         id=event_id,
@@ -34,6 +35,8 @@ def outbox(booking: Booking, event_type: str, request_id: str) -> OutboxEvent:
             "start_at": booking.start_at.isoformat(),
             "end_at": booking.end_at.isoformat(),
             "status": booking.status,
+            "type": event_type,
+            "notification": await notification_snapshot(db, booking.employee_id, booking.space_id),
         },
     )
 
@@ -77,7 +80,7 @@ async def create_booking(
     try:
         # PostgreSQL, rather than a preceding availability SELECT, decides the winner.
         await db.flush()
-        db.add(outbox(booking, "booking.created.v1", request.state.request_id))
+        db.add(await outbox(db, booking, "booking.created.v1", request.state.request_id))
         await db.commit()
     except IntegrityError as exc:
         await db.rollback()
@@ -132,7 +135,7 @@ async def cancel_booking(booking_id: UUID, request: Request, db: DB, user: Write
     if booking.status == "confirmed":
         booking.status = "cancelled"
         booking.cancelled_at = datetime.now(UTC)
-        db.add(outbox(booking, "booking.cancelled.v1", request.state.request_id))
+        db.add(await outbox(db, booking, "booking.cancelled.v1", request.state.request_id))
         await db.commit()
     return BookingView.model_validate(booking)
 

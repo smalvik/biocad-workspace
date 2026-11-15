@@ -1,8 +1,17 @@
 # Development progress (fill with actual evidence)
 
-**Current follow-up:** user requests browser viewing of Allure, issue #27,
-`ci/wb-09-allure-web` from develop 887bcc1. Local implementation and full regression
-in progress; WB-07 deferred until the requested public report route works.
+**WB-07 current task:** issue #30 / `feat/wb-07-email-notifications`, from develop fd81f82
+with carried browser-Allure notes. Local full 237 passed, including real broker/SMTP
+failure recovery; four-phase v1.3.1 upgrade/rollback passed. Final template-review run
+also passed 237 checks / 211 raw Allure. [Local evidence](../evidence/WB-07-local.md).
+Committed-head CI and delivery pending; production remains v1.3.1.
+
+**2026-11-15: browser Allure #27 released v1.3.1.** PR #28 → develop fd81f82,
+promotion #29 → main 8d8cf08; [main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43745466108),
+209 regression / 185 raw Allure results; public HTTP smoke + 4 desktop/mobile report cases
+passed, zero downloads. [Open report](https://biocad.smalvik.dev/allure/),
+[evidence](../evidence/WB-09-allure-web.md). 23 other containers and all original data preserved.
+Next unfinished P0 is WB-07.
 
 **2026-11-15: WB-06 + WB-11 planning fix released v1.3.0.**
 PRs #23/#25 merged develop 887bcc1; promotion #26 merged main 19a8388.
@@ -28,6 +37,7 @@ Published [v1.0.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.0
 
 | WB | Branch | PR | Tests / Allure | Release | State |
 |---|---|---|---|---|---|
+| WB-09 browser Allure | `ci/wb-09-allure-web` | [#28 merged](https://github.com/smalvik/biocad-workspace/pull/28), [main #29](https://github.com/smalvik/biocad-workspace/pull/29), issue #27 | [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43745466108), 209 regression / 185 raw Allure; public HTTP + 4 browser passed | v1.3.1 | [Inline Allure](https://biocad.smalvik.dev/allure/), version archive and original live LLM report; [evidence](../evidence/WB-09-allure-web.md) |
 | WB-01 | `chore/wb-01-bootstrap` | [#2 merged](https://github.com/smalvik/biocad-workspace/pull/2) | [PR CI passed](https://github.com/smalvik/biocad-workspace/actions/runs/43598925846), [post-merge regression passed](https://github.com/smalvik/biocad-workspace/actions/runs/43599195552) | v1.0.0 | Merged; task branch retained |
 | WB-02 | `feat/wb-02-booking-core` | [#4 merged](https://github.com/smalvik/biocad-workspace/pull/4), [main #6 merged](https://github.com/smalvik/biocad-workspace/pull/6) | [develop regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43604565825), [main regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43604855360) | v1.0.0 | In develop and main per user instruction |
 | WB-11 | `fix/wb-11-outbox-probe` | [#8 merged](https://github.com/smalvik/biocad-workspace/pull/8) | [PR CI PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43604235478), full post-merge regression PASS | v1.0.0 | Test harness defect fixed; no application race claimed |

@@ -19,7 +19,7 @@ pytestmark = [allure.suite("regression"), allure.feature("delivery")]
 @pytest.fixture
 def manifest():
     return {
-        "schema": 1,
+        "schema": 2,
         "source_sha": "a" * 40,
         "version": "1.0.0",
         "images": {name: f"smalvik/biocad-{name}@sha256:{'b' * 64}" for name in contract.SERVICES},
@@ -48,6 +48,20 @@ def test_requires_complete_test_image_set_and_strict_version(manifest):
     manifest["version"] = "1.01.0"
     with pytest.raises(ValueError):
         contract.validate(manifest, "smalvik")
+
+
+def test_notification_manifest_preserves_legacy_rollback_contract(manifest):
+    legacy = copy.deepcopy(manifest)
+    legacy["schema"] = 1
+    legacy["images"] = {name: legacy["images"][name] for name in contract.LEGACY_SERVICES}
+    assert contract.validate(legacy, "smalvik") == legacy
+    assert contract.runtime_services(legacy) == ("booking", "assistant", "web")
+    assert "notification" in contract.runtime_services(manifest)
+    for name in ("notification", "notification-tests"):
+        incomplete = copy.deepcopy(manifest)
+        del incomplete["images"][name]
+        with pytest.raises(ValueError):
+            contract.validate(incomplete, "smalvik")
 
 
 @pytest.mark.parametrize(
@@ -87,6 +101,8 @@ def test_failed_smoke_restores_previous_images_without_restoring_database(tmp_pa
     directory.mkdir()
     previous = copy.deepcopy(manifest)
     previous["source_sha"] = "c" * 40
+    previous["schema"] = 1
+    previous["images"] = {name: previous["images"][name] for name in contract.LEGACY_SERVICES}
     (directory / "current.json").write_text(json.dumps(previous))
     monkeypatch.setattr(server, "compose", lambda env, m, s: (["compose", m["source_sha"]], {}))
     backup = Mock(return_value="actual-backup.dump")
@@ -107,6 +123,7 @@ def test_failed_smoke_restores_previous_images_without_restoring_database(tmp_pa
     assert commands[-1][:2] == ["compose", previous["source_sha"]]
     assert "--no-build" in commands[-1]
     assert not any("down" in cmd or "pg_restore" in cmd for cmd in commands)
+    assert any(cmd[-2:] == ["stop", "notification"] for cmd in commands)
     assert json.loads((directory / "current.json").read_text()) == previous
 
 

@@ -39,6 +39,7 @@ services:
       SEED_DEMO_DATA: 'true'
       DEMO_PASSWORD: ${DEMO_PASSWORD:-demo-workspace}
       RABBITMQ_URL: amqp://biocad:${RABBITMQ_PASSWORD:?}@rabbitmq:5672/
+      NOTIFICATIONS_ENABLED: ${NOTIFICATIONS_ENABLED:-false}
       ASSISTANT_BUDGET_USD: ${ASSISTANT_BUDGET_USD:-0}
       ASSISTANT_FREE_ONLY: 'true'
       ASSISTANT_BUDGET_EPOCH: ${ASSISTANT_BUDGET_EPOCH:-demo-v1}
@@ -65,6 +66,24 @@ services:
       OPENROUTER_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
       ENABLE_LLM_TEST_FIXTURE: ${ENABLE_LLM_TEST_FIXTURE:-false}
     mem_limit: 384m
+    cpus: 0.5
+
+  notification:
+    profiles: [notifications]
+    logging: *bounded-logs
+    image: ${NOTIFICATION_IMAGE:-biocad-notification:disabled}
+    restart: unless-stopped
+    environment:
+      TZ: UTC
+      GIT_SHA: ${GIT_SHA:?}
+      RELEASE_VERSION: ${RELEASE_VERSION:?}
+      RABBITMQ_URL: amqp://biocad:${RABBITMQ_PASSWORD:?}@rabbitmq:5672/
+      NOTIFICATION_PUBLIC_URL: ${NOTIFICATION_PUBLIC_URL:-https://biocad.smalvik.dev}
+      MAILPIT_SMTP_HOST: mailpit
+      NOTIFICATION_STATE_PATH: /data/deliveries.sqlite
+    volumes:
+      - notificationdata:/data
+    mem_limit: 128m
     cpus: 0.5
 
   web:
@@ -120,3 +139,4 @@ volumes:
   pgdata:
   rabbitdata:
   maildata:
+  notificationdata:
