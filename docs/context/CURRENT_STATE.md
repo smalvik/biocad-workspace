@@ -1,68 +1,43 @@
 # Actual implementation status — 2026-11-15
 
-**Access incident #21, monitoring:** the user reports the browser now opens the site
-and requested continuing the backlog. No DNS/proxy/route remediation was applied;
-the earlier direct/VPN difference remains an observation, not an established cause.
-[Actual diagnosis](../evidence/WB-11-browser-access.md). A new public ingress is deferred.
+**WB-06 and WB-11 planning fix released as v1.3.0.**
+Production: **https://biocad.smalvik.dev** ·
+[published release](https://github.com/smalvik/biocad-workspace/releases/tag/v1.3.0) ·
+[remote evidence](../evidence/WB-06-remote.md).
+Main/source **19a838808e6e15d6daeb00be63688221071fb1fa**; develop **887bcc1**.
+User pause was explicitly resumed; [historical handoff](PAUSE_HANDOFF.md).
 
-**WB-06 in progress:** issue #22, branch `feat/wb-06-assistant-mcp`. Local code now
-contains real SDK MCP over STDIO, RabbitMQ RPC, OpenRouter tool calling and an explicit
-proposal/confirmation UI. Regression and review are ongoing; this is **not deployed**.
-Implementation `89ad3d5` is pushed in [draft PR #23](https://github.com/smalvik/biocad-workspace/pull/23);
-first committed CI [43710246930](https://github.com/smalvik/biocad-workspace/actions/runs/43710246930)
-passed all 181 checks and immutable candidate publication. No staging/production rollout occurred.
-The user approved **free models only**. Strict zero-price guards and
-`inclusionai/ling-3.2-flash:free` now pass local real-provider acceptance: 3 scenarios,
-8 successful responses all `cost=0`, no booking writes, run 20261115T131327Z-20b777.
-WB-06 PR #23 merged to develop c85b8dc; CI/server regression and staging deployment
-passed run 43719293194. Real staging room lookup passed, but repeated employee search
-exhausted planning rounds in the near-Anna case. Separate fix issue #24 / branch
-`fix/wb-11-free-assistant-planning` is under verification before main promotion.
-Local fix regression passed 189 checks / Allure 163; actual free live run
-20261115T135746Z-0e5c21 passed 3 scenarios with 4 zero-cost provider responses.
-Production remains v1.2.0; no paid route is enabled.
-CI continues using a labelled scripted HTTP provider with real MCP/RabbitMQ/PostgreSQL;
-that deterministic regression is kept distinct from the actual real-provider proof.
-
-| Item | Observed state |
+| Capability | Observed state |
 |---|---|
-| Product requirements | PRD v1.2 written (Markdown/Word), with WB-01…WB-18 backlog |
-| Visuals | 54 current responsive PNGs (18 WB steps × desktop/tablet/mobile), 12 time-window PNGs + comparison, older conceptual PNGs |
-| Static demos | HTML employee-map demo, release-history mock and visual viewer; **not deployed React application** |
-| Interview preparation | 72 draft Q&A, technical architecture decisions and sample release-note templates |
-| Demo employee data | Fictional employees and calendar scenario; see `docs/data/demo_fixture.json` |
-| React application | v1.2.0 live: map/search/portraits/timeline plus explicit booking confirmation, own bookings and confirmed cancellation; stable lost-response retry/reload |
-| FastAPI services | Live Booking Core, safe own-booking resource location, authenticated employee directory/location and batch public occupancy profiles; Assistant remains health/OpenAPI skeleton |
-| PostgreSQL schema/tests | Alembic core schema, GiST [start,end), per-user idempotency, atomic outbox and fictional seed; real concurrency + restart regression passed locally |
-| RabbitMQ/MCP/real LLM | Compose RabbitMQ + AMQP smoke implemented; application RPC/MCP/LLM not implemented |
-| Mailpit/email sending | Compose Mailpit + fictional SMTP smoke implemented; Notification Worker not implemented |
-| GitHub repository/branches/PRs | WB-05 #19 merged develop b98a9a3; main promotion #20 merged bddba67; v1.2.0 published |
-| Docker Hub image/release | Three runtime images with verified v1.2.0/latest aliases; seven immutable runtime/test SHA candidates and exact published digest manifest |
-| Staging/production | Both live, isolated on existing Ubuntu 24.04 / Traefik host; production HTTPS, restricted CI key, backups/rollback; 23 preexisting containers preserved |
-| Allure report/evidence | WB-05 regression 157 passed; server Allure 134 (132 regression + stage/prod smoke), Vitest 25 separately; final independent public smoke 4 + form/list preview 2 passed; initial external TLS timeouts retained in evidence |
-| GitHub Actions | Main 43690831879 passed checks, publication, server regression/staging/prod and v1.2.0/Allure publishing; real same-SHA serialization proof passed |
-| Official BIOCAD UI Kit | NOT PROVIDED / not verified; approximate reference styling only |
+| Booking authority | Live Booking FastAPI + PostgreSQL; GiST `[start,end)`, real concurrent winner/adjacency tests, durable UTC data, authenticated fictional users, CSRF and idempotency |
+| React manual flow | Two-floor SVG map, Moscow period/filtering, employee lookup, fictional portraits, selected-period occupancy/timeline; explicit confirmation, own list and cancel-own-only; retry/reload |
+| Assistant | Independently deployed FastAPI; official MCP 2.3.0 STDIO tools; all Booking interservice calls via durable RabbitMQ RPC; no Assistant DB access or network HTTP to Booking |
+| Real LLM | OpenRouter `inclusionai/ling-3.2-flash:free`; free-only consent, budget $0, catalog zero-price checks and per-request zero caps; no paid fallback |
+| AI booking | User consent, live read/propose tools, map highlight, signed user-bound 10-minute proposal, separate exact confirmation; no automatic booking; AI failure leaves manual form available |
+| Rate/limits | Durable 3 requests/user/minute, bounded tools/rounds/time/input, one bounded same-model 429 retry; provider capacity is not guaranteed |
+| Mailpit/notifications | Mailpit and fictional SMTP smoke work; Notification Worker and booking event emails **not implemented (WB-07)** |
+| CI/CD | GitHub Actions → immutable Docker Hub digests → complete isolated server regression → staging/smoke → exact production digests/HTTPS smoke → aliases/release/Allure |
+| Deploy isolation | Separate `biocad-staging`/`biocad-production`; existing Traefik ingress; 23 unrelated containers preserved, backup/previous v1.2.0 retained |
+| Requirements/visuals | PRD v1.2 + approved DECISIONS canonical; references/static HTML are concepts, not implementation evidence; official BIOCAD UI Kit/rights not provided |
 
-Source of truth for requirements: `docs/requirements/PRD_v1.2.md`. Source of truth for implementation state: actual git tree, code, test command results and links; update this status as work progresses.
+Main [workflow 43737645275](https://github.com/smalvik/biocad-workspace/actions/runs/43737645275)
+passed **189 checks** (79 Booking/delivery, 24 Assistant, 2 persistence, 26 Vitest
+and 58 Playwright); server Allure **165** (163 regression + stage/prod smoke),
+Vitest separately. CI provider is explicitly scripted; MCP/RabbitMQ/PostgreSQL real.
+Independent production actual-free acceptance: **3 API + 2 desktop/mobile browser cases**,
+all successful provider responses cost=0, no booking writes. Initial mobile provider
+429 is retained separately; final sequential repeat passed without runtime/model changes.
+Existing 7 bookings/12 accounts per environment and all 23 other containers preserved.
 
-WB-01 continues existing uncommitted scaffolding on `chore/wb-01-bootstrap`,
-created from `develop` without discarding earlier work. Base HEAD: `4b005dd`;
-the first smoke tested an uncommitted working tree. Actual outcomes and publication
-status: [WB-01](../changes/WB-01.md), [PROGRESS](PROGRESS.md).
-WB-01 merged through PR #2 at `e5bb0b5` after CI and explicit agent self-review;
-post-merge regression passed. WB-02 and WB-11 were integrated into develop and,
-by explicit user instruction, main (snapshot, no release/deploy). WB-03 is locally
-tested on `feat/wb-03-interactive-map`, created from develop `34d4f7c` after those merges.
-Later WB-09 delivered that baseline as v1.0.0; [remote proof](../evidence/WB-09-remote.md).
-WB-04 employee lookup/avatars shipped through [PR #16](https://github.com/smalvik/biocad-workspace/pull/16)
-and [main #17](https://github.com/smalvik/biocad-workspace/pull/17),
-[actual v1.1.0 evidence](../evidence/WB-04-remote.md).
-WB-05 form/own bookings/cancel shipped through [PR #19](https://github.com/smalvik/biocad-workspace/pull/19)
-and [main #20](https://github.com/smalvik/biocad-workspace/pull/20),
-[actual v1.2.0 evidence](../evidence/WB-05-remote.md).
-Next unimplemented product flow: WB-06 real Assistant/MCP/LLM.
+Next unfinished P0: **WB-07 email Notification Worker**, then WB-08 race/red-green
+evidence and remaining delivery docs. P1 comfort/quiz/failover/feedback and the actual
+in-product release-history page are not claimed delivered. See [backlog](../tasks/BACKLOG.md).
 
-GitHub repo confirmed: https://github.com/smalvik/biocad-workspace.
-Docker Hub namespace and server access/deployment are verified; see [remote evidence](../evidence/WB-09-remote.md).
-Still unverified: official BIOCAD UI Kit and approved/funded OpenRouter model/budget. Do not ask for raw credentials in chat;
-use local env and CI secrets.
+Browser access incident [#21](https://github.com/smalvik/biocad-workspace/issues/21)
+remains monitoring: user reports access restored, current public browser checks pass;
+no DNS/proxy/client route remediation was applied and the original direct/VPN cause
+is not established. [Diagnosis](../evidence/WB-11-browser-access.md).
+
+Earlier releases: [v1.0.0/WB-09](../evidence/WB-09-remote.md),
+[v1.1.0/WB-04](../evidence/WB-04-remote.md), [v1.2.0/WB-05](../evidence/WB-05-remote.md).
+All employee profiles/portraits/demo calendar data are fictional.
