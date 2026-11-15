@@ -9,7 +9,9 @@ Mailpit и nginx. WB-01 интегрирован через PR #2 с успеш�
 сотрудников, оригинальные вымышленные аватары и таймлайн владельцев по интервалу.
 WB-05 (форма, «Мои бронирования», отмена) выпущена в v1.2.0, 157 regression passed.
 WB-06 (MCP/RabbitMQ/AI-чат) реализуется в отдельной ветке, ещё не опубликована.
-Live LLM-проверка ожидает согласованных модели и бюджета. Notification Worker — WB-07.
+Пользователь разрешил только бесплатную модель: Ling 3.2 Flash free прошла 3 live
+сценария с нулевой стоимостью; CI/выкладка обновлённой ветки ещё выполняются.
+Notification Worker — WB-07.
 
 Статус и доказательства: [CURRENT_STATE](docs/context/CURRENT_STATE.md),
 [PROGRESS](docs/context/PROGRESS.md), [WB-01](docs/changes/WB-01.md).
@@ -99,8 +101,10 @@ WB-02: [develop regression](https://github.com/smalvik/biocad-workspace/actions/
 ## Assistant — WB-06 (в разработке)
 
 Для нового Assistant-кода смотрите [контракт и настройки WB-06](docs/architecture/ASSISTANT.md).
-В `.env` требуются реальный ключ, выбранная tool-calling модель, отдельный секрет
-предложений и согласованный `ASSISTANT_BUDGET_USD`; значение 0 блокирует inference.
+В `.env` требуются реальный ключ, `OPENROUTER_PRIMARY_MODEL=inclusionai/ling-3.2-flash:free`,
+отдельный секрет предложений и `ASSISTANT_BUDGET_USD=0`. Разрешены только бесплатные
+модели: актуальный каталог и каждый provider request проверяют нулевую цену;
+платного fallback нет. Rate limits бесплатного провайдера могут временно ограничить чат.
 Кнопка «AI-ассистент» запрашивает согласие на отправку текста в OpenRouter.
 AI только предлагает ресурс/период; кнопка «Проверить предложение AI» открывает
 обычное точное подтверждение. Ручная форма работает независимо от AI/брокера.

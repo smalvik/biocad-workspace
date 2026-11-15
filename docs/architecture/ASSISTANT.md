@@ -71,25 +71,29 @@ Model/provider failure returns an honest error and leaves the manual form usable
 
 Production uses only `https://openrouter.ai/api/v1`, no redirects/arbitrary base URLs.
 Provider routing requires tool parameters, disables provider fallback, denies data
-collection and caps prompt/completion pricing at 1/3 USD per million tokens with
-zero per-request fee. WB-12 model failover is still separate work.
+collection and caps prompt/completion/request pricing at **0**. Only explicit
+`:free` variants are allowed; each chat verifies current official catalog prices
+and required tool capabilities. A price change or catalog failure stops AI instead
+of routing to a paid endpoint. One same-model 429 retry waits at least Retry-After
+(3–10 s); longer/invalid delays or a repeated 429 return an honest rate error.
+WB-12 model failover is still separate work and must also respect free-only consent.
 
 ## Configuration and spend cap
 
 Set server-only `OPENROUTER_API_KEY`, approved `OPENROUTER_PRIMARY_MODEL`, a separate
 random `ASSISTANT_PROPOSAL_SECRET` (32+ characters outside local), and an approved
-`ASSISTANT_BUDGET_USD`. The default budget is **0**, which prevents inference.
+`ASSISTANT_BUDGET_USD=0`. The user explicitly approved **free models only**.
+The selected primary is `inclusionai/ling-3.2-flash:free`; no paid fallback is allowed.
 `ASSISTANT_REQUESTS_PER_MINUTE` defaults to 3 per authenticated employee, persisted
-in PostgreSQL. `ASSISTANT_BUDGET_EPOCH` identifies a lifetime budget allocation;
-**do not change epochs to bypass the cap or reset automatically on deploy/restart**.
+in PostgreSQL. Free inference works with a zero monetary budget. Runtime Compose
+enforces `ASSISTANT_FREE_ONLY=true`; Booking rejects paid reservation requests.
 
-Before each provider round Booking atomically reserves 0.05 USD against the shared
-epoch cap. This conservatively covers the bounded input/output at the provider
-price ceilings; it is not a claim of actual billed cost. Reservation IDs are
-idempotent. Uncertain provider outcomes are not refunded. Exhaustion may therefore
-stop the demo earlier than its actual billing balance would. Concurrent requests
-cannot overspend this reservation cap. Provider account/key limits remain an
-additional independent bound, not a replacement for the application cap.
+The additive migration retains a conservative monetary-reservation ledger and
+synthetic concurrency tests, but the approved free runtime does not spend from it.
+Paid mode is not enabled by this delivery. Provider account/free rate limits remain
+independent constraints and may make AI temporarily unavailable; the manual form
+continues to work. API proof records actual model/provider and returned zero-cost
+usage metadata without credentials or raw prompts.
 
 Bootstrap adds a proposal secret to BIOCAD environment secrets while retaining
 existing DB/session/broker secrets. No LLM key or spending allowance is inferred
@@ -109,17 +113,19 @@ using fictional users/requests and recording model/tool names, exact selection,
 status and cost metadata without API keys, cookies, CSRF or signed proposal tokens.
 Published Allure reports must distinguish deterministic regression from live proof.
 
-The prepared proposal-only command is:
+The proposal-only live acceptance command is:
 
 ```powershell
-python scripts/check_live_assistant.py --base-url http://localhost:8080 --expected-model APPROVED_MODEL_ID --allow-paid
+python scripts/check_live_assistant.py --base-url http://localhost:8080 --expected-model inclusionai/ling-3.2-flash:free --allow-free-live
 ```
 
 Run it only after approval and configuring the real local Assistant. It logs in as
 fictional e12, tests room capacity / near-Anna / clarification, verifies exact time
 and unchanged own bookings, writes sanitized run.json plus `live_llm` Allure results,
-then logs out. It never calls booking confirmation/cancellation. Without `--allow-paid`
-it exits before network requests. This prepared command is not evidence of execution.
+then logs out. It never calls booking confirmation/cancellation. Without `--allow-free-live`
+it exits before network requests. `--expected-sha` optionally pins the deployed source.
+Real local run `20261115T131327Z-20b777` passed 3 cases with 8 successful provider
+responses, all `cost=0`; the stack used a dirty pre-commit snapshot, recorded separately.
 
 Primary references: [MCP Python SDK client](https://py.sdk.modelcontextprotocol.io/client/),
 [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk),

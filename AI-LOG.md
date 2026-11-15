@@ -215,3 +215,15 @@ GitHub token читался в память и передавался через
   published. Staging/production job skipped for draft feature PR, as intended.
   Checked live acceptance CLI guard (refuses before any request without paid flag)
   and Ruff; actual live acceptance still not executed.
+  User then explicitly selected **only a free model**. Added fail-closed :free
+  settings/catalog checks and zero provider price caps; no paid route/fallback.
+  Runtime Booking rejects paid reservations but allows zero-price calls under the
+  durable user rate limit with budget 0. Free Gemma probe returned 429; Ling 3.2
+  Flash free returned tool calls and cost 0. First end-to-end live run failed on
+  provider 429; retained evidence, diagnosed safely in an isolated test process.
+  Added one bounded same-model retry respecting short Retry-After, enum clarification
+  schema and model/provider/cost metadata. Current Assistant unit 17 passed.
+  Full local free regression 20261115T130029Z-ef921e passed 186 checks / Allure 160.
+  Real live run 20261115T131327Z-20b777 passed 3 scenarios, 8 successful model
+  responses all cost=0, zero booking writes; source base 01c0bf5 / dirty recorded.
+  Read-only server baseline captured; no server runtime change at this point.

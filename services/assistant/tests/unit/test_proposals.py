@@ -55,6 +55,7 @@ def test_production_disallows_fake_provider_and_insecure_urls():
         {"app_env": "production", "enable_llm_test_fixture": True},
         {"app_env": "production", "assistant_proposal_secret": "local-only-proposal-secret-change-me"},
         {"openrouter_base_url": "http://example.com/v1"},
+        {"openrouter_primary_model": "paid/example"},
     ):
         with pytest.raises(ValidationError) as invalid:
             Settings(openrouter_api_key="unit-test-sensitive-key", **values)

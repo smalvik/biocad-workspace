@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     demo_password: str = "demo-workspace"
     rabbitmq_url: SecretStr = SecretStr("")
     assistant_budget_usd: float = Field(default=0, ge=0, le=1000)
+    assistant_free_only: bool = True
     assistant_budget_epoch: str = Field(default="demo-v1", pattern=r"^[a-zA-Z0-9._-]{1,64}$")
     assistant_requests_per_minute: int = Field(default=3, ge=1, le=1000)
 

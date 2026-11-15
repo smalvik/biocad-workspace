@@ -32,6 +32,11 @@ class Settings(BaseSettings):
             raise ValueError("Only the official HTTPS provider or the isolated test fixture is allowed")
         if self.enable_llm_test_fixture and not fixture:
             raise ValueError("Scripted LLM is allowed only in the isolated local test stack")
+        if not fixture and any(
+            model and not model.endswith(":free")
+            for model in (self.openrouter_primary_model, self.openrouter_fallback_model)
+        ):
+            raise ValueError("Only explicitly free OpenRouter model variants are allowed")
         secret = self.assistant_proposal_secret.get_secret_value()
         if self.app_env != "local" and (len(secret) < 32 or secret == "local-only-proposal-secret-change-me"):
             raise ValueError("Configure a separate proposal signing secret")

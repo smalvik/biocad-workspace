@@ -53,6 +53,7 @@ async def authorize(request: Request, db: DB, user: Writer):
 class ReserveRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     request_id: UUID
+    free_only: bool = False
 
 
 class ReplayRequest(BaseModel):
@@ -80,6 +81,14 @@ async def replay_confirmation(body: ReplayRequest, request: Request, db: DB, use
 async def reserve(body: ReserveRequest, request: Request, db: DB, user: Writer):
     internal_only(request)
     settings = get_settings()
+    if settings.assistant_free_only:
+        if not body.free_only:
+            raise ApiError(403, "AI_FREE_ONLY", "Разрешены только бесплатные модели")
+        # No monetary reservation for zero-price inference. The durable user rate
+        # window is still checked before the chat; Assistant enforces price=0.
+        return {"reserved_micro_usd": 0, "replayed": False, "free_only": True}
+    if body.free_only:
+        raise ApiError(403, "AI_CONFIG_MISMATCH", "Проверьте бесплатный режим сервисов")
     limit = int(Decimal(str(settings.assistant_budget_usd)) * 1_000_000)
     if limit < RESERVATION_MICRO_USD:
         raise ApiError(429, "AI_BUDGET_EXHAUSTED", "Демо-лимит AI исчерпан. Бронируйте через обычную форму.")

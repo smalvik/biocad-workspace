@@ -1,7 +1,7 @@
 """A real SDK MCP server over STDIO; all domain reads travel through RabbitMQ."""
 
 import os
-from typing import Any
+from typing import Any, Literal
 
 from mcp.server import MCPServer
 
@@ -84,7 +84,9 @@ async def propose_booking(space_id: str, start_at: str, end_at: str) -> dict[str
 
 
 @server.tool(structured_output=True)
-async def ask_clarification(missing: list[str]) -> dict[str, Any]:
+async def ask_clarification(
+    missing: list[Literal["date", "time", "type", "capacity", "employee"]],
+) -> dict[str, Any]:
     """Ask for missing mandatory fields: date, time, type, capacity, employee. Never claim a booking."""
     labels = {
         "date": "дату",

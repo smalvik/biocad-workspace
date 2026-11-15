@@ -18,6 +18,7 @@ async def internal(api, database, monkeypatch):
     settings = get_settings().model_copy(
         update={
             "assistant_budget_usd": 0.1,
+            "assistant_free_only": False,
             "assistant_budget_epoch": "test-" + uuid4().hex,
             "assistant_requests_per_minute": 3,
         }
@@ -86,3 +87,23 @@ async def test_rate_limit_is_shared_across_concurrent_requests_and_csrf_is_requi
         headers={"X-CSRF-Token": "invalid"},
     )
     assert invalid.status_code == 403
+
+
+async def test_free_only_mode_works_with_zero_budget_and_rejects_paid_reservations(internal):
+    client, settings, database = internal
+    settings.assistant_free_only = True
+    settings.assistant_budget_usd = 0
+    free = await client.post(
+        "/api/v1/internal/assistant/reserve", json={"request_id": str(uuid4()), "free_only": True}
+    )
+    assert free.status_code == 200 and free.json()["reserved_micro_usd"] == 0
+    paid = await client.post("/api/v1/internal/assistant/reserve", json={"request_id": str(uuid4())})
+    assert paid.status_code == 403 and paid.json()["error"]["code"] == "AI_FREE_ONLY"
+    async with database.connect() as connection:
+        assert (
+            await connection.scalar(
+                text("SELECT count(*) FROM assistant_spend_reservations WHERE epoch=:epoch"),
+                {"epoch": settings.assistant_budget_epoch},
+            )
+            == 0
+        )

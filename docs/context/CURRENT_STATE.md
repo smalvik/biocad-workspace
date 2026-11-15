@@ -11,9 +11,12 @@ proposal/confirmation UI. Regression and review are ongoing; this is **not deplo
 Implementation `89ad3d5` is pushed in [draft PR #23](https://github.com/smalvik/biocad-workspace/pull/23);
 first committed CI [43710246930](https://github.com/smalvik/biocad-workspace/actions/runs/43710246930)
 passed all 181 checks and immutable candidate publication. No staging/production rollout occurred.
-The configured OpenRouter key passed a read-only validity check. No inference calls
-have been made: model/budget approval is pending. CI uses an explicitly scripted HTTP
-provider with real MCP/RabbitMQ/PostgreSQL, not proof of a live LLM answer.
+The user approved **free models only**. Strict zero-price guards and
+`inclusionai/ling-3.2-flash:free` now pass local real-provider acceptance: 3 scenarios,
+8 successful responses all `cost=0`, no booking writes, run 20261115T131327Z-20b777.
+The source was a dirty pre-commit snapshot; refreshed PR CI/deploy are pending.
+CI continues using a labelled scripted HTTP provider with real MCP/RabbitMQ/PostgreSQL;
+that deterministic regression is kept distinct from the actual real-provider proof.
 
 | Item | Observed state |
 |---|---|

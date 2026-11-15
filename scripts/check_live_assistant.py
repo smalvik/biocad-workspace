@@ -19,10 +19,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", default="http://localhost:8080")
     parser.add_argument("--expected-model", required=True)
-    parser.add_argument("--allow-paid", action="store_true", help="Requires prior model/budget approval")
+    parser.add_argument("--expected-sha", default="", help="Optional exact deployed source SHA")
+    parser.add_argument(
+        "--allow-free-live", action="store_true", help="Explicit opt-in to real zero-price inference"
+    )
     args = parser.parse_args()
-    if not args.allow_paid:
-        parser.error("Real inference requires --allow-paid and an approved model/spending cap")
+    if not args.allow_free_live or not args.expected_model.endswith(":free"):
+        parser.error("Real inference requires --allow-free-live and an explicitly free model variant")
     url = urlsplit(args.base_url)
     if (
         url.hostname not in {"localhost", "127.0.0.1", "web", "biocad.smalvik.dev"}
@@ -59,6 +62,7 @@ def main() -> int:
         "expected_model": args.expected_model,
         "provider_mode": "real OpenRouter, not scripted",
         "booking_writes_attempted": 0,
+        "working_tree": os.environ.get("WORKING_TREE", "unknown"),
         "cases": [],
     }
     success = False
@@ -71,6 +75,8 @@ def main() -> int:
         assert identity["employee"]["fictional"] is True
         health = request("/api/v1/assistant/healthz")
         report["source_sha"] = health["version"]
+        if args.expected_sha:
+            assert health["version"] == args.expected_sha, "Unexpected deployed source SHA"
         before = request("/api/v1/bookings/me")["items"]
         floors = request("/api/v1/floors")["items"]
         floor = next(row for row in floors if row["number"] == 2)
@@ -100,6 +106,11 @@ def main() -> int:
                 assert data["scripted_test"] is False, "A scripted provider is not live acceptance"
                 assert data["model"] == args.expected_model, "Unexpected requested model"
                 case.update(model=data["model"], tools_used=data["tools_used"])
+                calls = data["provider_calls"]
+                assert calls and all(
+                    call["cost"] == 0 and call["model"] == args.expected_model for call in calls
+                )
+                case["provider_calls"] = calls
                 if kind:
                     proposal = data["proposal"]
                     assert proposal["space"]["kind"] == kind
