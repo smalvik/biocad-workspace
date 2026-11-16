@@ -1,10 +1,12 @@
 # Actual implementation status — 2026-11-16 (Moscow)
 
-**WB-10 #38 in progress:** documentation-only `docs/wb-10-delivery-evidence` from
-develop05e08e6 plus carried WB-08 evidence e301cb3. Actual C1/C2, README, ADR review,
-evidence index and concise AI-LOG tested: fresh 7-service start, 4 browser smoke,
-3 Mermaid renders and full 248-check regression PASS. Remote gates pending.
-Product remains the verified v1.4.1 below.
+**WB-10 #38 released v1.4.2:** actual C1/C2, reviewed ADRs, reproducible README,
+evidence index and concise AI-LOG; documentation only. PR #39 → develope8e29cf,
+promotion #40 → main4a40e18. [Main CI/server](https://github.com/smalvik/biocad-workspace/actions/runs/43788663155)
+**248 checks /35 commands exit0 /224 raw Allure PASS**. Fresh local start7 healthy,
+browser smoke4 and Mermaid render3 PASS; independent public app4/report4 PASS, no downloads.
+Both environments updated, original data and 23 unrelated containers preserved.
+[Actual task evidence](../evidence/WB-10-remote.md). Active personal hours unmeasured.
 
 **WB-08 and conditional WB-11 #34 released v1.4.1:** genuine two-process PostgreSQL
 race evidence (RED 2 failed / restored GREEN 3 passed) and the discovered deadlock fix.
@@ -29,9 +31,9 @@ zero downloads. Existing data and 23 unrelated containers preserved.
 
 **WB-06 and WB-11 planning fix released as v1.3.0.**
 Current production: **https://biocad.smalvik.dev** ·
-[published v1.4.1](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.1) ·
-[remote evidence](../evidence/WB-08-remote.md).
-Production/staging source **5364c9e05505041e0035ea1b28adef99c6f61346**; develop **05e08e6**.
+[published v1.4.2](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.2) ·
+[remote evidence](../evidence/WB-10-remote.md).
+Production/staging source **4a40e18099d98b275f768489a10f8a010003cd33**; develop **e8e29cf**.
 User pause was explicitly resumed; [historical handoff](PAUSE_HANDOFF.md).
 
 | Capability | Observed state |
@@ -44,10 +46,10 @@ User pause was explicitly resumed; [historical handoff](PAUSE_HANDOFF.md).
 | Rate/limits | Durable 3 requests/user/minute, bounded tools/rounds/time/input, one bounded same-model 429 retry; provider capacity is not guaranteed |
 | Mailpit/notifications | Live in both environments; seven legacy messages captured in each, durable Worker dedup/retry, zero pending jobs/queues. Fictional full name/address, resource/floor, Moscow interval, booking code/CTA. SMTP acceptance/commit crash duplicate window is explicit |
 | CI/CD | GitHub Actions → immutable Docker Hub digests → complete isolated server regression → staging/smoke → exact production digests/HTTPS smoke → aliases/release/Allure |
-| Deploy isolation | Separate `biocad-staging`/`biocad-production`; 14 own containers healthy, existing Traefik ingress; 23 unrelated containers preserved, backup/previous production v1.4.0 retained |
+| Deploy isolation | Separate `biocad-staging`/`biocad-production`; 14 own containers healthy, existing Traefik ingress; 23 unrelated containers preserved, backup/previous production v1.4.1 retained |
 | Requirements/visuals | PRD v1.2 + approved DECISIONS canonical; references/static HTML are concepts, not implementation evidence; official BIOCAD UI Kit/rights not provided |
 
-Main [workflow 43779639648](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648)
+Main [workflow 43788663155](https://github.com/smalvik/biocad-workspace/actions/runs/43788663155)
 passed **248 checks** (111 Booking/delivery, 24 Assistant, 20 Worker, 2 persistence,
 5 outage/recovery phases, 26 Vitest and 60 Playwright); server Allure **224 raw results**
 (222 regression + stage/prod smoke; UI may group history/phase identities),
@@ -56,11 +58,12 @@ Original v1.3.0 production actual-free acceptance: **3 API + 2 desktop/mobile br
 all successful provider responses cost=0, no booking writes. Initial mobile provider
 429 is retained separately; final sequential repeat passed without runtime/model changes.
 Existing 7 bookings/12 accounts per environment and all 23 other containers preserved.
-WB-07/WB-08/WB-11 #34 made no new inference calls. Public application smoke 4, report UI 4
-and race log attachment UI 2 passed; Allure opens inline with zero downloads and retains
+WB-07/WB-08/WB-10/WB-11 #34 made no new inference calls. Current public application
+smoke4 and report UI4 passed; original v1.4.1 race log attachment UI2 also passed; Allure opens inline with zero downloads and retains
 those original live results. Published Booking runtime physically excludes probe/pytest.
 
-Next unfinished P0: **WB-10 delivery documentation** (WB-09 already shipped).
+Next unfinished P0 docs: **WB-18 interview playbook verification**; WB-17 process
+notes/releases exist, its in-product UI remains P1. WB-09 already shipped.
 P1 comfort/quiz/failover/feedback and the actual
 in-product release-history page are not claimed delivered. See [backlog](../tasks/BACKLOG.md).
 

@@ -1,10 +1,18 @@
 # Development progress (fill with actual evidence)
 
-**WB-10 #38 in progress:** separate `docs/wb-10-delivery-evidence` from develop05e08e6,
-carried WB-08 evidence e301cb3. README/C1/C2/ADR/evidence index/AI-LOG implemented;
-no runtime changes or new LLM calls. Fresh local start 7 healthy, browser smoke4,
-Mermaid3 and full248 regression PASS; remote delivery remains pending.
-[Task note](../changes/WB-10.md).
+**2026-11-16 Moscow: WB-10 #38 released v1.4.2.**
+`docs/wb-10-delivery-evidence`, head54547a9, PR #39 → develop **e8e29cf**;
+promotion #40 → main **4a40e18099d98b275f768489a10f8a010003cd33**. All PR/develop/main jobs
+pass with explicit agent self-review, not independent human approval.
+[Main workflow](https://github.com/smalvik/biocad-workspace/actions/runs/43788663155) **248 checks /35 commands exit0**;
+clean server **20261116T015805Z-747e4b**, **224 raw Allure** (222+stage/prod2; Vitest separate).
+README clean scoped start7 healthy/browser4, Mermaid3; independent public app4/report4
+PASS, downloads0. Original 7 bookings/12 accounts per environment and 23 other
+containers unchanged; 14 own healthy. No runtime/schema/frontend-flow change or new LLM call.
+[Release](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.2), [actual evidence](../evidence/WB-10-remote.md).
+Active hours explicitly unmeasured. Next unfinished P0 docs: **WB-18**; P1 release-history
+UI and comfort/failover remain outside this task. Final post-release notes retained on
+WB-10 branch; start next task from develop and carry that docs commit.
 
 **2026-11-16 Moscow: WB-08 #33 and WB-11 #34 released v1.4.1.**
 `test/wb-08-regression-evidence`, PR #36 → develop 05e08e6; separate deadlock fix
@@ -19,9 +27,8 @@ Public app **4**, report UI **4**, expanded race attachments **2** passed, downl
 Both environments v1.4.1, 14 own containers healthy; original 7 bookings/12 accounts
 per environment and 23 other containers preserved. No new LLM calls.
 [Release](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.1), [Allure](https://biocad.smalvik.dev/allure/v1.4.1/),
-[evidence](../evidence/WB-08-remote.md). Next unfinished P0: **WB-10 delivery docs**.
-Post-release evidence stays on the WB-08 branch; start WB-10 from `develop` and carry
-its documentation commit, leaving the immutable released application source unchanged.
+[evidence](../evidence/WB-08-remote.md). At that checkpoint next P0 was WB-10; its branch carried the final WB-08 evidence
+commit while retaining the immutable released application source.
 
 **2026-11-16 Moscow: WB-07 released v1.4.0**, issue #30 / `feat/wb-07-email-notifications`.
 Reviewed PR #31 merged develop 82d14a4, promotion #32 merged main 5decd64.
@@ -64,6 +71,7 @@ Published [v1.0.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.0
 
 | WB | Branch | PR | Tests / Allure | Release | State |
 |---|---|---|---|---|---|
+| WB-10 | `docs/wb-10-delivery-evidence` | [#39 develop](https://github.com/smalvik/biocad-workspace/pull/39), [#40 main](https://github.com/smalvik/biocad-workspace/pull/40), issue #38 | [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43788663155), 248 /224 raw Allure; fresh browser4, Mermaid3; public app4/report4 | v1.4.2 | README/C1/C2/ADR/evidence/AI-LOG; [proof](../evidence/WB-10-remote.md) |
 | WB-08 | `test/wb-08-regression-evidence` | [#36 develop](https://github.com/smalvik/biocad-workspace/pull/36), [#37 main](https://github.com/smalvik/biocad-workspace/pull/37), issue #33 | [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648), 248 regression / 224 raw Allure; public app 4/report 4/race attachments 2 passed | v1.4.1 | Genuine red 2 failed / restored green 3 passed; test-only owned DB; [evidence](../evidence/WB-08-remote.md) |
 | WB-11 deadlock | `fix/wb-11-booking-deadlock` | [#35 develop](https://github.com/smalvik/biocad-workspace/pull/35), issue #34 | Standalone 240 passed, combined 248 passed, native arbitration + bounded retry tested | v1.4.1 | Actual 40P01/500 fixed; [evidence](../evidence/WB-11-booking-deadlock.md) |
 | WB-07 | `feat/wb-07-email-notifications` | [#31 develop](https://github.com/smalvik/biocad-workspace/pull/31), [#32 main](https://github.com/smalvik/biocad-workspace/pull/32), issue #30 | [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43763748048), 237 regression / Allure 213; public app 4/report UI 4 passed | v1.4.0 | Live outbox/RabbitMQ/Worker/Mailpit; durable dedup/retry, real rollback proof; [evidence](../evidence/WB-07-remote.md) |
@@ -78,7 +86,7 @@ Published [v1.0.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.0
 | WB-05 | `feat/wb-05-booking-flow` | [#19 merged develop](https://github.com/smalvik/biocad-workspace/pull/19), [#20 merged main](https://github.com/smalvik/biocad-workspace/pull/20), issue #18 | [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43690831879), 157 regression, Allure 134, final public smoke 4 + preview 2 | v1.2.0 | Released; 23 previous containers preserved; [evidence](../evidence/WB-05-remote.md) |
 | WB-06 | `feat/wb-06-assistant-mcp` | [#23 merged](https://github.com/smalvik/biocad-workspace/pull/23), [main #26](https://github.com/smalvik/biocad-workspace/pull/26), issue #22 | [Main/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43737645275), 189 regression / Allure 165; real free 3 API + 2 browser passed | v1.3.0 | Released, free-only $0; [evidence](../evidence/WB-06-remote.md) |
 | WB-11 free planning | `fix/wb-11-free-assistant-planning` | [#25 merged](https://github.com/smalvik/biocad-workspace/pull/25), issue #24 | Local/committed/server full regression and real free staging/production passed | v1.3.0 | Fixed before main promotion; no separate patch release |
-| WB-10 … WB-18 (except conditional WB-11 records) | See backlog | — | — | — | TODO; next P0 WB-10 |
+| WB-12 … WB-18 | See backlog | — | — | — | TODO by remaining scope; next P0 docs WB-18, WB-17 UI P1 |
 | WB-11 browser access | `fix/wb-11-browser-access` | [issue #21 open](https://github.com/smalvik/biocad-workspace/issues/21) | Earlier direct/VPN difference retained; user now reports browser opens | None | Monitoring; no infrastructure fix applied; [evidence](../evidence/WB-11-browser-access.md) |
 
 For each completed task, add the real branch, SHA, PR URL, command output summary, Allure run/report URL, merge SHA, staging verification and release (if any). Keep unfinished items TODO, never fabricate completed results.
