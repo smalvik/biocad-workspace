@@ -43,3 +43,12 @@ DO NOTHING plus bounded residual-deadlock retry, retaining all original constrai
 Consequence: PostgreSQL-specific DDL is intentional. Docker/database migrations
 are required for local use. HTTP 409 is an expected outcome when a slot changes
 between an availability read and confirmation.
+
+WB-10 review trace: [Alembic exclusion DDL](../../services/booking/migrations/versions/0001_booking_core.py),
+[native booking implementation](../../services/booking/app/bookings.py),
+[actual concurrent/idempotency/direct-SQL tests](../../services/booking/tests/integration/test_booking_core.py),
+[40P01/retry/exhaustion HTTP tests](../../services/booking/tests/integration/test_deadlock_retry.py).
+Rejected process-local mutexes do not coordinate multiple containers; a locking SELECT
+cannot lock a non-existent booking row to exclude a future overlapping interval.
+The DB constraint also protects direct writers. The exact constraint remains shipped;
+the intentionally broken schema exists only in a creation-owned disposable test DB.

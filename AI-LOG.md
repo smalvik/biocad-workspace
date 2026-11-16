@@ -1,70 +1,36 @@
-# AI-LOG — фактическая работа Codex, 14–16 ноября 2026 (МСК)
+# AI-LOG — фактическая работа, 14–16 ноября 2026 (МСК)
 
-Пользователь определял порядок задач, разрешил push/PR/merge/deploy и **только
-бесплатные модели, бюджет $0**. Codex продолжил найденный каркас, реализовал код,
-тесты и delivery. В PR явно записана самопроверка агента; независимое человеческое
-ревью не заявляется. Точный model id агента, его стоимость и затраченные часы неизвестны.
+Пользователь задавал приоритеты, предоставил доступы в ignored env, разрешил
+push/PR/merge/deploy, выбрал **только бесплатную модель / бюджет $0** и сообщил,
+что браузерный доступ восстановился. Codex подготовил код, тесты, документы и
+выполнил зафиксированные проверки. Личные code review/тесты пользователя не
+подтверждены. Review в PR — явная самопроверка агента, не независимое human approval.
+Активные часы разработчика/агента не измерялись; календарные даты их не заменяют.
+Точная модель/стоимость агента неизвестны. Не заявляем сэкономленные часы.
 
-- **WB-01/02/03:** Compose, CI/Allure; Booking/FastAPI/PostgreSQL с GiST `[start,end)`,
-  демо-сессиями/CSRF, идемпотентностью и outbox; React SVG-карта. Реальные проверки
-  параллельной записи и restart. Ошибка повторного HTTP-соединения аварийного outbox
-  probe исправлена отдельным WB-11, а не выдана за дефект бронирования.
-- **WB-09/v1.0.0:** по запросу пользователя до WB-04 настроены build-once SHA/digest
-  Docker Hub, restricted SSH dispatcher, staging/production, backup/rollback и релизы.
-  Реальная проверка сериализации публикации одинакового SHA после WB-11 #13.
-- **WB-04/v1.1.0, WB-05/v1.2.0:** поиск сотрудников, собственные вымышленные SVG-аватары,
-  таймлайн выбранного периода, отдельное подтверждение, свои брони/отмена и retry/reload.
-  Соответственно 131 и 157 regression checks; реальные desktop/mobile screenshots.
-- **WB-06/v1.3.0:** MCP 2.3.0 STDIO, RabbitMQ RPC, лимиты, user-bound proposal и
-  явное подтверждение. Ling 3.2 Flash `:free`, catalog/zero-price caps, без paid fallback;
-  CI явно scripted. Исправлены MCP schema/event loop, mobile occlusion и staging #24
-  через PR #25. После пользовательской паузы и явного resume: main 43737645275 PASS,
-  189 checks / server Allure 165; production real free 3 API + 2 browser PASS, cost=0,
-  без booking writes. Первый mobile 429 сохранён. [Evidence](docs/evidence/WB-06-remote.md).
-- **WB-09 follow-up/v1.3.1:** Nginx inline/read-only mount, атомарная публикация
-  проверенного release Allure. PR #28 → fd81f82, #29 → 8d8cf08; main 43745466108 PASS,
-  209 checks / server Allure 185, public HTTP + 4 report UI PASS, download=0.
-  [Evidence](docs/evidence/WB-09-allure-web.md). Новых LLM-вызовов не было.
-- **WB-07/v1.4.0:** outbox publisher, отдельный SQLite inbox Worker, Jinja2/Mailpit,
-  девять образов/schema 2 с legacy rollback. При review добавлены ФИО/контакт помощи,
-  убрана лишняя миграция. Реальный v1.3.1 upgrade/rollback/resume и повторный full 237 PASS;
-  первый import-path FAIL вспомогательного probe сохранён. PR #31 → develop 82d14a4,
-  #32 → main **5decd64**, main **43763748048 PASS**: 237 checks, 35 команд exit 0,
-  server Allure 213. Published 15.11 21:43:49 UTC / 16.11 00:43:49 МСК.
-  Public app 4/report UI 4 PASS, download=0; по 7 настоящих Mailpit писем в каждой среде,
-  очереди пусты. Исходные 7 броней/12 аккаунтов на среду и 23 других контейнера сохранены;
-  14 своих контейнеров healthy. SMTP ambiguous-commit window описан, exactly-once не обещан.
-  Новых inference calls не было. [Evidence](docs/evidence/WB-07-remote.md).
-- **WB-08 / WB-11 #34:** настоящий red/green probe обнаружил PostgreSQL deadlock
-  `40P01` и HTTP 500 при сохранённом constraint. Retry-only прошёл probe, но full20
-  выявил каскад deadlock; fix-ветка добавляет native ON CONFLICT и максимум три полных
-  попытки с тем же ключом. Финальная локальная регрессия 240 PASS / Allure 214.
-  [Реальные FAIL/PASS](docs/evidence/WB-11-booking-deadlock.md). PR #35 CI PASS, develop 75f661f.
-- **WB-08 + WB-11 #34 / v1.4.1:** отдельный child DB, два HTTP-процесса, настоящий
-  pytest RED 2 failed / восстановленный GREEN 3 passed, одинаковый source hash oracle,
-  исходные логи/результаты в Allure. Guards/cleanup и физическое отсутствие probe/pytest
-  в опубликованном runtime проверены. PR #35 → 75f661f, #36 → 05e08e6, #37 → main
-  **5364c9e05505041e0035ea1b28adef99c6f61346**. Feature/post-merge/promotion/main CI PASS;
-  main **43779639648 PASS**: 248 checks, 35 команд exit 0, server Allure 224 raw
-  (222 regression + stage/prod smoke; Vitest отдельно). Published 16.11 **00:35:01 UTC /
-  03:35:01 МСК**. Обе среды v1.4.1; public app 4/report 4/race attachments 2 PASS,
-  download=0. 7 броней/12 аккаунтов на среду и 23 других контейнера сохранены,
-  14 своих healthy, Mailpit 7/7 на среду. Предыдущая v1.4.0 и backup сохранены.
-  Реальные первоначальные FAIL не скрыты. Новых LLM-вызовов и миграций не было.
-  Итоговые docs: policy и staged secret scan (15 файлов) PASS, 147 локальных ссылок
-  без пропусков, `git diff --cached --check` PASS после удаления пустой строки в конце.
-  [Финальные доказательства](docs/evidence/WB-08-remote.md).
+| Конкретное решение | Инициатор / изменение | Фактическая проверка и след |
+|---|---|---|
+| Booking + PostgreSQL — единственный владелец записи; GiST `[start,end)` и idempotency | PRD/пользователь; агент реализовал. WB-08 обнаружил реальный 40P01/500; retry-only не выдержал full20, агент изменил решение на native ON CONFLICT + bounded residual retry | [ADR-001](docs/adr/001-booking-consistency.md), [исходные FAIL/PASS](docs/evidence/WB-11-booking-deadlock.md), [PR #35](https://github.com/smalvik/biocad-workspace/pull/35), [неизменный oracle RED/GREEN](docs/evidence/WB-08-remote.md) |
+| Модель только предлагает; read/propose через настоящий MCP STDIO/RabbitMQ; отдельное подтверждение | PRD/пользователь; agent выбрал free Ling после реального Gemma 429. Пользователь ограничил деньги $0, платный fallback исключён; planning limit исправлен отдельным PR | [protocol/code refs](docs/architecture/ASSISTANT.md), [PR #25](https://github.com/smalvik/biocad-workspace/pull/25), [real-free 3 API + 2 browser cost=0](docs/evidence/WB-06-remote.md); initial mobile 429 сохранён |
+| Изоляция delivery и честные гарантии уведомлений | Пользователь потребовал сохранить чужие приложения; agent адаптировал deployment к существующему Traefik, отдельным projects и restricted SSH. При review убрал лишнюю миграцию; SQLite inbox отделён от Booking DB, SMTP exactly-once не обещан | [ADR-002](docs/adr/002-broker-and-outbox.md), [PR #31](https://github.com/smalvik/biocad-workspace/pull/31), [реальный rollback/recovery](docs/evidence/WB-07-local.md), [23 чужих контейнера и данные сохранены](docs/evidence/WB-08-remote.md) |
 
-Реальные команды: `scripts/check.py --run-type regression`, pytest/Ruff/Vitest/
-Playwright/Allure в Docker; `gh issue/pr/run/release`, `remote_delivery.py`,
-`promote_images.py`, `publish_release.py`, `check_live_assistant.py`;
-safe SSH inventory и server-only сравнение данных. Секреты в ignored env/CI Secrets,
-не в Git/argv/логах; реальные персональные данные в LLM не отправлялись.
-Auto-review отклонил экспорт production IDs/fingerprints; заменено сравнением
-только на сервере, наружу только агрегаты. Неподтверждённые ключи не использовались.
+Разногласие по доступу: auto-review отклонил экспорт production IDs/fingerprints;
+agent заменил его серверным root-only сравнением и экспортом только агрегатов.
+Пользователь не заявлял проверку изменённого кода; автоматические результаты не
+выдаются за неё. Секреты не помещались в Git/argv/публичные логи; персональные
+данные в LLM не отправлялись. Новых LLM calls после v1.3.0 для WB-07/08/10 не требуется.
 
-Подробные команды, исходные FAIL и ограничения: [PROGRESS](docs/context/PROGRESS.md),
-[WB-09](docs/evidence/WB-09-remote.md), [WB-04](docs/evidence/WB-04-remote.md),
-[WB-05](docs/evidence/WB-05-remote.md), [WB-06](docs/evidence/WB-06-remote.md),
-[WB-07](docs/evidence/WB-07-local.md), [WB-08](docs/evidence/WB-08-remote.md).
-Следующая P0 — WB-10, документация поставки; остальные PRD-возможности не объявляются готовыми.
+Срез продукта v1.4.1: отдельные [PR #35](https://github.com/smalvik/biocad-workspace/pull/35)/
+[#36](https://github.com/smalvik/biocad-workspace/pull/36), main [#37](https://github.com/smalvik/biocad-workspace/pull/37),
+source **5364c9e**, [CI/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648):
+248 checks / 35 commands exit 0 / 224 raw server Allure. RED 2 failed, GREEN 3 passed
+в child DB; public app 4/report 4/race attachments 2 PASS, downloads=0; данные и
+23 чужих контейнера сохранены. [Progress и история](docs/context/PROGRESS.md).
+
+WB-10, [issue #38](https://github.com/smalvik/biocad-workspace/issues/38),
+`docs/wb-10-delivery-evidence` от develop05e08e6 с перенесёнными WB-08 notes e301cb3:
+agent сверяет C1/C2/ADR с кодом, сокращает README, составляет evidence index и
+проверил clean local запуск: 7 healthy, 4 browser smoke PASS; Mermaid3 и full248
+PASS, 35 commands exit0 / raw Allure222. [Task note](docs/changes/WB-10.md),
+[actual commands](docs/evidence/WB-10-remote.md). Часы запрошены, пока не указаны.
+Весь PRD и отложенные WB-12–18 не объявляются готовыми.

@@ -1,5 +1,11 @@
 # Actual implementation status — 2026-11-16 (Moscow)
 
+**WB-10 #38 in progress:** documentation-only `docs/wb-10-delivery-evidence` from
+develop05e08e6 plus carried WB-08 evidence e301cb3. Actual C1/C2, README, ADR review,
+evidence index and concise AI-LOG tested: fresh 7-service start, 4 browser smoke,
+3 Mermaid renders and full 248-check regression PASS. Remote gates pending.
+Product remains the verified v1.4.1 below.
+
 **WB-08 and conditional WB-11 #34 released v1.4.1:** genuine two-process PostgreSQL
 race evidence (RED 2 failed / restored GREEN 3 passed) and the discovered deadlock fix.
 Separate reviewed PRs #35/#36 → develop 05e08e6, promotion #37 → main5364c9e;

@@ -1,260 +1,211 @@
 # BIOCAD Workspace Booking
 
-React/Vite, независимые FastAPI Booking и Assistant, PostgreSQL, RabbitMQ,
-Mailpit и nginx. WB-01 интегрирован через PR #2 с успешным CI и post-merge regression.
-В WB-02 добавлен Booking API с демо-сессиями, миграцией и защитой PostgreSQL;
-результат его проверок — в [WB-02](docs/changes/WB-02.md).
-В WB-03 реализована интерактивная SVG-карта двух этажей с настоящим API,
-входом, фильтрами даты/времени и карточкой места. В WB-04 опубликованы поиск
-сотрудников, оригинальные вымышленные аватары и таймлайн владельцев по интервалу.
-WB-05 (форма, «Мои бронирования», отмена) выпущена в v1.2.0, 157 regression passed.
-WB-06 (MCP/RabbitMQ/AI-чат) и исправление planning #24 выпущены в **v1.3.0**.
-Работает настоящая `inclusionai/ling-3.2-flash:free`, только бесплатно, бюджет $0,
-без платного fallback. AI предлагает ресурс, отдельное подтверждение создаёт бронь.
-Полная регрессия 189 passed; реальная production приёмка — 3 API + 2 browser passed,
-все успешные ответы cost=0. Free-провайдер может вернуть 429; ручная форма доступна.
-WB-07 выпущен в **v1.4.0**: независимый Notification Worker отправляет письма о создании
-и отмене через RabbitMQ в Mailpit. Полная регрессия 237 passed; обновление/откат с
-v1.3.1 и восстановление после отказов брокера/SMTP проверены на реальных сервисах.
-В v1.3.1 добавлен [просмотр Allure в браузере](https://biocad.smalvik.dev/allure/)
-с автоматическим обновлением после релиза и архивом версий.
+Рабочее демо бронирования мест и переговорных: React, независимые Python FastAPI
+Booking/Assistant, PostgreSQL, RabbitMQ, Notification Worker и Mailpit.
+Booking Service и PostgreSQL — единственный источник подтверждённых броней.
 
-Статус и доказательства: [CURRENT_STATE](docs/context/CURRENT_STATE.md),
-[PROGRESS](docs/context/PROGRESS.md), [WB-01](docs/changes/WB-01.md).
-WB-02 и исправление WB-11 интегрированы в develop/main через проверенные PR.
-WB-03 слита в develop через [PR #9](https://github.com/smalvik/biocad-workspace/pull/9);
-[post-merge regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923).
-Рабочее демо: **https://biocad.smalvik.dev** ·
-[v1.4.1](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.1) ·
-[Allure в браузере](https://biocad.smalvik.dev/allure/).
-Вход: вымышленные `e01` … `e12`, пароль `demo-workspace`.
+**[Открыть приложение](https://biocad.smalvik.dev)** ·
+[Репозиторий](https://github.com/smalvik/biocad-workspace) ·
+[Опубликованный v1.4.1](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.1) ·
+[Allure в браузере](https://biocad.smalvik.dev/allure/)
 
-CI/CD WB-09: [runbook и фактический статус](docs/process/DELIVERY.md).
-Реализованы SHA/digest images, отдельные staging/production проекты, ограниченный SSH
-dispatcher, backup/rollback и Allure. Сервер обследован, BIOCAD admin/CI ключи созданы,
-ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648),
-248 regression / server Allure 224 raw results (Vitest отдельно); отдельный
-[real free LLM Allure v1.3.0](https://biocad.smalvik.dev/allure/v1.3.0/live/).
-[Архив v1.3.0](https://biocad.smalvik.dev/allure/v1.3.0/).
-23 старых контейнера и существующие брони/аккаунты сохранились.
-[Фактические evidence и ограничения WB-08 / v1.4.1](docs/evidence/WB-08-remote.md).
+Вымышленные демо-пользователи: **e01 … e12**, пароль **demo-workspace**.
+Официальный BIOCAD UI Kit и права на фотографии не предоставлены; цвета приближённые,
+аватары — собственные иллюстрации. Лица обозначают закрепление или бронь на выбранный
+период, а не физическое присутствие.
 
-## Локальный запуск
+## Запуск локально
 
-Нужны Docker с Linux containers и Compose >= 2.24.4. Node и uv на хосте не нужны.
-Из корня репозитория:
+Нужны Docker с Linux containers и Docker Compose **2.24.4+**, свободные порты из
+таблицы ниже. Node, uv и Python на хосте для самого приложения не требуются.
+Из корня клонированного репозитория выполните одну команду:
 
 ```powershell
 docker compose --env-file .env.example -f infra/compose.yaml up -d --build --wait
 ```
 
-Страница: http://localhost:8080. Booking Swagger: http://localhost:8080/api/docs.
-Assistant Swagger: http://localhost:8080/api/v1/assistant/docs. Mailpit: http://localhost:8025.
-API/БД/почта опубликованы только на loopback; RabbitMQ доступен внутри сети Compose.
-Проверка БД: http://localhost:8080/api/v1/readyz. `/healthz` проверяет жизнь процесса,
-`/readyz` Booking проверяет PostgreSQL и возвращает 503 при недоступности БД.
+Compose собирает приложение, ожидает healthchecks и создаёт persistent volumes.
+Booking при старте выполняет Alembic `upgrade head`, затем идемпотентный fictional seed:
+два этажа, минимум 12 сотрудников, места и демонстрационные брони. Повторный seed
+обновляет геометрию, сохраняя брони, аккаунты и пароли. Фиксированные примеры D-03:
+16.11.2026 МСК 10–12 Мария, 12–14 свободно, 14–16 Павел; для новой брони выберите
+будущую дату относительно времени сервера. D-07 закреплён за Анной и не бронируется.
 
-Для собственных настроек скопируйте `.env.example` в игнорируемый `.env` и используйте
-`--env-file .env` вместо `--env-file .env.example`. Не меняйте пароль уже созданного
-PostgreSQL volume только через env: это не изменит пароль роли в БД.
-Без OpenRouter-ключа ручное бронирование работает; для AI укажите в ignored `.env`
-`OPENROUTER_API_KEY`, `OPENROUTER_PRIMARY_MODEL=inclusionai/ling-3.2-flash:free`,
-`ASSISTANT_FREE_ONLY=true`, `ASSISTANT_BUDGET_USD=0` и длинный
-`ASSISTANT_PROPOSAL_SECRET`. Платные модели/fallback не разрешены.
-Значения по умолчанию подходят только локальному демо.
-Booking при запуске выполняет Alembic `upgrade head`. Локальный Compose включает
-`SEED_DEMO_DATA=true`: вымышленные данные из `docs/data/demo_fixture.json` загружаются
-идемпотентно, без перезаписи существующих броней. Вне локального окружения нужен
-собственный `SESSION_SECRET` длиной минимум 32 символа.
+| Адрес на этом компьютере | Назначение | Env для смены порта |
+|---|---|---|
+| http://localhost:8080 | React и проксирование API | `WEB_HOST_PORT` |
+| http://localhost:8080/api/docs | Booking Swagger | Через Web |
+| http://localhost:8080/api/v1/assistant/docs | Assistant Swagger | Через Web |
+| http://localhost:8025 | Mailpit: демонстрационные письма | `MAILPIT_HOST_PORT` |
+| http://localhost:8000/healthz | Booking напрямую | `BOOKING_HOST_PORT` |
+| http://localhost:8001/healthz | Assistant напрямую | `ASSISTANT_HOST_PORT` |
+| localhost:55432 | PostgreSQL для локальной разработки | `POSTGRES_HOST_PORT` |
 
-Остановить стенд с сохранением данных:
+Все host-порты привязаны к `127.0.0.1`. RabbitMQ доступен внутри Compose-сети.
+`/api/v1/healthz` — процесс Booking; `/api/v1/readyz` — доступность PostgreSQL.
+Assistant healthcheck проверяет процесс, а не способность внешнего LLM ответить.
+Worker имеет собственный heartbeat/storage healthcheck.
+
+Остановка с сохранением данных:
 
 ```powershell
 docker compose --env-file .env.example -f infra/compose.yaml down
 ```
 
-## Проверки
+Для собственных настроек скопируйте `.env.example` в игнорируемый `.env` и замените
+`--env-file .env.example` на `--env-file .env`. Пример и локальные fallback-пароли
+подходят только для демо. Изменение env-пароля PostgreSQL не меняет пароль роли
+в уже существующем volume; повторный seed также не сбрасывает пароль пользователя.
+Перечень env-имён и значений по умолчанию: [.env.example](.env.example),
+[local Compose](infra/compose.yaml). Настоящие значения не помещайте в Git или чат.
 
-С Python 3.12+ и Docker:
+## Что работает и как проверить
+
+1. Войдите как e01, выберите этаж, будущую дату и интервал МСК. Карта показывает
+   постоянные места, свободные/занятые FreeDesk и переговорные. Поиск сотрудника
+   выбирает его закрепление/бронь для выбранного времени; несколько броней дают
+   счётчик и полный таймлайн, а не одного «владельца» на всё окно.
+2. Выберите свободный ресурс → «Продолжить» → проверьте точный ресурс/время →
+   «Подтвердить бронирование». До подтверждения записи нет. В «Мои бронирования»
+   можно отменить свою бронь; повтор операции сохраняет тот же idempotency key.
+3. Откройте Mailpit: создание/отмена проходят через PostgreSQL outbox → RabbitMQ →
+   отдельный Worker → HTML/text SMTP. Отказ брокера/почты не откатывает бронь.
+4. Для AI настройте серверный ключ по инструкции ниже. Чат читает актуальные данные
+   через MCP и RabbitMQ и предлагает вариант. Отдельное точное подтверждение вызывает
+   Booking; модель не имеет инструмента записи. При отказе AI ручная форма доступна.
+
+GiST exclusion защищает `[start,end)` в БД, смежные интервалы разрешены. Даты хранятся
+как aware UTC, UI показывает Europe/Moscow. Повтор того же ключа/payload возвращает
+ту же бронь, изменённый payload или пересечение — 409. После исчерпания ограниченных
+повторов deadlock возвращается 503 `BOOKING_RETRY`; повторите с прежним ключом.
+Отмена чужой брони запрещена. [Код и доказательства](docs/architecture/EVIDENCE.md).
+
+## Реальный AI и границы расходов
+
+Без ключа OpenRouter приложение и ручная форма работают, AI вернёт понятную ошибку.
+В ignored `.env` задайте серверные `OPENROUTER_API_KEY`, `OPENROUTER_PRIMARY_MODEL`,
+`ASSISTANT_PROPOSAL_SECRET`, `ASSISTANT_FREE_ONLY` и `ASSISTANT_BUDGET_USD`.
+Настроенная модель — **inclusionai/ling-3.2-flash:free**; допускаются только проверенные
+бесплатные `:free`. Обязательны **ASSISTANT_FREE_ONLY=true**, **ASSISTANT_BUDGET_USD=0**;
+отдельный signing secret вне local — не менее 32 символов.
+Платный fallback и покупка кредитов не разрешены.
+
+Каждый чат проверяет актуальный каталог и нулевые цены; каждый provider request имеет
+нулевые price caps. Бесплатная модель может быть недоступна или вернуть 429; гарантии
+capacity нет. Лимит — 3 запроса/пользователь/минуту, до 4 model rounds/8 tools и 60 секунд.
+В браузере требуется согласие; в LLM отправляются текст и минимальные вымышленные
+данные, без cookies/ключей. [MCP/RPC, токены предложений и настройки](docs/architecture/ASSISTANT.md).
+
+## Тесты и настоящие отчёты
+
+Для runner нужен Python **3.12+** и Docker; npm/pytest/Playwright исполняются в образах.
 
 ```powershell
-python scripts/check.py
+python scripts/check.py --run-type smoke
 python scripts/check.py --run-type regression
 python scripts/check_policy.py
 ```
 
-Каждый прогон создаёт отдельный Compose-проект без host ports и отдельные volumes;
-использует `.env.example`, не читает локальные LLM-ключи и запускает явно scripted
-HTTP-провайдер без платных запросов. MCP SDK, RabbitMQ и PostgreSQL настоящие.
-После проверки удаляет только свои
-контейнеры и тестовые volumes. Уже запущенный проект `biocad` сохраняется.
+Оба режима сейчас запускают полный доступный набор; `run-type` меняет Allure metadata,
+а не объём проверок. Runner не читает локальный `.env`, создаёт уникальный Compose-проект
+без host-портов и удаляет только свои контейнеры/volumes. PostgreSQL, RabbitMQ, MCP
+и Mailpit настоящие; **LLM в CI явно scripted**, платных/реальных provider calls нет.
+Получаем Ruff, TypeScript/build, pytest, Vitest, desktop/mobile Playwright, проверку
+перезапуска/сохранности и настоящие broker/SMTP outage/recovery. Authenticated traces отключены.
 
-Проверяются сборка/TypeScript, Ruff, pytest трёх сервисов, настоящий PostgreSQL,
-AMQP round trip через durable queue с persistent message, SMTP → Mailpit,
-Vitest и Playwright Chromium для desktop/mobile. E2E проверяет вход/выход, два
-этажа, календарные окна, фильтры, детали, клавиатуру, pan/zoom/fit, ошибки API,
-просроченную сессию и запоздалые ответы, создание/отмену через UI и AI-предложение
-с отдельным подтверждением. Реальный OpenRouter проверяется отдельно с разрешённой
-бесплатной моделью и бюджетом $0; scripted regression не считается доказательством live LLM.
+Результаты сохраняются в ignored `artifacts/<UTC-run-id>/`: `run.json`, `commands.log`,
+`allure-results`, `test-results`, `playwright-report`. SHA и `working_tree=dirty|clean`
+описывают фактический snapshot. Actions генерирует HTML и прикрепляет artifacts;
+просто наличие файлов не означает PASS.
 
-Логи, `run.json`, Allure results, Playwright HTML и screenshots сохраняются отдельно
-в `artifacts/<UTC-run-id>/` (исключено из Git). SHA в отчёте — базовый HEAD;
-`working_tree=dirty` явно отмечает незакоммиченные изменения.
+- [v1.4.1 regression Allure](https://biocad.smalvik.dev/allure/v1.4.1/), просмотр inline.
+- [Исторический реальный бесплатный LLM smoke](https://biocad.smalvik.dev/allure/v1.3.0/live/):
+  3 API + 2 browser cases, cost=0, без booking writes. Это отдельное live-доказательство.
+- [Полный CI/CD v1.4.1 PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648):
+  248 regression checks, 35 команд exit 0; server 224 raw Allure (222 + stage/prod 2,
+  Vitest отдельно). UI Allure может группировать phase/history.
+- [Подлинный RED](docs/evidence/concurrency-red.md) / [GREEN](docs/evidence/concurrency-green.md):
+  две реальные HTTP-службы и disposable child DB. С отсутствующим constraint —
+  2 настоящих падения, с восстановленным — 3 passed. В отчёте: Behaviors →
+  race-red-green → Race sensitivity → `red.log` / `green.log`.
+  Мутация запрещена для persistent БД, probe/pytest отсутствуют в runtime-образе.
+- [Доставка WB-08 и сохранность данных](docs/evidence/WB-08-remote.md),
+  [текущая задача WB-10](docs/changes/WB-10.md).
 
-Authenticated traces отключены: cookies/CSRF не сохраняются в network artifacts.
-`.github/workflows/ci.yaml` проверяет PR в `develop`/`main`, полный набор после push
-в обе ветки, генерирует Allure HTML и загружает artifacts.
-Для WB-01 подтверждены [PR CI](https://github.com/smalvik/biocad-workspace/actions/runs/43598925846)
-и [post-merge regression](https://github.com/smalvik/biocad-workspace/actions/runs/43599195552).
-WB-02: [develop regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604565825)
-и [main regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604855360) — PASS.
-Публикация отчёта, staging, immutable release images и production реализованы в WB-09;
-WB-08 и отдельный WB-11 deadlock fix выпущены в **v1.4.1**: **248 проверок PASS**,
-подлинный RED **2 failed** / восстановленный GREEN **3 passed** в собственной временной БД.
-[RED](docs/evidence/concurrency-red.md), [GREEN](docs/evidence/concurrency-green.md).
-GiST остаётся защитой от пересечений; native conflict arbitration и ограниченный retry
-исправляют обнаруженные 40P01/500 при конкурентных подтверждениях.
-В [Allure v1.4.1](https://biocad.smalvik.dev/allure/v1.4.1/) откройте **Behaviors →
-race-red-green → Race sensitivity: genuine red FAIL, restored green PASS (disposable DB only)**,
-затем `red.log` / `green.log`. Реальные логи открыты Playwright на desktop/mobile,
-скачиваний нет. В опубликованном runtime-образе probe/pytest физически отсутствуют.
-Новых LLM-вызовов в WB-08/WB-11 не было. Следующая P0 — WB-10, документация поставки.
+## Архитектура, решения и API
 
-## Уведомления — WB-07 (v1.4.0)
+- [C1: контекст и внешние системы](docs/architecture/C1.md).
+- [C2: контейнеры, протоколы и владение данными](docs/architecture/C2.md).
+- [ADR-001: PostgreSQL, GiST, идемпотентность и deadlock](docs/adr/001-booking-consistency.md).
+- [ADR-002: RabbitMQ, outbox и отдельный notification inbox](docs/adr/002-broker-and-outbox.md).
+- [Evidence index: требование → код → тест → отчёт](docs/architecture/EVIDENCE.md).
 
-Подтверждение и отмена сохраняют событие в той же транзакции PostgreSQL. Отдельный
-publisher отправляет его с подтверждением RabbitMQ; Worker сохраняет собственный
-SQLite inbox в volume `notificationdata` перед ACK и отправляет HTML/text через Mailpit.
-У Worker нет доступа к Booking DB. Сбои RabbitMQ/SMTP не откатывают бронь; доставка
-повторяется с задержкой до 60 секунд, состояние переживает перезапуск.
+REST использует префикс `/api/v1`: auth `/auth/login`, `/auth/me`, `/auth/logout`;
+карта `/floors`, `/spaces?floor_id&from&to`, `/employees?q=&from=&to=`;
+брони `/bookings`, `/bookings/me`, `/bookings/{id}/cancel`. Swagger выше — точный контракт.
+Запись требует session cookie, `X-CSRF-Token` и для создания `Idempotency-Key`;
+владелец берётся из сессии. Передавайте ISO 8601 с offset. HTTP 401 — нет сессии,
+403 — CSRF/чужая отмена, 409 — конфликт, 422 — некорректный или прошлый интервал.
+Точный RabbitMQ envelope/operation allowlist — в [Assistant protocol](docs/architecture/ASSISTANT.md).
 
-Письмо содержит вымышленные ФИО/адрес, ресурс/этаж, точный интервал МСК, код брони
-и ссылку на приложение. Локально откройте http://localhost:8025 после бронирования.
-На сервере Mailpit остаётся внутренним; письма и их HTML проверяются в Allure.
-Разрешены только адреса `@example.test` и демо SMTP. Готовые события дедуплицируются;
-сбой между принятием SMTP и локальным commit может привести к повтору — SMTP exactly-once
-не обещается. Миграция Booking DB не требуется; старые события обогащаются при публикации.
-[ADR и ограничения](docs/adr/002-broker-and-outbox.md),
-[реальные проверки и откат](docs/evidence/WB-07-local.md),
-[релиз/сервер/публичные проверки](docs/evidence/WB-07-remote.md).
+## Staging, production и образы
 
-## Assistant — WB-06 (v1.3.0)
+[CI/CD runbook](docs/process/DELIVERY.md) описывает реальные команды и bootstrap.
+Feature issue → отдельная ветка → локальные проверки → reviewed PR в develop →
+полная regression/server/staging smoke → promotion PR в main → полный main/server
+gate → те же immutable digests в production → HTTPS smoke → version/latest/release/Allure.
+Review в текущих PR — явная самопроверка агента; независимое человеческое approval не заявлено.
 
-Для нового Assistant-кода смотрите [контракт и настройки WB-06](docs/architecture/ASSISTANT.md).
-В `.env` требуются реальный ключ, `OPENROUTER_PRIMARY_MODEL=inclusionai/ling-3.2-flash:free`,
-отдельный секрет предложений и `ASSISTANT_BUDGET_USD=0`. Разрешены только бесплатные
-модели: актуальный каталог и каждый provider request проверяют нулевую цену;
-платного fallback нет. Rate limits бесплатного провайдера могут временно ограничить чат.
-Кнопка «AI-ассистент» запрашивает согласие на отправку текста в OpenRouter.
-AI только предлагает ресурс/период; кнопка «Проверить предложение AI» открывает
-обычное точное подтверждение. Ручная форма работает независимо от AI/брокера.
-Доступно в public v1.3.0; [реальные проверки и Allure](docs/evidence/WB-06-remote.md).
+На общем сервере два отдельных Compose-проекта: `biocad-staging`, `biocad-production`.
+Только production Web присоединён к существующему Traefik ingress; API/БД/broker/Mailpit
+внутренние. Порты стендов — loopback 18081/18080. Внешний Mailpit route отсутствует.
+Ограниченный SSH dispatcher не даёт произвольный shell. Перед обновлением — проверенный
+`pg_dump`; image rollback использует предыдущий manifest и повторяет smoke. **Восстановление
+БД не автоматическое**: оно может потерять новые брони. Не выполняйте host-wide prune,
+удаление volume или перезапуск чужого proxy/daemon.
 
-## Booking API — WB-02
+| Runtime repository | Отдельный test image |
+|---|---|
+| [smalvik/biocad-web](https://hub.docker.com/r/smalvik/biocad-web) | [web-tests](https://hub.docker.com/r/smalvik/biocad-web-tests) |
+| [smalvik/biocad-booking](https://hub.docker.com/r/smalvik/biocad-booking) | [booking-tests](https://hub.docker.com/r/smalvik/biocad-booking-tests) |
+| [smalvik/biocad-assistant](https://hub.docker.com/r/smalvik/biocad-assistant) | [assistant-tests](https://hub.docker.com/r/smalvik/biocad-assistant-tests) |
+| [smalvik/biocad-notification](https://hub.docker.com/r/smalvik/biocad-notification) | [notification-tests](https://hub.docker.com/r/smalvik/biocad-notification-tests) |
+| — | [e2e](https://hub.docker.com/r/smalvik/biocad-e2e) |
 
-Локальные демо-логины: `e01` … `e12`, пароль по умолчанию `demo-workspace`
-(только вымышленные аккаунты). E01 — Анна, e02 — Дмитрий, e03 — Мария.
-`DEMO_PASSWORD` задаёт пароль при первом seed; повторный seed пароль существующей
-учётной записи не меняет. Настоящего SSO нет.
+Девять образов/schema 2, четыре runtime. `sha-<40-character-SHA>` — candidate,
+`v1.MINOR.PATCH` и `latest` — aliases после успешной доставки. Для воспроизведения
+используйте [опубликованный точный manifest v1.4.1](https://github.com/smalvik/biocad-workspace/releases/download/v1.4.1/candidate.json),
+а не подвижный latest. Один SHA собирается один раз; staging → production без rebuild.
 
-В [Swagger](http://localhost:8080/api/docs):
+## Объём, долги и время
 
-1. Выполните `POST /api/v1/auth/login` с `username` и `password`.
-   Браузер сохранит HttpOnly session cookie; ответ содержит `csrf_token`.
-2. Прочитайте `GET /api/v1/floors` и `GET /api/v1/spaces` с `floor_id`, `from`, `to`.
-   Даты — ISO с offset, например `2026-11-16T12:00:00+03:00`.
-3. Для `POST /api/v1/bookings` передайте `X-CSRF-Token`, уникальный `Idempotency-Key`
-   и точные `space_id`, `start_at`, `end_at`. Передайте их только после явного
-   решения подтвердить этот ресурс/интервал. Сервер возьмёт владельца из сессии.
-4. `GET /api/v1/bookings/me` показывает свои записи; `POST /api/v1/bookings/{id}/cancel`
-   с тем же CSRF-токеном отменяет только собственную бронь.
+Реализованы карта, поиск/аватары по выбранному времени, ручная форма/свои брони/отмена,
+AI read/propose/confirm, уведомления, защита БД, CI/CD и Allure. Это incremental demo,
+не утверждение о завершении всего PRD. Нет настоящего SSO/HR/CAD, HA-кластера или
+внешнего SMTP. Отложены model failover WB-12, расширенный comfort NLP/quiz/feedback
+WB-13–15, отдельный scope WB-16 и in-product release-history WB-17. Последняя страница
+ещё не реализована; опубликованные релизы доступны на GitHub. WB-18 — отдельная
+проверка interview playbook. [Актуальный статус](docs/context/CURRENT_STATE.md),
+[backlog](docs/tasks/BACKLOG.md), [progress](docs/context/PROGRESS.md).
 
-Первое подтверждение — 201; повтор идентичного запроса с тем же ключом — 200
-и та же бронь, даже после отмены. Новый payload с прежним ключом и пересечение — 409.
-Смежные интервалы разрешены; отмена освобождает слот. Отсутствие сессии — 401,
-чужая отмена/неверный CSRF — 403, некорректный период — 422. Новые брони в прошлом
-отклоняются; это локальное правило WB-02. Нужны даты в будущем относительно сервера.
+Работа в журнале относится к 14–16 ноября 2026 МСК. **Активные часы разработчика и
+агента не измерялись**; календарные timestamp CI/коммитов не выдаются за трудозатраты.
+Пользователь задавал приоритеты, предоставил доступы и сообщил о восстановлении
+браузерного доступа. Агент подготовил код/документы/тесты и выполнил описанные проверки.
+Личная проверка пользователем и точная модель/стоимость агента не подтверждены.
+[AI-LOG с конкретными решениями и изменениями](AI-LOG.md).
 
-Время хранится/возвращается в UTC; карта показывает время Europe/Moscow.
-D-07 закреплён за Анной и не бронируется. D-03 имеет два фиксированных слота
-16.11.2026 (10–12 Мария, 14–16 Павел МСК); 12–14 свободно.
-Поля reservations описывают бронь на время, не физическое присутствие.
+Практические выводы: SELECT перед записью не заменяет exclusion в БД; настоящий
+конкурентный тест выявляет ошибки, которых не видно в scripted provider tests;
+подтверждение SMTP и commit inbox не атомарны; deployment evidence и rollback надо
+проектировать вместе с фичей. Подробные альтернативы и ограничения — в двух ADR.
 
-Outbox-событие сохраняется с бронью в одной транзакции; отправки через RabbitMQ
-и писем о пользовательских бронях пока нет. [ADR-001](docs/adr/001-booking-consistency.md).
-Runner проверяет сохранность после настоящего restart PostgreSQL и Booking.
+## Навигация по репозиторию
 
-## Карта — WB-03
-
-Откройте http://localhost:8080/ и войдите (`e01`, `demo-workspace` по умолчанию).
-Основной план — 24 стола и 3 переговорные; второй — 12 столов и 2 переговорные.
-Офисные зоны, стены, двери, окна и вентиляция схематические и вымышленные.
-Положения ресурсов и статусы приходят из Booking API, а не из PNG.
-
-Выберите этаж, дату и интервал МСК; быстрые окна помогают проверить сценарий D-03.
-Поставьте фильтры типов/«Только свободные». Место выбирается кликом, Tab+Enter
-или через доступный список под картой; на мобильном карточка открывается снизу.
-Карту можно двигать за фон, приближать колесом/+ и возвращать кнопкой fit.
-При фокусе на схеме стрелки двигают её, Home возвращает исходный вид.
-
-Ручное обновление и polling 25 с получают новый snapshot. При смене периода
-старые статусы скрываются, прежний запрос отменяется; ответ другого периода
-не применяется. Карточка показывает все пересекающиеся брони и точное время.
-Это сведения о резервировании, не физическом присутствии. Авторы брони/аватары
-и поиск реализованы в WB-04. В WB-05 карта поддерживает запись
-после отдельного подтверждения; доступно в public v1.2.0.
-
-Seed обновляет геометрию floor/space для демо; существующие брони, аккаунты
-и пароли сохраняются. Alembic `0002_floor_plan` добавляет поле плана без изменения
-bookings/exclusion. [Проверки и настоящие screenshots](docs/evidence/WB-03-local.md).
-
-## Поиск сотрудников — WB-04
-
-WB-04: поиск по ФИО/отделу переключает этаж и выбирает бронь/постоянное место.
-Период 16.11.2026 для D-03: Мария 10–12, свободно без лица 12–14,
-Павел 14–16; 09–17 показывает два лица и полный таймлайн. Лица обозначают
-бронь/закрепление, а не присутствие. `GET /api/v1/employees?q=&from=&to=`,
-`/api/v1/employees/{id}/location?from=&to=` и `/api/v1/floors/{id}/occupancy?from=&to=`
-требуют демо-сессию; дата/время передаются с UTC offset.
-Без времени directory возвращает только профили, не предполагает текущую локацию.
-Портреты — собственные SVG-иллюстрации; отсутствие/ошибка картинки даёт инициалы.
-Проверки: [131 passed / реальные screenshots](docs/evidence/WB-04-local.md),
-[выпуск v1.1.0 / сервер / public smoke](docs/evidence/WB-04-remote.md).
-
-## Бронирование — WB-05
-
-Свободное место/переговорная → «Продолжить» → проверка точного
-ресурса/офиса/этажа/МСК → «Подтвердить бронирование». До этого записи нет.
-«Мои бронирования» показывает свои confirmed/cancelled записи; отмена тоже
-требует подтверждения. При потере ответа повторяет исходную операцию, включая
-после reload вкладки. [Локальные проверки](docs/evidence/WB-05-local.md),
-[реальный release/server/public smoke](docs/evidence/WB-05-remote.md).
-
-## Begin here (VS Code + Codex)
-
-1. Unzip the handoff; open **`biocad-workspace`** as the VS Code workspace folder (`File → Open Folder`).
-2. Install/open the official **Codex IDE extension**, sign in using your ChatGPT account; or use Codex CLI from the workspace terminal.
-3. Open `START_HERE.md` and paste the text from `CODEX_FIRST_PROMPT.md` into Codex. The root `AGENTS.md` is its recurring task contract.
-4. Run `python scripts/verify_handoff.py` to confirm files and asset counts. This does not test a product.
-5. Read `CURRENT_STATE.md` and `PROGRESS.md`, then continue the next unfinished WB task on its own branch.
-6. Configure API keys and tokens **locally** using env files ignored by Git and GitHub Actions Secrets, never in chats or committed files.
-
-## Canonical project contents
-- `docs/requirements/PRD_v1.2.md` — full PRD v1.2, the canonical scope and acceptance rules.
-- `docs/context/CHAT_HANDOFF.md` — human-readable distilled history of decisions across this ChatGPT thread.
-- `docs/context/CURRENT_STATE.md` — evidence-based status; no code falsely marked shipped.
-- `docs/tasks/` — branch-by-task backlog WB-01…WB-18.
-- `docs/design/UI_CONTRACT.md` — map/avatars/calendar/drawer/responsiveness/UI tokens.
-- `references/desktop`, `tablet`, `mobile` — 54 latest PNGs covering 18 WB steps.
-- `references/calendar_scenarios` — 12 scenarios + overview for four time ranges.
-- `references/legacy` — early prototypes/reference PNGs, not requirements.
-- `references/viewer_standalone.html` — static interactive viewer, **not** React/MCP production code.
-- `docs/interview/INTERVIEW_GUIDE.md` — 72 practice questions/answers.
-- `docs/changes` and `docs/releases` — task/release notes templates. Historic release UI is **demo only**.
-- `docs/process/DEVELOPMENT_PROCESS.md` — required Git, test, staging and release procedure.
-- `CODEX_FIRST_PROMPT.md` and `docs/codex/PROMPTS.md` — prompts for startup and one task at a time.
-
-## Primary rules
-The real product must implement the original test assignment faithfully, including PostgreSQL concurrent booking, adjacent timestamps, idempotency, persistence, working React booking form, live MCP + real LLM assistant, RabbitMQ services, Mailpit, Playwright / pytest / Allure, C1/C2/ADR/AI-LOG and a public deploy. P1 comfort features, quiz and feedback follow working P0.
-
-Do not count these PNGs, copied markdown documents or HTML prototypes as completed product development. See `docs/context/CURRENT_STATE.md`.
+`apps/web` — React/Nginx; `services/booking` — API/Alembic/RPC/outbox;
+`services/assistant` — FastAPI/MCP/LLM; `services/notification` — Worker/Jinja2/SQLite;
+`tests/e2e` — Playwright; `infra` — Compose/ingress; `scripts` — проверки/delivery.
+[PRD v1.2](docs/requirements/PRD_v1.2.md) и [approved decisions](docs/requirements/DECISIONS.md)
+канонические. `references/` и static HTML — концепты, не исходники или доказательство
+релиза. Исторический handoff: [START_HERE](START_HERE.md); статус реализации берите
+из CURRENT_STATE, а не из старых startup prompts.

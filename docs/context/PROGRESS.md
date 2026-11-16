@@ -1,5 +1,11 @@
 # Development progress (fill with actual evidence)
 
+**WB-10 #38 in progress:** separate `docs/wb-10-delivery-evidence` from develop05e08e6,
+carried WB-08 evidence e301cb3. README/C1/C2/ADR/evidence index/AI-LOG implemented;
+no runtime changes or new LLM calls. Fresh local start 7 healthy, browser smoke4,
+Mermaid3 and full248 regression PASS; remote delivery remains pending.
+[Task note](../changes/WB-10.md).
+
 **2026-11-16 Moscow: WB-08 #33 and WB-11 #34 released v1.4.1.**
 `test/wb-08-regression-evidence`, PR #36 → develop 05e08e6; separate deadlock fix
 `fix/wb-11-booking-deadlock`, PR #35 → 75f661f; promotion #37 → main **5364c9e05505041e0035ea1b28adef99c6f61346**.
