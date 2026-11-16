@@ -1,13 +1,12 @@
 # Actual implementation status — 2026-11-16 (Moscow)
 
-**WB-08 in progress / discovered WB-11 #34:** a real synchronized two-process probe
-found PostgreSQL deadlock `40P01` returning HTTP 500 in v1.4.0; exclusion still prevents
-double booking. Separate `fix/wb-11-booking-deadlock` adds native conflict arbitration
-and bounded complete-transaction retry. The retry-only probe passed but a 20-request
-full run exposed a deadlock cascade; native-path full 240 checks passed, PR #35 CI green
-and merged develop 75f661f. WB-08 complete local 248 passed / Allure 222, actual child
-red 2 failed and restored green 3 passed, runtime excludes the probe. No production update yet.
-[Actual bug evidence](../evidence/WB-11-booking-deadlock.md).
+**WB-08 and conditional WB-11 #34 released v1.4.1:** genuine two-process PostgreSQL
+race evidence (RED 2 failed / restored GREEN 3 passed) and the discovered deadlock fix.
+Separate reviewed PRs #35/#36 → develop 05e08e6, promotion #37 → main5364c9e;
+[main CI/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648), **248 checks**, all 35 commands exit 0.
+Both persistent environments updated; no new LLM calls or Booking migration.
+[Actual delivery evidence](../evidence/WB-08-remote.md),
+[actual bug history](../evidence/WB-11-booking-deadlock.md).
 
 **WB-07 released v1.4.0:** PR #31 → develop 82d14a4, #32 → main 5decd64.
 Outbox → RabbitMQ → independent durable Notification Worker → private Mailpit HTML/text
@@ -24,14 +23,14 @@ zero downloads. Existing data and 23 unrelated containers preserved.
 
 **WB-06 and WB-11 planning fix released as v1.3.0.**
 Current production: **https://biocad.smalvik.dev** ·
-[published v1.4.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.0) ·
-[remote evidence](../evidence/WB-07-remote.md).
-Production/staging source **5decd646785e8b9932dab7aa838ae2a3f1f74f7b**; develop **82d14a4**.
+[published v1.4.1](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.1) ·
+[remote evidence](../evidence/WB-08-remote.md).
+Production/staging source **5364c9e05505041e0035ea1b28adef99c6f61346**; develop **05e08e6**.
 User pause was explicitly resumed; [historical handoff](PAUSE_HANDOFF.md).
 
 | Capability | Observed state |
 |---|---|
-| Booking authority | Live Booking FastAPI + PostgreSQL; GiST `[start,end)`, real concurrent winner/adjacency tests, durable UTC data, authenticated fictional users, CSRF and idempotency |
+| Booking authority | Live Booking FastAPI + PostgreSQL; GiST `[start,end)`, native conflict arbitration and bounded deadlock retry; real concurrent winner/adjacency and RED/GREEN tests, durable UTC data, authenticated fictional users, CSRF and idempotency |
 | React manual flow | Two-floor SVG map, Moscow period/filtering, employee lookup, fictional portraits, selected-period occupancy/timeline; explicit confirmation, own list and cancel-own-only; retry/reload |
 | Assistant | Independently deployed FastAPI; official MCP 2.3.0 STDIO tools; all Booking interservice calls via durable RabbitMQ RPC; no Assistant DB access or network HTTP to Booking |
 | Real LLM | OpenRouter `inclusionai/ling-3.2-flash:free`; free-only consent, budget $0, catalog zero-price checks and per-request zero caps; no paid fallback |
@@ -39,22 +38,23 @@ User pause was explicitly resumed; [historical handoff](PAUSE_HANDOFF.md).
 | Rate/limits | Durable 3 requests/user/minute, bounded tools/rounds/time/input, one bounded same-model 429 retry; provider capacity is not guaranteed |
 | Mailpit/notifications | Live in both environments; seven legacy messages captured in each, durable Worker dedup/retry, zero pending jobs/queues. Fictional full name/address, resource/floor, Moscow interval, booking code/CTA. SMTP acceptance/commit crash duplicate window is explicit |
 | CI/CD | GitHub Actions → immutable Docker Hub digests → complete isolated server regression → staging/smoke → exact production digests/HTTPS smoke → aliases/release/Allure |
-| Deploy isolation | Separate `biocad-staging`/`biocad-production`; 14 own containers healthy, existing Traefik ingress; 23 unrelated containers preserved, backup/previous production v1.3.1 retained |
+| Deploy isolation | Separate `biocad-staging`/`biocad-production`; 14 own containers healthy, existing Traefik ingress; 23 unrelated containers preserved, backup/previous production v1.4.0 retained |
 | Requirements/visuals | PRD v1.2 + approved DECISIONS canonical; references/static HTML are concepts, not implementation evidence; official BIOCAD UI Kit/rights not provided |
 
-Main [workflow 43763748048](https://github.com/smalvik/biocad-workspace/actions/runs/43763748048)
-passed **237 checks** (100 Booking/delivery, 24 Assistant, 20 Worker, 2 persistence,
-5 outage/recovery phases, 26 Vitest and 60 Playwright); server Allure **213 raw results**
-(211 regression + stage/prod smoke),
+Main [workflow 43779639648](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648)
+passed **248 checks** (111 Booking/delivery, 24 Assistant, 20 Worker, 2 persistence,
+5 outage/recovery phases, 26 Vitest and 60 Playwright); server Allure **224 raw results**
+(222 regression + stage/prod smoke; UI may group history/phase identities),
 Vitest separately. CI provider is explicitly scripted; MCP/RabbitMQ/PostgreSQL real.
 Original v1.3.0 production actual-free acceptance: **3 API + 2 desktop/mobile browser cases**,
 all successful provider responses cost=0, no booking writes. Initial mobile provider
 429 is retained separately; final sequential repeat passed without runtime/model changes.
 Existing 7 bookings/12 accounts per environment and all 23 other containers preserved.
-WB-07 made no new inference calls. Public application smoke 4 and report UI 4 passed;
-Allure opens inline with zero downloads and retains those original live results.
+WB-07/WB-08/WB-11 #34 made no new inference calls. Public application smoke 4, report UI 4
+and race log attachment UI 2 passed; Allure opens inline with zero downloads and retains
+those original live results. Published Booking runtime physically excludes probe/pytest.
 
-Next unfinished P0: **WB-08 race/red-green evidence**, then remaining delivery docs.
+Next unfinished P0: **WB-10 delivery documentation** (WB-09 already shipped).
 P1 comfort/quiz/failover/feedback and the actual
 in-product release-history page are not claimed delivered. See [backlog](../tasks/BACKLOG.md).
 
