@@ -21,15 +21,14 @@ it cannot replace previously published report content. Previous versions remain 
 
 ## Actual status
 
-Latest delivery branches: `test/wb-08-regression-evidence` ([issue #33](https://github.com/smalvik/biocad-workspace/issues/33))
-and separate `fix/wb-11-booking-deadlock` ([issue #34](https://github.com/smalvik/biocad-workspace/issues/34));
-original infrastructure issue #10. Runtime Compose, restricted SSH dispatcher and Actions are live.
-**Working in production:** [v1.4.1](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.1),
-https://biocad.smalvik.dev. Main workflow `43779639648` passed complete 248-check regression,
-real server staging/prod smoke, digest promotion and release/Allure publication.
+Latest delivery: `docs/wb-10-delivery-evidence`, [issue #38](https://github.com/smalvik/biocad-workspace/issues/38);
+documentation only, original infrastructure issue #10. Runtime Compose/restricted dispatcher live.
+**Working in production:** [v1.4.2](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.2),
+https://biocad.smalvik.dev. Main workflow `43788663155` passed complete 248-check
+regression, real server staging/prod smoke, digest promotion and release/Allure publication.
 Registry/deployment gates are enabled after verified credentials/bootstrap.
 [Initial infrastructure evidence](../evidence/WB-09-remote.md),
-[current race proof, delivery and preservation of 23 existing containers](../evidence/WB-08-remote.md).
+[current delivery and preservation of 23 existing containers](../evidence/WB-10-remote.md).
 
 ## Delivery contract
 
@@ -45,8 +44,8 @@ WB-07 adds `smalvik/biocad-notification` to runtime repositories `biocad-web`,
 `biocad-booking`, `biocad-assistant`, and `biocad-notification-tests` to separate test
 runners `biocad-web-tests`, `biocad-booking-tests`, `biocad-assistant-tests`, `biocad-e2e`.
 All nine use `sha-<40-character-source-sha>` candidates. Four runtime services receive
-`v1.MINOR.PATCH` / `latest` aliases after production validation. Production v1.4.1
-has nine images and four runtime services, previous production v1.4.0 also uses schema 2.
+`v1.MINOR.PATCH` / `latest` aliases after production validation. Production v1.4.2
+has nine images and four runtime services, previous production v1.4.1 also uses schema 2.
 Legacy v1.3.1 has seven/three and remains accepted by the manifest/rollback contract.
 
 The first checked incremental delivery starts at `v1.0.0`. Subsequent published snapshots bump MINOR if their commits include `feat`, otherwise PATCH.
