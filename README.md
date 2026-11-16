@@ -13,9 +13,9 @@ WB-06 (MCP/RabbitMQ/AI-чат) и исправление planning #24 выпущ
 без платного fallback. AI предлагает ресурс, отдельное подтверждение создаёт бронь.
 Полная регрессия 189 passed; реальная production приёмка — 3 API + 2 browser passed,
 все успешные ответы cost=0. Free-провайдер может вернуть 429; ручная форма доступна.
-WB-07 реализован локально: независимый Notification Worker отправляет письма о создании
-и отмене через RabbitMQ в Mailpit. Проверены 237 случаев и реальный откат v1.3.1;
-финальная проверка шаблонов также прошла. Доставка через PR ещё ожидается.
+WB-07 выпущен в **v1.4.0**: независимый Notification Worker отправляет письма о создании
+и отмене через RabbitMQ в Mailpit. Полная регрессия 237 passed; обновление/откат с
+v1.3.1 и восстановление после отказов брокера/SMTP проверены на реальных сервисах.
 В v1.3.1 добавлен [просмотр Allure в браузере](https://biocad.smalvik.dev/allure/)
 с автоматическим обновлением после релиза и архивом версий.
 
@@ -25,19 +25,19 @@ WB-02 и исправление WB-11 интегрированы в develop/main
 WB-03 слита в develop через [PR #9](https://github.com/smalvik/biocad-workspace/pull/9);
 [post-merge regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923).
 Рабочее демо: **https://biocad.smalvik.dev** ·
-[v1.3.1](https://github.com/smalvik/biocad-workspace/releases/tag/v1.3.1) ·
+[v1.4.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.0) ·
 [Allure в браузере](https://biocad.smalvik.dev/allure/).
 Вход: вымышленные `e01` … `e12`, пароль `demo-workspace`.
 
 CI/CD WB-09: [runbook и фактический статус](docs/process/DELIVERY.md).
 Реализованы SHA/digest images, отдельные staging/production проекты, ограниченный SSH
 dispatcher, backup/rollback и Allure. Сервер обследован, BIOCAD admin/CI ключи созданы,
-ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43745466108),
-209 regression / server Allure 185 raw results; отдельный
+ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43763748048),
+237 regression / server Allure 213 raw results; отдельный
 [real free LLM Allure v1.3.0](https://biocad.smalvik.dev/allure/v1.3.0/live/).
 [Архив v1.3.0](https://biocad.smalvik.dev/allure/v1.3.0/).
 23 старых контейнера и существующие брони/аккаунты сохранились.
-[Фактические evidence и ограничения](docs/evidence/WB-09-allure-web.md).
+[Фактические evidence и ограничения WB-07](docs/evidence/WB-07-remote.md).
 
 ## Локальный запуск
 
@@ -109,9 +109,13 @@ Authenticated traces отключены: cookies/CSRF не сохраняютс�
 WB-02: [develop regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604565825)
 и [main regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604855360) — PASS.
 Публикация отчёта, staging, immutable release images и production реализованы в WB-09;
-дополнительные race/red-green evidence остаются WB-08.
+WB-08 реализован и проверен локально: 248 outer checks, подлинный red 2 failed /
+restored green 3 passed в отдельной временной БД. [RED](docs/evidence/concurrency-red.md),
+[GREEN](docs/evidence/concurrency-green.md). Probe/pytest отсутствуют в runtime-образе;
+сами логи и исходные результаты child pytest вложены в Allure. Доставка WB-08 ожидается;
+реально найденный deadlock исправлен отдельно в WB-11 PR #35.
 
-## Уведомления — WB-07 (локально, доставка ожидается)
+## Уведомления — WB-07 (v1.4.0)
 
 Подтверждение и отмена сохраняют событие в той же транзакции PostgreSQL. Отдельный
 publisher отправляет его с подтверждением RabbitMQ; Worker сохраняет собственный
@@ -126,7 +130,8 @@ SQLite inbox в volume `notificationdata` перед ACK и отправляет
 сбой между принятием SMTP и локальным commit может привести к повтору — SMTP exactly-once
 не обещается. Миграция Booking DB не требуется; старые события обогащаются при публикации.
 [ADR и ограничения](docs/adr/002-broker-and-outbox.md),
-[реальные проверки и откат](docs/evidence/WB-07-local.md).
+[реальные проверки и откат](docs/evidence/WB-07-local.md),
+[релиз/сервер/публичные проверки](docs/evidence/WB-07-remote.md).
 
 ## Assistant — WB-06 (v1.3.0)
 
