@@ -5,7 +5,9 @@ carried final WB-07 docs a2657f9. Its initial real red/green experiment exposed 
 Booking deadlock handling defect #34. Separate `fix/wb-11-booking-deadlock` uses native
 ON CONFLICT arbitration plus at most three `40P01` transaction attempts; retry-only
 handling proved insufficient under 20-caller contention. Native full regression 240 PASS / Allure 214;
-WB-08 draft probe preserved separately. Production still v1.4.0.
+WB-11 PR #35 CI 43775620397 PASS, merged develop 75f661f; post-merge 43776298717 running.
+WB-08 full local 20261115T233744Z-14784d **248 PASS**, 35 commands exit 0 / Allure 222;
+genuine red 2 failed, restored green 3 passed, runtime probe/pytest absent. Production still v1.4.0.
 [Bug evidence](../evidence/WB-11-booking-deadlock.md).
 
 **2026-11-16 Moscow: WB-07 released v1.4.0**, issue #30 / `feat/wb-07-email-notifications`.

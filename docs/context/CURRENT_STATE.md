@@ -4,7 +4,9 @@
 found PostgreSQL deadlock `40P01` returning HTTP 500 in v1.4.0; exclusion still prevents
 double booking. Separate `fix/wb-11-booking-deadlock` adds native conflict arbitration
 and bounded complete-transaction retry. The retry-only probe passed but a 20-request
-full run exposed a deadlock cascade; native-path full 240 checks passed. No production update yet.
+full run exposed a deadlock cascade; native-path full 240 checks passed, PR #35 CI green
+and merged develop 75f661f. WB-08 complete local 248 passed / Allure 222, actual child
+red 2 failed and restored green 3 passed, runtime excludes the probe. No production update yet.
 [Actual bug evidence](../evidence/WB-11-booking-deadlock.md).
 
 **WB-07 released v1.4.0:** PR #31 → develop 82d14a4, #32 → main 5decd64.

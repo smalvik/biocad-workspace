@@ -42,7 +42,13 @@ Final standalone WB-11 full **20261115T232844Z-108797 passed 240 checks**:
 Base a2657f9 / dirty fix-only tree, no WB-08 draft probe in this full run.
 [Run metadata](../../artifacts/20261115T232844Z-108797/run.json),
 [actual full log](../../artifacts/WB-11-deadlock-regression-native.log).
-Committed-head PR/server validation remains pending.
+Committed head **2bc728e58d306997e4af4535f043857e540653f8** passed
+[PR #35 CI 43775620397](https://github.com/smalvik/biocad-workspace/actions/runs/43775620397),
+with explicit agent self-review (not independent human approval), merged develop
+**75f661fcd75670bf3fce9efa7e3fe37c5bc9ef64** on 15 November 23:42:54 UTC
+/ 16 November 02:42:54 Moscow. Post-merge server/staging workflow
+[43776298717 running](https://github.com/smalvik/biocad-workspace/actions/runs/43776298717);
+main promotion remains pending WB-08.
 First standalone full attempt **20261115T232051Z-64f160** stopped at **102 passed /
 1 failed**: retry/exhaustion worked, but a subsequent manual-retry test interval
 randomly overlapped another parameter case and correctly returned 409. The fixture
