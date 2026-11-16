@@ -52,3 +52,13 @@ booking/cancellation E2E. Actual commands/results belong in the WB-07 evidence n
 Primary sources: [RabbitMQ acknowledgements and confirms](https://www.rabbitmq.com/docs/confirms),
 [aio-pika publication semantics](https://docs.aio-pika.com/_modules/aio_pika/exchange.html),
 [Mailpit integration testing](https://mailpit.axllent.org/docs/integration/).
+
+WB-10 review trace: [publisher](../../services/booking/app/outbox.py),
+[RPC adapter](../../services/booking/app/rpc.py),
+[Worker/inbox](../../services/notification/app/store.py),
+[publisher integration](../../services/booking/tests/integration/test_outbox_publisher.py),
+[real outage/replay phases](../../services/booking/tests/integration/notifications_recovery.py),
+[actual C2](../architecture/C2.md). A direct network REST call was rejected for backend
+interservice work by the project requirement; in-process ASGI reuse inside Booking
+is an implementation adapter, not such a call. RPC deadlines and temporary reply queues
+bound work but do not replace idempotency when a committed reply is lost.
