@@ -40,10 +40,20 @@
   выявил каскад deadlock; fix-ветка добавляет native ON CONFLICT и максимум три полных
   попытки с тем же ключом. Финальная локальная регрессия 240 PASS / Allure 214.
   [Реальные FAIL/PASS](docs/evidence/WB-11-booking-deadlock.md). PR #35 CI PASS, develop 75f661f.
-- **WB-08:** отдельный child DB, два HTTP-процесса, настоящий pytest red 2 failed /
-  восстановленный green 3 passed, одинаковый source hash oracle, исходные логи/результаты
-  в Allure. Guards/cleanup и отсутствие probe/pytest в runtime проверены. Full local
-  248 PASS / 222 raw Allure, 35 команд exit 0. Production пока v1.4.0; доставка ожидается.
+- **WB-08 + WB-11 #34 / v1.4.1:** отдельный child DB, два HTTP-процесса, настоящий
+  pytest RED 2 failed / восстановленный GREEN 3 passed, одинаковый source hash oracle,
+  исходные логи/результаты в Allure. Guards/cleanup и физическое отсутствие probe/pytest
+  в опубликованном runtime проверены. PR #35 → 75f661f, #36 → 05e08e6, #37 → main
+  **5364c9e05505041e0035ea1b28adef99c6f61346**. Feature/post-merge/promotion/main CI PASS;
+  main **43779639648 PASS**: 248 checks, 35 команд exit 0, server Allure 224 raw
+  (222 regression + stage/prod smoke; Vitest отдельно). Published 16.11 **00:35:01 UTC /
+  03:35:01 МСК**. Обе среды v1.4.1; public app 4/report 4/race attachments 2 PASS,
+  download=0. 7 броней/12 аккаунтов на среду и 23 других контейнера сохранены,
+  14 своих healthy, Mailpit 7/7 на среду. Предыдущая v1.4.0 и backup сохранены.
+  Реальные первоначальные FAIL не скрыты. Новых LLM-вызовов и миграций не было.
+  Итоговые docs: policy и staged secret scan (15 файлов) PASS, 147 локальных ссылок
+  без пропусков, `git diff --cached --check` PASS после удаления пустой строки в конце.
+  [Финальные доказательства](docs/evidence/WB-08-remote.md).
 
 Реальные команды: `scripts/check.py --run-type regression`, pytest/Ruff/Vitest/
 Playwright/Allure в Docker; `gh issue/pr/run/release`, `remote_delivery.py`,
@@ -56,5 +66,5 @@ Auto-review отклонил экспорт production IDs/fingerprints; зам�
 Подробные команды, исходные FAIL и ограничения: [PROGRESS](docs/context/PROGRESS.md),
 [WB-09](docs/evidence/WB-09-remote.md), [WB-04](docs/evidence/WB-04-remote.md),
 [WB-05](docs/evidence/WB-05-remote.md), [WB-06](docs/evidence/WB-06-remote.md),
-[WB-07](docs/evidence/WB-07-local.md).
-Следующая P0 — WB-08; остальные PRD-возможности не объявляются готовыми.
+[WB-07](docs/evidence/WB-07-local.md), [WB-08](docs/evidence/WB-08-remote.md).
+Следующая P0 — WB-10, документация поставки; остальные PRD-возможности не объявляются готовыми.

@@ -47,8 +47,12 @@ Committed head **2bc728e58d306997e4af4535f043857e540653f8** passed
 with explicit agent self-review (not independent human approval), merged develop
 **75f661fcd75670bf3fce9efa7e3fe37c5bc9ef64** on 15 November 23:42:54 UTC
 / 16 November 02:42:54 Moscow. Post-merge server/staging workflow
-[43776298717 running](https://github.com/smalvik/biocad-workspace/actions/runs/43776298717);
-main promotion remains pending WB-08.
+[43776298717 PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43776298717):
+real server **20261115T234957Z-36f94f**, clean75f661f, **240 checks / 35 commands exit 0**,
+**215 raw Allure** including staging smoke. Completed WB-08 PR #36, promotion #37 →
+main **5364c9e05505041e0035ea1b28adef99c6f61346**; [main 43779639648](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648) **PASS**,
+combined **248 checks / 224 raw server Allure**. Published patch **v1.4.1**, both
+persistent environments updated. [Final release/public/preservation evidence](WB-08-remote.md).
 First standalone full attempt **20261115T232051Z-64f160** stopped at **102 passed /
 1 failed**: retry/exhaustion worked, but a subsequent manual-retry test interval
 randomly overlapped another parameter case and correctly returned 409. The fixture
@@ -62,7 +66,7 @@ against all usable existing constraints, then checks the same idempotency key to
 return replay or conflict. No named exclusion dependency is introduced into SQL;
 the WB-08 missing-constraint sensitivity experiment remains possible in its private DB.
 Three-attempt `40P01` retry stays as a fallback, not the normal contention mechanism.
-The intended promotion includes this fix and completed WB-08 together after checked
+The actual promotion included this fix and completed WB-08 together after separate checked
 develop PRs, following the existing feature-plus-conditional-fix delivery process.
 No LLM calls, paid resources, Booking migration or persistent data mutation.
 

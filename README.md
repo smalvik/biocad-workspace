@@ -25,19 +25,19 @@ WB-02 и исправление WB-11 интегрированы в develop/main
 WB-03 слита в develop через [PR #9](https://github.com/smalvik/biocad-workspace/pull/9);
 [post-merge regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923).
 Рабочее демо: **https://biocad.smalvik.dev** ·
-[v1.4.0](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.0) ·
+[v1.4.1](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.1) ·
 [Allure в браузере](https://biocad.smalvik.dev/allure/).
 Вход: вымышленные `e01` … `e12`, пароль `demo-workspace`.
 
 CI/CD WB-09: [runbook и фактический статус](docs/process/DELIVERY.md).
 Реализованы SHA/digest images, отдельные staging/production проекты, ограниченный SSH
 dispatcher, backup/rollback и Allure. Сервер обследован, BIOCAD admin/CI ключи созданы,
-ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43763748048),
-237 regression / server Allure 213 raw results; отдельный
+ограниченный dispatcher установлен. [Main workflow PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648),
+248 regression / server Allure 224 raw results (Vitest отдельно); отдельный
 [real free LLM Allure v1.3.0](https://biocad.smalvik.dev/allure/v1.3.0/live/).
 [Архив v1.3.0](https://biocad.smalvik.dev/allure/v1.3.0/).
 23 старых контейнера и существующие брони/аккаунты сохранились.
-[Фактические evidence и ограничения WB-07](docs/evidence/WB-07-remote.md).
+[Фактические evidence и ограничения WB-08 / v1.4.1](docs/evidence/WB-08-remote.md).
 
 ## Локальный запуск
 
@@ -109,11 +109,16 @@ Authenticated traces отключены: cookies/CSRF не сохраняютс�
 WB-02: [develop regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604565825)
 и [main regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604855360) — PASS.
 Публикация отчёта, staging, immutable release images и production реализованы в WB-09;
-WB-08 реализован и проверен локально: 248 outer checks, подлинный red 2 failed /
-restored green 3 passed в отдельной временной БД. [RED](docs/evidence/concurrency-red.md),
-[GREEN](docs/evidence/concurrency-green.md). Probe/pytest отсутствуют в runtime-образе;
-сами логи и исходные результаты child pytest вложены в Allure. Доставка WB-08 ожидается;
-реально найденный deadlock исправлен отдельно в WB-11 PR #35.
+WB-08 и отдельный WB-11 deadlock fix выпущены в **v1.4.1**: **248 проверок PASS**,
+подлинный RED **2 failed** / восстановленный GREEN **3 passed** в собственной временной БД.
+[RED](docs/evidence/concurrency-red.md), [GREEN](docs/evidence/concurrency-green.md).
+GiST остаётся защитой от пересечений; native conflict arbitration и ограниченный retry
+исправляют обнаруженные 40P01/500 при конкурентных подтверждениях.
+В [Allure v1.4.1](https://biocad.smalvik.dev/allure/v1.4.1/) откройте **Behaviors →
+race-red-green → Race sensitivity: genuine red FAIL, restored green PASS (disposable DB only)**,
+затем `red.log` / `green.log`. Реальные логи открыты Playwright на desktop/mobile,
+скачиваний нет. В опубликованном runtime-образе probe/pytest физически отсутствуют.
+Новых LLM-вызовов в WB-08/WB-11 не было. Следующая P0 — WB-10, документация поставки.
 
 ## Уведомления — WB-07 (v1.4.0)
 

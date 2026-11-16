@@ -36,4 +36,16 @@ The ordinary blocking 20-request real HTTP test remains unchanged. Whole local
 [whole-run metadata](../../artifacts/20261115T233744Z-14784d/run.json).
 Runtime image physically excludes both mutation probe and pytest;
 [actual network-disabled inspection](../../artifacts/WB-08-runtime-boundary-local.json).
-Clean CI/server/public report validation will be recorded when actually completed.
+Published **v1.4.1**, clean main **5364c9e05505041e0035ea1b28adef99c6f61346**;
+[main CI/server](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648) PASS. Real server **20261116T002540Z-52c71a**
+again records genuine RED exit 1 / 2 failed and GREEN exit 0 / 3 passed,
+same oracle hash above, exact catalog restoration and owned database removed.
+[Actual main GREEN output](../../artifacts/WB-08-main-delivery/server/5364c9e05505041e0035ea1b28adef99c6f61346/20261116T002540Z-52c71a/green-pytest.log),
+[main structured proof](../../artifacts/WB-08-main-delivery/server/5364c9e05505041e0035ea1b28adef99c6f61346/20261116T002540Z-52c71a/race-proof.json),
+[final delivery evidence](WB-08-remote.md).
+Open [Allure v1.4.1](https://biocad.smalvik.dev/allure/v1.4.1/):
+**Behaviors → race-red-green → Race sensitivity: genuine red FAIL, restored green
+PASS (disposable DB only)**, then **green.log**. Both attachments actually opened
+in public desktop/mobile browser checks with **zero downloads**.
+[Actual browser result](../../artifacts/WB-08-race-production-browser/run.json).
+No runtime mutation flag; the published Booking image physically excludes probe/pytest.
