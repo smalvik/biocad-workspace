@@ -41,7 +41,7 @@ MCP/PostgreSQL/RabbitMQ/Mailpit real, LLM explicitly scripted; no new inference 
 No new unit/browser tests mirroring documentation were added; existing real behavioral
 coverage validates the implementation described by the playbook.
 
-## Initial preservation snapshot and pending remote gates
+## Initial preservation snapshot (before delivery)
 
 Fresh counts before delivery: staging **7 bookings /
 12 accounts**; production **9
@@ -49,6 +49,86 @@ bookings /12 accounts**. These are the actual
 21 November baseline, not copied from old seven-booking release notes.
 Individual IDs/fingerprints stay root-only on the server; only aggregates exported.
 [Actual counts](../../artifacts/WB-18-data-before.json).
-**23 unrelated containers** recorded. Final preservation is not preclaimed.
-PR, clean CI, post-merge server/staging, promotion/main and release remain pending;
-results and published URLs will be recorded only after completion.
+**23 unrelated containers** recorded. Final preservation results are below.
+## Completed remote gates
+
+| Gate | Actual result |
+|---|---|
+| [PR #42](https://github.com/smalvik/biocad-workspace/pull/42), head312f9a2 | [CI 44899736150 PASS](https://github.com/smalvik/biocad-workspace/actions/runs/44899736150); check/package pass, PR delivery correctly skipped |
+| Develop merge | **9c30d7a096b3b1ad104a4413b21c8c6c0b990b16**, 2026-11-21T11:41:19Z UTC |
+| Post-merge develop | [44900291312 PASS](https://github.com/smalvik/biocad-workspace/actions/runs/44900291312); complete CI/server regression and persistent staging smoke |
+| [Promotion #43](https://github.com/smalvik/biocad-workspace/pull/43) | [44900329820 PASS](https://github.com/smalvik/biocad-workspace/actions/runs/44900329820); same-SHA complete nine-image manifests exactly equal |
+| Main merge | **fb0d3428e3631e94e13f3bd2c0f8ddc15c01269d**, 2026-11-21T11:59:47Z UTC |
+| Main | [44901696653 PASS](https://github.com/smalvik/biocad-workspace/actions/runs/44901696653); full CI/server/staging/production, exact digest promotion, aliases, release and Allure |
+
+Reviews explicitly state **agent self-review**, not independent human approval.
+Clean real develop server **20261121T114809Z-c8616b**, **248 checks /35 commands exit0 /
+223 raw Allure** including staging smoke. Clean main server **20261121T121710Z-d1ed12**,
+**248 /35exit0 /224 raw Allure** (222 regression + stage/prod2; Vitest26 separate).
+[Develop metadata](../../artifacts/WB-18-develop-delivery/server/9c30d7a096b3b1ad104a4413b21c8c6c0b990b16/20261121T114809Z-c8616b/run.json),
+[main metadata](../../artifacts/WB-18-main-delivery/server/fb0d3428e3631e94e13f3bd2c0f8ddc15c01269d/20261121T121710Z-d1ed12/run.json),
+[build-once proof](../../artifacts/WB-18-build-once-proof.json).
+Raw expected child failures remain real attachments of the passing sensitivity gate;
+Allure UI can group phase/history identities and does not promise 224 visible rows.
+
+Published **[v1.4.3](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.3)**, **2026-11-21T12:27:48Z UTC**,
+non-draft/non-prerelease, exact source **fb0d3428e3631e94e13f3bd2c0f8ddc15c01269d**. Same complete nine-image/schema2
+main manifest in staging and production, four runtime version/latest aliases after smoke.
+
+### Preserved first failure and capacity recovery
+
+Main attempt1 passed check/package, then refused before starting server regression:
+the diagnostic inventory after the refusal measured **4,134,772 KiB available RAM**
+(about3.94 GiB), below the unchanged
+**4,194,304 KiB /4 GiB** preflight minimum; disk had about31.3 GiB free.
+No main server test ran and no production deployment occurred in that attempt.
+[Actual first-attempt jobs](../../artifacts/WB-18-main-attempt1.json),
+[original failure log](../../artifacts/WB-18-main-failed-attempt1.log).
+An explicit scoped operational recovery checked ownership marker/project labels,
+acquired the existing deploy lock and temporarily stopped only seven **private
+biocad-staging** containers, retaining volumes. Production remained v1.4.2 and foreign
+projects were not stopped. Available RAM became **4,502,268 KiB** (about4.29 GiB).
+[Actual recovery](../../artifacts/WB-18-capacity-recovery.json).
+`gh run rerun 44901696653 --failed` reran only delivery as **attempt2**, using
+the already built immutable main candidate; check/package were not rebuilt.
+Attempt2 passed full regression/staging/production and restored all seven staging
+services. The resource guard was not weakened. Automated capacity recovery is not
+implemented; future heavy gates still require the documented resource budget.
+
+## Independent public proof and final preservation
+
+Public application **4 desktop/mobile PASS**, no booking writes/inference.
+Allure latest + original v1.3.0 live report **4 PASS**, downloads0; HTTP
+inline/content-type/source/checksum PASS. Additionally the documented path
+Behaviors → race-red-green → Race sensitivity → red.log/green.log was exercised
+in **2 desktop/mobile checks PASS**, real NONOVERLAP_INVARIANT/2failed and 3passed
+visible, downloads0. This validates the new interview instructions.
+[App result](../../artifacts/WB-18-production-browser/run.json),
+[report UI result](../../artifacts/WB-18-allure-production-browser/run.json),
+[actual expanded race logs](../../artifacts/WB-18-race-production-browser/run.json).
+[Open app](https://biocad.smalvik.dev),
+[versioned Allure](https://biocad.smalvik.dev/allure/v1.4.3/).
+
+All **14 own containers healthy/running**; **23 unrelated
+container IDs/images/start times/restart counts unchanged**. Original staging
+**7 bookings /12 accounts**,
+production **9 bookings /12 accounts**
+preserved, changed/missing0. Current counts can grow through legitimate user activity;
+individual identifiers/fingerprints remain server-only, root0600.
+[Final aggregate data check](../../artifacts/WB-18-data-final.json),
+[container comparison](../../artifacts/WB-18-preservation-proof.json),
+[filtered server state](../../artifacts/WB-18-final-server-state.json).
+Sampled foreign HTTP results are recorded separately and not claimed healthy merely
+because they match baseline. Worker healthy both, outbox/jobs/queues drained;
+sent/captured counts are actual values in [notification audit](../../artifacts/WB-18-final-notifications.json).
+
+Previous production **v1.4.2 /4a40e18** and validated backups retained:
+staging **20261121T122535-3afd24.dump /29722 bytes**,
+production **20261121T122604-dc6c82.dump /32238 bytes**.
+No raw snapshots/backups in public assets, proxy/DNS/daemon change, DB migration,
+foreign-project mutation, external SMTP or new task LLM call.
+
+Personal-hours estimate remains a separate ignored illustrative draft pending owner
+review, not published accounting or a claim of human code review. Next planned P1:
+**WB-12 free-model failover**, still subject to the free-only/$0 constraint. Remaining
+comfort/quiz/feedback/timeline/release-history UI are not claimed implemented.
