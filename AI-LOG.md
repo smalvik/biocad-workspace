@@ -1,4 +1,4 @@
-# AI-LOG — фактическая работа, 14–16 ноября 2026 (МСК)
+# AI-LOG — работа 14–16 ноября; продолжение 21 ноября 2026 (МСК)
 
 Пользователь задавал приоритеты, предоставил доступы в ignored env, разрешил
 push/PR/merge/deploy, выбрал **только бесплатную модель / бюджет $0** и сообщил,
@@ -27,10 +27,22 @@ source **5364c9e**, [CI/server PASS](https://github.com/smalvik/biocad-workspace
 в child DB; public app 4/report 4/race attachments 2 PASS, downloads=0; данные и
 23 чужих контейнера сохранены. [Progress и история](docs/context/PROGRESS.md).
 
-WB-10, [issue #38](https://github.com/smalvik/biocad-workspace/issues/38),
+WB-10 выпущен в **v1.4.2**, [issue #38](https://github.com/smalvik/biocad-workspace/issues/38),
 `docs/wb-10-delivery-evidence` от develop05e08e6 с перенесёнными WB-08 notes e301cb3:
 agent сверяет C1/C2/ADR с кодом, сокращает README, составляет evidence index и
 проверил clean local запуск: 7 healthy, 4 browser smoke PASS; Mermaid3 и full248
 PASS, 35 commands exit0 / raw Allure222. [Task note](docs/changes/WB-10.md),
 [actual commands](docs/evidence/WB-10-remote.md). Часы запрошены, пока не указаны.
+PR39 → develope8e29cf, PR40 → main4a40e18;
+[CI/server 43788663155 PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43788663155): 248/35exit0/raw224.
+Public app4/report4 PASS, download0; данные/23 чужих контейнера сохранены.
+Новых LLM calls и runtime changes не было; следующая P0 docs — WB-18.
 Весь PRD и отложенные WB-12–18 не объявляются готовыми.
+
+WB-18, issue #41: 21 ноября продолжены существующие черновики; guide18/72 сверен
+с кодом, исправлены ACL/trace/SMTP/RPC/deploy и безопасный walkthrough, готовится
+полная проверка. Runtime/schema не менялись, новых LLM calls нет. Пользователь попросил
+сгенерировать оценку часов отдельно: создан локальный иллюстративный черновик для
+проверки, не подтверждённый журнал. В публичных документах факт остаётся «не измерялось».
+Локальный full **20261121T112324Z-e3bdea PASS**: 248/35exit0/raw222;
+structure18/72 и links PASS. Remote CI/release ещё не заявляются выполненными.

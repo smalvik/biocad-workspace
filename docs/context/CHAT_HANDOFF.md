@@ -1,11 +1,10 @@
 # Conversation handoff — BIOCAD Workspace Booking
 
-**Current release on 2026-11-15:** v1.3.1, main 8d8cf08 / develop fd81f82.
-WB-06 + fix #24 shipped v1.3.0; browser Allure follow-up #27 now also released.
-Read CURRENT_STATE and [actual remote proof](../evidence/WB-09-allure-web.md).
+**Current release on 2026-11-16:** v1.4.2 (WB-10 docs), main 4a40e18 / develop e8e29cf.
+Read CURRENT_STATE and [actual remote proof](../evidence/WB-10-remote.md).
 Public report: https://biocad.smalvik.dev/allure/. Free models only / $0.
-Next P0 is WB-07. Post-release evidence is committed on retained `ci/wb-09-allure-web`;
-carry those documentation changes onto the next branch from develop before new work.
+Next unfinished P0 docs: WB-18. Post-release evidence is committed on retained
+`docs/wb-10-delivery-evidence`; carry it onto the next branch from develop before new work.
 The [pause record](PAUSE_HANDOFF.md) is historical, not an active stop instruction.
 
 This is an authored, curated summary of the **visible user requirements and created artifacts**, not a verbatim transcript or automatic transfer of ChatGPT private context. Resolve any conflict using the newest PRD v1.2 and explicit human updates.
