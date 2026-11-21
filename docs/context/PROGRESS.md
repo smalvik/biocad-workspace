@@ -1,5 +1,13 @@
 # Development progress (fill with actual evidence)
 
+**WB-18 #41 in progress, 21 November 2026 Moscow:** existing
+`docs/wb-18-interview-playbook` from develope8e29cf plus carried WB-10 evidencee7af1e4.
+18-section/72-Q&A guide, code/evidence table and safe local walkthrough completed;
+runtime unchanged. Local full248 /35exit0 /rawAllure222 PASS, run20261121T112324Z-e3bdea;
+structure18/72 and links pass. Remote delivery is still pending.
+The v1.4.2 results below are historical gates, not claimed newly executed today.
+[Task note](../changes/WB-18.md).
+
 **2026-11-16 Moscow: WB-10 #38 released v1.4.2.**
 `docs/wb-10-delivery-evidence`, head54547a9, PR #39 → develop **e8e29cf**;
 promotion #40 → main **4a40e18099d98b275f768489a10f8a010003cd33**. All PR/develop/main jobs
