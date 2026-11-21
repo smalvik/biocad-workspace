@@ -1,12 +1,15 @@
 # Actual implementation status — 2026-11-21 (Moscow)
 
-**WB-18 #41 in progress, 21 November 2026 Moscow:** existing
-`docs/wb-18-interview-playbook` from develope8e29cf plus carried WB-10 evidencee7af1e4.
-18-section/72-Q&A guide, code/evidence table and safe local walkthrough completed;
-runtime unchanged. Local full248 /35exit0 /rawAllure222 PASS, run20261121T112324Z-e3bdea;
-structure18/72 and links pass. Remote delivery is still pending.
-The v1.4.2 results below are historical gates, not claimed newly executed today.
-[Task note](../changes/WB-18.md).
+**WB-18 #41 released v1.4.3, 21 November 2026 Moscow:** 18-task/72-Q&A
+guide verified against code, evidence table and safe local walkthrough. PR #42
+→ develop9c30d7a, promotion #43 → main **fb0d3428e3631e94e13f3bd2c0f8ddc15c01269d**.
+[Main CI/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/44901696653): **248 /35exit0 /224 raw Allure**,
+public app4/report4/expanded race logs2 PASS, downloads0. Original staging
+7 bookings and production 9 bookings,
+12 accounts per environment and 23 unrelated containers preserved;
+14 own healthy. Documentation only, no new LLM calls. Separate personal-hours draft
+is not verified accounting. [Actual evidence](../evidence/WB-18-remote.md).
+Next planned P1: **WB-12 free-model failover**, free-only/$0; other P1 scope remains TODO.
 
 **WB-10 #38 released v1.4.2:** actual C1/C2, reviewed ADRs, reproducible README,
 evidence index and concise AI-LOG; documentation only. PR #39 → develope8e29cf,
@@ -39,9 +42,9 @@ zero downloads. Existing data and 23 unrelated containers preserved.
 
 **WB-06 and WB-11 planning fix released as v1.3.0.**
 Current production: **https://biocad.smalvik.dev** ·
-[published v1.4.2](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.2) ·
-[remote evidence](../evidence/WB-10-remote.md).
-Production/staging source **4a40e18099d98b275f768489a10f8a010003cd33**; develop **e8e29cf**.
+[published v1.4.3](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.3) ·
+[remote evidence](../evidence/WB-18-remote.md).
+Production/staging source **fb0d3428e3631e94e13f3bd2c0f8ddc15c01269d**; develop **9c30d7a**.
 User pause was explicitly resumed; [historical handoff](PAUSE_HANDOFF.md).
 
 | Capability | Observed state |
@@ -52,12 +55,12 @@ User pause was explicitly resumed; [historical handoff](PAUSE_HANDOFF.md).
 | Real LLM | OpenRouter `inclusionai/ling-3.2-flash:free`; free-only consent, budget $0, catalog zero-price checks and per-request zero caps; no paid fallback |
 | AI booking | User consent, live read/propose tools, map highlight, signed user-bound 10-minute proposal, separate exact confirmation; no automatic booking; AI failure leaves manual form available |
 | Rate/limits | Durable 3 requests/user/minute, bounded tools/rounds/time/input, one bounded same-model 429 retry; provider capacity is not guaranteed |
-| Mailpit/notifications | Live in both environments; seven legacy messages captured in each, durable Worker dedup/retry, zero pending jobs/queues. Fictional full name/address, resource/floor, Moscow interval, booking code/CTA. SMTP acceptance/commit crash duplicate window is explicit |
+| Mailpit/notifications | Live in both environments; actual sent/captured counts recorded in WB-18 audit, durable Worker dedup/retry, zero pending jobs/queues. Fictional notification fields only; SMTP acceptance/commit duplicate window explicit |
 | CI/CD | GitHub Actions → immutable Docker Hub digests → complete isolated server regression → staging/smoke → exact production digests/HTTPS smoke → aliases/release/Allure |
-| Deploy isolation | Separate `biocad-staging`/`biocad-production`; 14 own containers healthy, existing Traefik ingress; 23 unrelated containers preserved, backup/previous production v1.4.1 retained |
+| Deploy isolation | Separate `biocad-staging`/`biocad-production`; 14 own containers healthy, existing Traefik ingress; 23 unrelated containers preserved, backup/previous production v1.4.2 retained |
 | Requirements/visuals | PRD v1.2 + approved DECISIONS canonical; references/static HTML are concepts, not implementation evidence; official BIOCAD UI Kit/rights not provided |
 
-Main [workflow 43788663155](https://github.com/smalvik/biocad-workspace/actions/runs/43788663155)
+Main [workflow 44901696653](https://github.com/smalvik/biocad-workspace/actions/runs/44901696653)
 passed **248 checks** (111 Booking/delivery, 24 Assistant, 20 Worker, 2 persistence,
 5 outage/recovery phases, 26 Vitest and 60 Playwright); server Allure **224 raw results**
 (222 regression + stage/prod smoke; UI may group history/phase identities),
@@ -65,13 +68,14 @@ Vitest separately. CI provider is explicitly scripted; MCP/RabbitMQ/PostgreSQL r
 Original v1.3.0 production actual-free acceptance: **3 API + 2 desktop/mobile browser cases**,
 all successful provider responses cost=0, no booking writes. Initial mobile provider
 429 is retained separately; final sequential repeat passed without runtime/model changes.
-Existing 7 bookings/12 accounts per environment and all 23 other containers preserved.
-WB-07/WB-08/WB-10/WB-11 #34 made no new inference calls. Current public application
-smoke4 and report UI4 passed; original v1.4.1 race log attachment UI2 also passed; Allure opens inline with zero downloads and retains
+Current preservation audit: staging7/production9 original bookings,
+12 accounts per environment and 23 other containers preserved.
+WB-07/WB-08/WB-10/WB-18/WB-11 #34 made no new task inference calls. Current public application
+smoke4, report UI4 and expanded race log UI2 passed; Allure opens inline with zero downloads and retains
 those original live results. Published Booking runtime physically excludes probe/pytest.
 
-Next unfinished P0 docs: **WB-18 interview playbook verification**; WB-17 process
-notes/releases exist, its in-product UI remains P1. WB-09 already shipped.
+Next planned P1: **WB-12 free-model failover**; WB-17 process notes/releases exist,
+its in-product UI remains P1. This does not claim completion of the entire PRD.
 P1 comfort/quiz/failover/feedback and the actual
 in-product release-history page are not claimed delivered. See [backlog](../tasks/BACKLOG.md).
 

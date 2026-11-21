@@ -21,4 +21,4 @@
 | WB-15 | — | — | — | — | Not implemented |
 | WB-16 | — | — | Partial in WB-04: [snapshot](../../services/booking/app/bookings.py) | — | Separate scope not started |
 | WB-17 | — | — | Task notes + [docs/releases](../releases/v1.4.2.md); no in-product page | — | Process only; UI not implemented |
-| WB-18 | [Issue #41](https://github.com/smalvik/biocad-workspace/issues/41); PR pending | Base `e7af1e4` | [PLAYBOOK](PLAYBOOK.md), [task evidence](../changes/WB-18.md) | Pending actual run | In progress |
+| WB-18 | [#42](https://github.com/smalvik/biocad-workspace/pull/42), main [#43](https://github.com/smalvik/biocad-workspace/pull/43), issue #41 | Head `312f9a2`, merge `9c30d7a`, main `fb0d342` | [PLAYBOOK](PLAYBOOK.md), [actual evidence](../evidence/WB-18-remote.md) | [main PASS](https://github.com/smalvik/biocad-workspace/actions/runs/44901696653), [Allure](https://biocad.smalvik.dev/allure/v1.4.3/) | Released v1.4.3 |

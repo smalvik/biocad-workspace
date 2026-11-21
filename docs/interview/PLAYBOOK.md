@@ -1,6 +1,8 @@
-# Interview playbook — проверено по коду v1.4.2
+# Interview playbook — WB-18, опубликован v1.4.3
 
 Срез реализации: опубликованный main **4a40e18** ([v1.4.2](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.2)).
+WB-18 опубликован в [v1.4.3](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.3); полная регрессия и
+браузерная проверка red.log/green.log прошли. [Фактические gates](../evidence/WB-18-remote.md).
 Проверка документа продолжена 21 ноября 2026 МСК. Текущий статус сервера подтверждается
 отдельной проверкой, а не возрастом этого среза или фактом существования релиза.
 Ответы из [INTERVIEW_GUIDE](INTERVIEW_GUIDE.md) сверены с реальными файлами и тестами.
@@ -82,7 +84,7 @@ Raw Allure и логи — в `artifacts/<UTC-run-id>`. Не запускайт�
 выполняют один набор с разными metadata. Браузерные проверки записи ограничены
 local/isolated hosts; публичный smoke не создаёт/отменяет брони.
 
-Для демонстрации чувствительности откройте [версионный Allure v1.4.2](https://biocad.smalvik.dev/allure/v1.4.2/):
+Для демонстрации чувствительности откройте [версионный Allure v1.4.3](https://biocad.smalvik.dev/allure/v1.4.3/):
 **Behaviors → race-red-green → Race sensitivity: genuine red FAIL, restored green
 PASS (disposable DB only)** → `red.log` / `green.log`. Там настоящий child RED
 с 2 failed и GREEN с 3 passed; обычный outer gate успешен только при восстановлении

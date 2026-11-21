@@ -21,14 +21,14 @@ it cannot replace previously published report content. Previous versions remain 
 
 ## Actual status
 
-Latest delivery: `docs/wb-10-delivery-evidence`, [issue #38](https://github.com/smalvik/biocad-workspace/issues/38);
+Latest delivery: `docs/wb-18-interview-playbook`, [issue #41](https://github.com/smalvik/biocad-workspace/issues/41);
 documentation only, original infrastructure issue #10. Runtime Compose/restricted dispatcher live.
-**Working in production:** [v1.4.2](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.2),
-https://biocad.smalvik.dev. Main workflow `43788663155` passed complete 248-check
+**Working in production:** [v1.4.3](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.3),
+https://biocad.smalvik.dev. Main workflow `44901696653` passed complete 248-check
 regression, real server staging/prod smoke, digest promotion and release/Allure publication.
 Registry/deployment gates are enabled after verified credentials/bootstrap.
 [Initial infrastructure evidence](../evidence/WB-09-remote.md),
-[current delivery and preservation of 23 existing containers](../evidence/WB-10-remote.md).
+[current delivery, capacity recovery and preservation](../evidence/WB-18-remote.md).
 
 ## Delivery contract
 
@@ -44,8 +44,8 @@ WB-07 adds `smalvik/biocad-notification` to runtime repositories `biocad-web`,
 `biocad-booking`, `biocad-assistant`, and `biocad-notification-tests` to separate test
 runners `biocad-web-tests`, `biocad-booking-tests`, `biocad-assistant-tests`, `biocad-e2e`.
 All nine use `sha-<40-character-source-sha>` candidates. Four runtime services receive
-`v1.MINOR.PATCH` / `latest` aliases after production validation. Production v1.4.2
-has nine images and four runtime services, previous production v1.4.1 also uses schema 2.
+`v1.MINOR.PATCH` / `latest` aliases after production validation. Production v1.4.3
+has nine images and four runtime services, previous production v1.4.2 also uses schema 2.
 Legacy v1.3.1 has seven/three and remains accepted by the manifest/rollback contract.
 
 The first checked incremental delivery starts at `v1.0.0`. Subsequent published snapshots bump MINOR if their commits include `feat`, otherwise PATCH.
@@ -92,6 +92,17 @@ Memory/CPU/log limits apply only to BIOCAD containers; the daemon and unrelated 
 
 Before server regression the dispatcher requires at least 6 GiB free disk and 4 GiB available RAM: the largest bounded regression phase can use roughly 3.4 GiB in addition to already running apps.
 If inventory is smaller, stop and choose a reviewed resource plan; do not remove other apps/images or add swap silently.
+
+Observed WB-18/21 November: main attempt1 refused at about3.94 GiB available RAM,
+while check/package had passed. An administrator temporarily stopped only the
+ownership/label-verified private `biocad-staging` project under the deploy lock,
+preserving its volumes and production; available RAM rose to about4.29 GiB.
+The failed delivery job alone was rerun with the same immutable candidate and the
+normal successful staging deployment restarted its services. A restore path was
+prepared for a failed rerun. The 4-GiB guard was retained. This recovery is operational,
+not an implemented automatic staging scheduler; future runs can still refuse low
+capacity. [Actual failure/recovery evidence](../evidence/WB-18-remote.md).
+
 
 Complete candidate regression uses `scripts/check.py --manifest ... --environment staging --run-type regression` with prebuilt runtime/test digests.
 It creates disposable `biocad-check-<unique-id>` storage/network, exposes no ports, and never uses the persistent production DB for fault injection or direct SQL tests.
