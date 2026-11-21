@@ -6,7 +6,7 @@ Booking Service и PostgreSQL — единственный источник по
 
 **[Открыть приложение](https://biocad.smalvik.dev)** ·
 [Репозиторий](https://github.com/smalvik/biocad-workspace) ·
-[Опубликованный v1.4.1](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.1) ·
+[Опубликованный v1.4.2](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.2) ·
 [Allure в браузере](https://biocad.smalvik.dev/allure/)
 
 Вымышленные демо-пользователи: **e01 … e12**, пароль **demo-workspace**.
@@ -118,10 +118,10 @@ python scripts/check_policy.py
 описывают фактический snapshot. Actions генерирует HTML и прикрепляет artifacts;
 просто наличие файлов не означает PASS.
 
-- [v1.4.1 regression Allure](https://biocad.smalvik.dev/allure/v1.4.1/), просмотр inline.
+- [v1.4.2 regression Allure](https://biocad.smalvik.dev/allure/v1.4.2/), просмотр inline.
 - [Исторический реальный бесплатный LLM smoke](https://biocad.smalvik.dev/allure/v1.3.0/live/):
   3 API + 2 browser cases, cost=0, без booking writes. Это отдельное live-доказательство.
-- [Полный CI/CD v1.4.1 PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648):
+- [Полный CI/CD v1.4.2 PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43788663155):
   248 regression checks, 35 команд exit 0; server 224 raw Allure (222 + stage/prod 2,
   Vitest отдельно). UI Allure может группировать phase/history.
 - [Подлинный RED](docs/evidence/concurrency-red.md) / [GREEN](docs/evidence/concurrency-green.md):
@@ -130,7 +130,7 @@ python scripts/check_policy.py
   race-red-green → Race sensitivity → `red.log` / `green.log`.
   Мутация запрещена для persistent БД, probe/pytest отсутствуют в runtime-образе.
 - [Доставка WB-08 и сохранность данных](docs/evidence/WB-08-remote.md),
-  [текущая задача WB-10](docs/changes/WB-10.md).
+  [WB-10: воспроизводимость и финальная доставка](docs/evidence/WB-10-remote.md).
 
 ## Архитектура, решения и API
 
@@ -174,7 +174,7 @@ Review в текущих PR — явная самопроверка агента
 
 Девять образов/schema 2, четыре runtime. `sha-<40-character-SHA>` — candidate,
 `v1.MINOR.PATCH` и `latest` — aliases после успешной доставки. Для воспроизведения
-используйте [опубликованный точный manifest v1.4.1](https://github.com/smalvik/biocad-workspace/releases/download/v1.4.1/candidate.json),
+используйте [опубликованный точный manifest v1.4.2](https://github.com/smalvik/biocad-workspace/releases/download/v1.4.2/candidate.json),
 а не подвижный latest. Один SHA собирается один раз; staging → production без rebuild.
 
 ## Объём, долги и время
@@ -188,7 +188,8 @@ WB-13–15, отдельный scope WB-16 и in-product release-history WB-17. 
 проверка interview playbook. [Актуальный статус](docs/context/CURRENT_STATE.md),
 [backlog](docs/tasks/BACKLOG.md), [progress](docs/context/PROGRESS.md).
 
-Работа в журнале относится к 14–16 ноября 2026 МСК. **Активные часы разработчика и
+Основная реализация в журнале относится к 14–16 ноября 2026 МСК; документация WB-18
+продолжена 21 ноября. **Активные часы разработчика и
 агента не измерялись**; календарные timestamp CI/коммитов не выдаются за трудозатраты.
 Пользователь задавал приоритеты, предоставил доступы и сообщил о восстановлении
 браузерного доступа. Агент подготовил код/документы/тесты и выполнил описанные проверки.
@@ -199,6 +200,16 @@ WB-13–15, отдельный scope WB-16 и in-product release-history WB-17. 
 конкурентный тест выявляет ошибки, которых не видно в scripted provider tests;
 подтверждение SMTP и commit inbox не атомарны; deployment evidence и rollback надо
 проектировать вместе с фичей. Подробные альтернативы и ограничения — в двух ADR.
+
+## Демонстрация и подготовка к интервью
+
+[PLAYBOOK](docs/interview/PLAYBOOK.md) связывает 18 задач с реальным кодом/тестами,
+показывает безопасный локальный walkthrough и отличает планы P1 от работающего демо.
+[72 вопроса](docs/interview/INTERVIEW_GUIDE.md),
+[PR/SHA/evidence по задачам](docs/interview/evidence-links.md).
+Проверка документации продолжена 21 ноября 2026: первоначальный трёхдневный план
+не выдаётся за фактическую длительность всего проекта. Отдельный черновик личной
+оценки часов подготовлен для пользователя; подтверждённого почасового учёта пока нет.
 
 ## Навигация по репозиторию
 

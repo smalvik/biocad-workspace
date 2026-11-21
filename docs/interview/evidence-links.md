@@ -1,22 +1,24 @@
 # Доказательства по задачам
 
-| Issue | PR | Коммит/SHA | Файл:строка | Allure | Статус |
+Состояние на v1.4.2 (main `4a40e18`). Сверка ответов с кодом — [PLAYBOOK](PLAYBOOK.md).
+
+| Задача | PR | Коммит/SHA | Код и доказательства | CI / Allure | Статус |
 |---|---|---|---|---|---|
-| WB-01 | [#2](https://github.com/smalvik/biocad-workspace/pull/2) | Code `bc283c7`, merge `e5bb0b5` | [Runner](../../scripts/check.py), [evidence](../evidence/WB-01-local.md) | [PR CI PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43598925846), [regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43599195552) | Merged, unreleased |
-| WB-02 | Issue #3; PR pending | Code `5f3f661`, tested from base `e5bb0b5` dirty snapshot | [API](../../services/booking/app/bookings.py), [ADR](../adr/001-booking-consistency.md), [evidence](../evidence/WB-02-local.md) | [Local Allure 50 passed](../../artifacts/20261114T133549Z-a1866f/allure-report/index.html) | Locally tested, not pushed/merged |
-| WB-03 | Issue #5; PR pending | Code `a02a488`, tested from base `34d4f7c` dirty snapshot | [SVG](../../apps/web/src/FloorMap.tsx), [snapshot hook](../../apps/web/src/useSnapshot.ts), [evidence](../evidence/WB-03-local.md) | [Local Allure 69 passed](../../artifacts/20261114T143322Z-c7f947/allure-report/index.html) | Locally tested, not pushed |
-| WB-04 | TBD | TBD | TBD | TBD | planned |
-| WB-05 | TBD | TBD | TBD | TBD | planned |
-| WB-06 | TBD | TBD | TBD | TBD | planned |
-| WB-07 | TBD | TBD | TBD | TBD | planned |
-| WB-08 | TBD | TBD | TBD | TBD | planned |
-| WB-09 | TBD | TBD | TBD | TBD | planned |
-| WB-10 | TBD | TBD | TBD | TBD | planned |
-| WB-11 | [#8](https://github.com/smalvik/biocad-workspace/pull/8) | Fix `bba451e`, merge `34d4f7c` | [Change note](../changes/WB-11.md) | [PR CI](https://github.com/smalvik/biocad-workspace/actions/runs/43604235478), [regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604565825) | Merged, unreleased; test harness fix |
-| WB-12 | TBD | TBD | TBD | TBD | planned |
-| WB-13 | TBD | TBD | TBD | TBD | planned |
-| WB-14 | TBD | TBD | TBD | TBD | planned |
-| WB-15 | TBD | TBD | TBD | TBD | planned |
-| WB-16 | TBD | TBD | TBD | TBD | planned |
-| WB-17 | TBD | TBD | TBD | TBD | planned |
-| WB-18 | TBD | TBD | TBD | TBD | planned |
+| WB-01 | [#2](https://github.com/smalvik/biocad-workspace/pull/2) | Code `bc283c7`, merge `e5bb0b5` | [Runner](../../scripts/check.py), [evidence](../evidence/WB-01-local.md) | [PR CI PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43598925846), [regression PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43599195552) | Released v1.0.0 |
+| WB-02 | [#4](https://github.com/smalvik/biocad-workspace/pull/4), main [#6](https://github.com/smalvik/biocad-workspace/pull/6) | Merge `523c116` | [API](../../services/booking/app/bookings.py), [ADR](../adr/001-booking-consistency.md), [evidence](../evidence/WB-02-local.md) | [develop regression](https://github.com/smalvik/biocad-workspace/actions/runs/43604565825) | Released v1.0.0 |
+| WB-03 | [#9](https://github.com/smalvik/biocad-workspace/pull/9) | Merge `af00fa1` | [SVG](../../apps/web/src/FloorMap.tsx), [snapshot hook](../../apps/web/src/useSnapshot.ts), [evidence](../evidence/WB-03-local.md) | [post-merge](https://github.com/smalvik/biocad-workspace/actions/runs/43608755923) | Released v1.0.0 |
+| WB-04 | [#16](https://github.com/smalvik/biocad-workspace/pull/16), main [#17](https://github.com/smalvik/biocad-workspace/pull/17) | Merge `a00f590` | [employees API](../../services/booking/app/employees.py), [evidence](../evidence/WB-04-remote.md) | [main](https://github.com/smalvik/biocad-workspace/actions/runs/43636402995) | Released v1.1.0 |
+| WB-05 | [#19](https://github.com/smalvik/biocad-workspace/pull/19), main [#20](https://github.com/smalvik/biocad-workspace/pull/20) | Merge `b98a9a3` | [flow hook](../../apps/web/src/useBookingFlow.ts), [evidence](../evidence/WB-05-remote.md) | [main](https://github.com/smalvik/biocad-workspace/actions/runs/43690831879) | Released v1.2.0 |
+| WB-06 | [#23](https://github.com/smalvik/biocad-workspace/pull/23), main [#26](https://github.com/smalvik/biocad-workspace/pull/26) | Merge `c85b8dc` | [MCP](../../services/assistant/app/mcp_server.py), [protocol](../architecture/ASSISTANT.md), [evidence](../evidence/WB-06-remote.md) | [main](https://github.com/smalvik/biocad-workspace/actions/runs/43737645275), [live](https://biocad.smalvik.dev/allure/v1.3.0/live/) | Released v1.3.0 |
+| WB-07 | [#31](https://github.com/smalvik/biocad-workspace/pull/31), main [#32](https://github.com/smalvik/biocad-workspace/pull/32) | Merge `82d14a4` | [inbox](../../services/notification/app/store.py), [ADR-002](../adr/002-broker-and-outbox.md), [evidence](../evidence/WB-07-remote.md) | [main](https://github.com/smalvik/biocad-workspace/actions/runs/43763748048) | Released v1.4.0 |
+| WB-08 | [#36](https://github.com/smalvik/biocad-workspace/pull/36), main [#37](https://github.com/smalvik/biocad-workspace/pull/37) | Merge `05e08e6` | [race probe](../../services/booking/race_probe/experiment.py), [evidence](../evidence/WB-08-remote.md) | [main](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648) | Released v1.4.1 |
+| WB-09 | [#11](https://github.com/smalvik/biocad-workspace/pull/11), main [#12](https://github.com/smalvik/biocad-workspace/pull/12); Allure [#28](https://github.com/smalvik/biocad-workspace/pull/28) | Merge `f3a6e8f`, `fd81f82` | [workflow](../../.github/workflows/ci.yaml), [dispatcher](../../scripts/deploy_server.py), [evidence](../evidence/WB-09-remote.md) | [main](https://github.com/smalvik/biocad-workspace/actions/runs/43626386129) | Released v1.0.0 / v1.3.1 |
+| WB-10 | [#39](https://github.com/smalvik/biocad-workspace/pull/39), main [#40](https://github.com/smalvik/biocad-workspace/pull/40) | Merge `e8e29cf`, main `4a40e18` | [C2](../architecture/C2.md), [evidence](../evidence/WB-10-remote.md) | [main](https://github.com/smalvik/biocad-workspace/actions/runs/43788663155) | Released v1.4.2 |
+| WB-11 | [#8](https://github.com/smalvik/biocad-workspace/pull/8), [#14](https://github.com/smalvik/biocad-workspace/pull/14), [#25](https://github.com/smalvik/biocad-workspace/pull/25), [#35](https://github.com/smalvik/biocad-workspace/pull/35) | Deadlock fix merge `75f661f` | [Change note](../changes/WB-11.md), [deadlock evidence](../evidence/WB-11-booking-deadlock.md) | [main v1.4.1](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648) | Released (v1.0.0, v1.3.0, v1.4.1); #21 monitoring |
+| WB-12 | — | — | — | — | Not implemented |
+| WB-13 | — | — | — | — | Not implemented |
+| WB-14 | — | — | — | — | Not implemented |
+| WB-15 | — | — | — | — | Not implemented |
+| WB-16 | — | — | Partial in WB-04: [snapshot](../../services/booking/app/bookings.py) | — | Separate scope not started |
+| WB-17 | — | — | Task notes + [docs/releases](../releases/v1.4.2.md); no in-product page | — | Process only; UI not implemented |
+| WB-18 | [Issue #41](https://github.com/smalvik/biocad-workspace/issues/41); PR pending | Base `e7af1e4` | [PLAYBOOK](PLAYBOOK.md), [task evidence](../changes/WB-18.md) | Pending actual run | In progress |
