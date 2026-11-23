@@ -19,7 +19,9 @@ push/PR/merge/deploy, выбрал **только бесплатную моде�
 Docker catalog403; Nvidia/Liquid отвергнуты по policy404; Ling/Gemma вернули429.
 Gemma4 оставлена кандидатом без включения на сервере. Политика данных не ослаблена;
 платные модели/кредиты не использованы, успешная inference/cost0 не выдумана.
-Draft PR и серверная доставка ещё не подтверждены. SSH22 недоступен с Windows/Docker,
+Кодcommit19313a4 запушен, создан draft [PR #45](https://github.com/smalvik/biocad-workspace/pull/45)
+в develop; CI проверяется отдельно, слияния/выпуска/деплоя WB-12 нет.
+Staged secret scan25/path170/policy/whitespace PASS. SSH22 недоступен с Windows/Docker,
 HTTPS443 доступен; прежний VPN отсутствует, пользователю отправлен запрос маршрута.
 Первый Ruff check обнаружил порядок импортов; исправление и повторный check успешны.
 Команды: Docker Compose build assistant-tests/web-tests; Docker ruff check/format;

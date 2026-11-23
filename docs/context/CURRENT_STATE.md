@@ -1,4 +1,12 @@
-# Actual implementation status — 2026-11-21 (Moscow)
+# Actual implementation status — 2026-11-23 (Moscow)
+
+**WB-12 #44: feature branch tested, draft [PR #45](https://github.com/smalvik/biocad-workspace/pull/45).**
+Request-local free fallback, shared attempt/time limits and React status implemented.
+Local277/35exit0/raw251, focused43 passed. Real-free acceptance failed
+(Docker catalog403; Nvidia/Liquid policy404; Ling/Gemma429). Gemma4 candidate only;
+no server fallback enabled. SSH22 times out; prior VPN absent. No merge/release/deploy.
+Production remains the published WB-18 v1.4.3 below.
+[Evidence](../evidence/WB-12-local.md), [resume steps](WB-12_HANDOFF.md).
 
 **WB-18 #41 released v1.4.3, 21 November 2026 Moscow:** 18-task/72-Q&A
 guide verified against code, evidence table and safe local walkthrough. PR #42
@@ -9,7 +17,7 @@ public app4/report4/expanded race logs2 PASS, downloads0. Original staging
 12 accounts per environment and 23 unrelated containers preserved;
 14 own healthy. Documentation only, no new LLM calls. Separate personal-hours draft
 is not verified accounting. [Actual evidence](../evidence/WB-18-remote.md).
-Next planned P1: **WB-12 free-model failover**, free-only/$0; other P1 scope remains TODO.
+Current P1: **WB-12 free-model failover**, draft PR, free-only/$0; other P1 scope remains TODO.
 
 **WB-10 #38 released v1.4.2:** actual C1/C2, reviewed ADRs, reproducible README,
 evidence index and concise AI-LOG; documentation only. PR #39 → develope8e29cf,

@@ -3,6 +3,9 @@
 Issue [#44](https://github.com/smalvik/biocad-workspace/issues/44),
 `feat/wb-12-llm-failover`, base `1219797795658d182c31315f43217a39e341728d`,
 working tree **dirty**, unreleased. This is pre-commit evidence, not production proof.
+Implementation committed as **19313a415a9ae8a3665c97ad7d98d6daee52da33** and pushed;
+draft [PR #45](https://github.com/smalvik/biocad-workspace/pull/45) created. Exact-head
+[CI checks](https://github.com/smalvik/biocad-workspace/pull/45/checks) are separate.
 
 Actual command: `python scripts/check.py --run-type regression`, through
 `python artifacts/run_logged.py artifacts/WB-12-local-regression.log ...`.

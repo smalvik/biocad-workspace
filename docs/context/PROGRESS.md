@@ -6,8 +6,10 @@ as 1219797. Bounded request-local free fallback and React status implemented;
 43 Assistant unit tests and React build passed; full local regression **277 checks,
 35 commands exit0, 251 raw Allure**. [Evidence](../evidence/WB-12-local.md).
 Live-free acceptance did not pass (Docker catalog403; Nvidia/Liquid policy404,
-Ling/Gemma429). Gemma4 is a candidate only; no server fallback enabled. Draft PR
-and delivery pending; SSH port22 times out, prior VPN absent.
+Ling/Gemma429). Gemma4 is a candidate only; no server fallback enabled. Draft
+[PR #45](https://github.com/smalvik/biocad-workspace/pull/45) created, code19313a4;
+delivery blocked by SSH22 timeout/prior VPN absent and live acceptance.
+[Continuation](WB-12_HANDOFF.md). No merge/deploy/release.
 No paid inference, schema migration
 or automatic booking. [Scope/decision](../adr/003-free-model-failover.md).
 
