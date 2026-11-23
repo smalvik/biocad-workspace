@@ -122,6 +122,7 @@ export type ChatMessage = { role: "user" | "assistant"; content: string };
 export type ChatResponse = {
   reply: string;
   proposal: AssistantProposal | null;
+  routing?: { state: "primary" | "fallback"; model: string };
 };
 export type Booking = BookingPayload & {
   id: string;

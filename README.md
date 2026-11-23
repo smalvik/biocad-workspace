@@ -90,9 +90,16 @@ GiST exclusion защищает `[start,end)` в БД, смежные интер
 отдельный signing secret вне local — не менее 32 символов.
 Платный fallback и покупка кредитов не разрешены.
 
+В ветке WB-12 реализовано необязательное переключение; кандидат резерва:
+`OPENROUTER_FALLBACK_MODEL=google/gemma-4-26b-a4b-it:free`.
+Пустое значение отключает переключение. Реальная приёмка резерва пока не пройдена:
+provider вернул 429; включение на сервере отложено. Статус выпуска см. в
+[CURRENT_STATE](docs/context/CURRENT_STATE.md).
+
 Каждый чат проверяет актуальный каталог и нулевые цены; каждый provider request имеет
 нулевые price caps. Бесплатная модель может быть недоступна или вернуть 429; гарантии
-capacity нет. Лимит — 3 запроса/пользователь/минуту, до 4 model rounds/8 tools и 60 секунд.
+capacity нет. Лимит — 3 запроса/пользователь/минуту, до 4 model rounds/8 tools,
+6 inference HTTP attempts на обе модели и 60 секунд вместе с проверкой каталога.
 В браузере требуется согласие; в LLM отправляются текст и минимальные вымышленные
 данные, без cookies/ключей. [MCP/RPC, токены предложений и настройки](docs/architecture/ASSISTANT.md).
 
@@ -182,7 +189,7 @@ Review в текущих PR — явная самопроверка агента
 Реализованы карта, поиск/аватары по выбранному времени, ручная форма/свои брони/отмена,
 AI read/propose/confirm, уведомления, защита БД, CI/CD и Allure. Это incremental demo,
 не утверждение о завершении всего PRD. Нет настоящего SSO/HR/CAD, HA-кластера или
-внешнего SMTP. Отложены model failover WB-12, расширенный comfort NLP/quiz/feedback
+внешнего SMTP. WB-12 model failover в работе; отложены расширенный comfort NLP/quiz/feedback
 WB-13–15, отдельный scope WB-16 и in-product release-history WB-17. Последняя страница
 ещё не реализована; опубликованные релизы доступны на GitHub. WB-18 — отдельная
 проверка interview playbook. [Актуальный статус](docs/context/CURRENT_STATE.md),

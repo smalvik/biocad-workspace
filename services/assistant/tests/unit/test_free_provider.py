@@ -4,9 +4,9 @@ import allure
 import httpx
 import pytest
 
-from app.agent import complete, verify_free_model
 from app.config import Settings
 from app.errors import AssistantError
+from app.provider import complete, verify_free_model
 
 pytestmark = [allure.suite("regression"), allure.feature("zero-price provider boundary")]
 MODEL = "inclusionai/ling-3.2-flash:free"
@@ -36,7 +36,7 @@ async def test_catalog_must_confirm_zero_price_and_required_tools(monkeypatch, p
         )
 
     monkeypatch.setattr(
-        "app.agent.httpx.AsyncClient",
+        "app.provider.httpx.AsyncClient",
         lambda **kwargs: original(transport=httpx.MockTransport(respond), **kwargs),
     )
     settings = Settings(openrouter_primary_model=MODEL)
@@ -66,7 +66,7 @@ async def test_inference_sets_all_price_caps_zero_and_preserves_zero_cost_eviden
         )
 
     monkeypatch.setattr(
-        "app.agent.httpx.AsyncClient",
+        "app.provider.httpx.AsyncClient",
         lambda **kwargs: original(transport=httpx.MockTransport(respond), **kwargs),
     )
     message, evidence = await complete(Settings(openrouter_primary_model=MODEL), [], [])
@@ -89,9 +89,9 @@ async def test_free_rate_limit_has_one_bounded_retry_without_paid_fallback(monke
             return httpx.Response(429, headers={"Retry-After": "4"})
         return httpx.Response(200, json={"model": MODEL, "usage": {"cost": 0}, "choices": [{"message": {}}]})
 
-    monkeypatch.setattr("app.agent.asyncio.sleep", sleep)
+    monkeypatch.setattr("app.provider.asyncio.sleep", sleep)
     monkeypatch.setattr(
-        "app.agent.httpx.AsyncClient",
+        "app.provider.httpx.AsyncClient",
         lambda **kwargs: original(transport=httpx.MockTransport(respond), **kwargs),
     )
     if recover:

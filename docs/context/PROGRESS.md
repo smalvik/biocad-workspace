@@ -1,5 +1,16 @@
 # Development progress (fill with actual evidence)
 
+**23 November 2026 Moscow: WB-12 #44 in progress**, branch
+`feat/wb-12-llm-failover`, based on develop9c30d7a with WB-18 final evidence carried
+as 1219797. Bounded request-local free fallback and React status implemented;
+43 Assistant unit tests and React build passed; full local regression **277 checks,
+35 commands exit0, 251 raw Allure**. [Evidence](../evidence/WB-12-local.md).
+Live-free acceptance did not pass (Docker catalog403; Nvidia/Liquid policy404,
+Ling/Gemma429). Gemma4 is a candidate only; no server fallback enabled. Draft PR
+and delivery pending; SSH port22 times out, prior VPN absent.
+No paid inference, schema migration
+or automatic booking. [Scope/decision](../adr/003-free-model-failover.md).
+
 **WB-18 #41 released v1.4.3, 21 November 2026 Moscow:** 18-task/72-Q&A
 guide verified against code, evidence table and safe local walkthrough. PR #42
 → develop9c30d7a, promotion #43 → main **fb0d3428e3631e94e13f3bd2c0f8ddc15c01269d**.

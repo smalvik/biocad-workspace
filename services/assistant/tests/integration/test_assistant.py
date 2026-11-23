@@ -109,6 +109,7 @@ async def test_chat_proposal_only_then_concurrent_idempotent_confirmation(accoun
     assert response.status_code == 200, response.text
     data = response.json()
     assert data["scripted_test"] is True
+    assert data["routing"]["state"] == "primary"
     assert data["tools_used"] == ["get_availability", "propose_booking"]
     assert (await booking.get("/api/v1/bookings/me")).json()["items"] == before
     proposal = data["proposal"]
@@ -237,3 +238,34 @@ async def test_last_planning_round_finishes_proposal_without_an_extra_model_call
     assert len(data["provider_calls"]) == 4
     assert data["tools_used"] == ["search_employees"] * 3 + ["get_availability", "propose_booking"]
     assert (await booking.get("/api/v1/bookings/me")).json()["items"] == before
+
+
+async def test_fallback_proposes_via_real_tools_and_requires_idempotent_user_confirmation(account):
+    booking, assistant, _, _ = account
+    before = (await booking.get("/api/v1/bookings/me")).json()["items"]
+    response = await chat(assistant, "резерв AI: найди FreeDesk")
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert data["routing"] == {"state": "fallback", "model": "test/fallback"}
+    assert data["model"] == "test/fallback" and data["provider_calls"][0]["cost"] == 0
+    assert data["provider_attempts"] == [
+        {"model": "test/scripted", "outcome": "http_503"},
+        {"model": "test/fallback", "outcome": "success"},
+    ]
+    assert data["tools_used"] == ["get_availability", "propose_booking"]
+    assert (await booking.get("/api/v1/bookings/me")).json()["items"] == before
+    body = {"proposal_token": data["proposal"]["token"], "idempotency_key": uuid4().hex}
+    try:
+        responses = await asyncio.gather(
+            *(assistant.post("/api/v1/assistant/confirm", json=body) for _ in range(2))
+        )
+        assert all(row.status_code == 200 for row in responses)
+        assert responses[0].json() == responses[1].json()
+        booking_id = responses[0].json()["id"]
+        own = (await booking.get("/api/v1/bookings/me")).json()["items"]
+        assert sum(row["id"] == booking_id for row in own) == 1
+    finally:
+        own = (await booking.get("/api/v1/bookings/me")).json()["items"]
+        for row in own:
+            if row["id"] not in {old["id"] for old in before}:
+                assert (await booking.post(f"/api/v1/bookings/{row['id']}/cancel")).status_code == 200

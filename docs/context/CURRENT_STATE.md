@@ -74,7 +74,8 @@ WB-07/WB-08/WB-10/WB-18/WB-11 #34 made no new task inference calls. Current publ
 smoke4, report UI4 and expanded race log UI2 passed; Allure opens inline with zero downloads and retains
 those original live results. Published Booking runtime physically excludes probe/pytest.
 
-Next planned P1: **WB-12 free-model failover**; WB-17 process notes/releases exist,
+WB-12 free-model failover is now **in progress on its feature branch**; current
+production above still uses the released single-model implementation. WB-17 process notes/releases exist,
 its in-product UI remains P1. This does not claim completion of the entire PRD.
 P1 comfort/quiz/failover/feedback and the actual
 in-product release-history page are not claimed delivered. See [backlog](../tasks/BACKLOG.md).

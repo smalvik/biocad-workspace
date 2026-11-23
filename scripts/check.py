@@ -58,7 +58,7 @@ def main() -> int:
             "RABBITMQ_PASSWORD": "biocad-test-only",
             "OPENROUTER_API_KEY": "fixture-not-secret",
             "OPENROUTER_PRIMARY_MODEL": "test/scripted",
-            "OPENROUTER_FALLBACK_MODEL": "",
+            "OPENROUTER_FALLBACK_MODEL": "test/fallback",
             "OPENROUTER_BASE_URL": "http://llm-fixture:8090/v1",
             "ENABLE_LLM_TEST_FIXTURE": "true",
             "ASSISTANT_PROPOSAL_SECRET": "isolated-proposal-only-secret-32-characters",

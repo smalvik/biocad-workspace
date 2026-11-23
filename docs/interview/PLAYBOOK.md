@@ -32,7 +32,7 @@ WB-18 опубликован в [v1.4.3](https://github.com/smalvik/biocad-works
 | WB-09 | **Исправлено**: webhook не используется. Actions → SSH-ключ `restrict,command="/usr/local/bin/biocad-ssh-entry"` → dispatcher с allowlist JSON-операций; promotion точных digest | [ci.yaml](../../.github/workflows/ci.yaml), [bootstrap_server.py](../../scripts/bootstrap_server.py), [deploy_server.py](../../scripts/deploy_server.py), [test_delivery.py](../../tests/delivery/test_delivery.py), [DELIVERY.md](../process/DELIVERY.md) |
 | WB-10 | Совпадает | [C1](../architecture/C1.md), [C2](../architecture/C2.md), [EVIDENCE](../architecture/EVIDENCE.md), [AI-LOG](../../AI-LOG.md) |
 | WB-11 | Совпадает; реальный пример — #34: `40P01` → 500, найден WB-08 probe | [WB-11 note](../changes/WB-11.md), [evidence](../evidence/WB-11-booking-deadlock.md), [PR #35](https://github.com/smalvik/biocad-workspace/pull/35) |
-| WB-12 | **Не реализовано**: только free-only модель и один bounded retry 429 той же модели | [config.py](../../services/assistant/app/config.py), [test_free_provider.py](../../services/assistant/tests/unit/test_free_provider.py) |
+| WB-12 | **Реализовано в feature-ветке, не выпущено**: bounded free failover/React statuses; локально277 PASS, live acceptance blocked (403/404/429) | [provider.py](../../services/assistant/app/provider.py), [ADR-003](../adr/003-free-model-failover.md), [evidence](../evidence/WB-12-local.md) |
 | WB-13–15 | **Не реализовано**: ответы — дизайн | [backlog](../tasks/BACKLOG.md) |
 | WB-16 | Частично: счётчик нескольких броней и интервалы есть (`occupancy_kind="multiple"`, `is_partial`); отдельный calendar-scope не начат | [bookings.py](../../services/booking/app/bookings.py), [domain.test.ts](../../apps/web/src/domain.test.ts), [smoke.spec.ts](../../tests/e2e/specs/smoke.spec.ts) |
 | WB-17 | Частично: task notes, [docs/releases](../releases/v1.4.2.md), GitHub Releases и asset `releases.json`; **in-product страница `/releases` и загрузка истории в UI не реализованы** | [publish_release.py](../../scripts/publish_release.py) |
@@ -105,6 +105,8 @@ INSERT и прямую DB-проверку доказывает автомати
 - **«Почему нет failover/comfort/quiz?»** — В первоначальном трёхдневном плане
   приоритет отдали P0; P1/P2 в [backlog](../tasks/BACKLOG.md). Документация WB-18
   продолжена 21 ноября: не утверждайте, что весь проект завершён за три дня.
+  WB-12 начат23 ноября: код/test fixture проходят, но реальная бесплатная модель
+  и серверная доставка пока не приняты; работающий production failover не заявлен.
 - **«Регрессия использует настоящий LLM?»** — Нет: CI LLM — scripted fixture; MCP,
   RabbitMQ, PostgreSQL настоящие. Реальный free-model прогон — отдельный
   [v1.3.0 live report](https://biocad.smalvik.dev/allure/v1.3.0/live/), cost=0.
