@@ -52,6 +52,7 @@ export function AssistantChat({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [proposal, setProposal] = useState<AssistantProposal | null>(null);
+  const [routing, setRouting] = useState<"primary" | "fallback" | "unavailable" | null>(null);
   const controller = useRef<AbortController | null>(null);
   const locked = useRef(false);
   useEffect(() => () => controller.current?.abort(), []);
@@ -63,6 +64,7 @@ export function AssistantChat({
     setBusy(true);
     setError("");
     setProposal(null);
+    setRouting(null);
     const pending: ChatMessage = { role: "user", content: text };
     setMessages([...messages, pending]);
     setInput("");
@@ -88,16 +90,19 @@ export function AssistantChat({
         { role: "assistant", content: result.reply },
       ]);
       setProposal(result.proposal);
+      setRouting(result.routing?.state ?? "primary");
       if (result.proposal) onProposal(result.proposal);
     } catch (reason) {
       if (request.signal.aborted) return;
       if (reason instanceof ApiError && reason.status === 401) onExpired();
-      else
+      else {
+        setRouting("unavailable");
         setError(
           reason instanceof Error
             ? reason.message
             : "AI недоступен. Используйте форму.",
         );
+      }
     } finally {
       locked.current = false;
       if (!request.signal.aborted) setBusy(false);
@@ -113,6 +118,16 @@ export function AssistantChat({
         Выбрано на плане: {floor.name} · {moscowDate(window.from)} ·{" "}
         {moscowTime(window.from)}–{moscowTime(window.to)} МСК.
       </p>
+      {routing && (
+        <p role="status" data-testid="assistant-model-status" data-state={routing}>
+          {routing === "primary"
+            ? "Основная бесплатная модель."
+            : routing === "fallback"
+              ? "Резервная модель; ответы могут содержать ошибки."
+              : "Ответ AI недоступен. Бронирование через форму работает."}
+        </p>
+      )}
+      <p className="muted">AI может ошибаться. Проверьте ресурс, дату и время перед подтверждением.</p>
       <div
         className="assistant-messages"
         role="log"

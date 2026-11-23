@@ -48,3 +48,17 @@ The initial Gemma free probe returned provider 429. Ling 3.2 Flash free returned
 real tool calls with `usage.cost=0`; it is the selected primary pending complete
 live acceptance. One bounded same-model 429 retry may respect Retry-After, but no
 automatic model switch or paid route is permitted. Manual bookings remain usable.
+
+## 2026-11-23 — WB-12: named free backup under the same $0 cap
+
+The user resumed the next planned task, WB-12, retaining the explicit free-only
+restriction. This extends the WB-06 single-model decision only to a named verified
+free fallback, with candidate `google/gemma-4-26b-a4b-it:free`, after the existing Ling free
+primary. No paid route, credit purchase or unbounded retries are authorized.
+Both models require a fresh zero-price/tool-capability catalog and per-request zero
+price caps. Use a request-local one-way switch, six total inference attempts and a
+60-second chat deadline; no fallback after auth/billing/policy or price violations.
+Enable a server fallback only after real-free acceptance under the unchanged data
+policy. Nvidia/Liquid were rejected by current privacy routing; Gemma returned429,
+so no backup is claimed verified or enabled. See [ADR-003](../adr/003-free-model-failover.md).
+This entry records scope, not release.

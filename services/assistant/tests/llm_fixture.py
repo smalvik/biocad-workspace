@@ -17,11 +17,15 @@ async def health():
 async def completions(request: Request):
     body = await request.json()
     assert request.headers["authorization"] == "Bearer fixture-not-secret"
-    assert body["model"] == "test/scripted"
+    assert body["model"] in {"test/scripted", "test/fallback"}
+    assert body["provider"]["max_price"] == {"prompt": 0, "completion": 0, "request": 0}
+    assert body["provider"]["allow_fallbacks"] is False
     messages = body["messages"]
     user = next(m["content"] for m in reversed(messages) if m["role"] == "user")
     if "сбой AI" in user:
         return JSONResponse({"error": "scripted provider outage"}, status_code=503)
+    if "резерв AI" in user and body["model"] == "test/scripted":
+        return JSONResponse({"error": "scripted primary outage"}, status_code=503)
     context = json.loads(messages[0]["content"].split("\nContext: ")[1])["selected"]
     start, end = context["start_at"], context["end_at"]
     tool_results = [json.loads(m["content"]) for m in messages if m["role"] == "tool"]
@@ -56,6 +60,8 @@ async def completions(request: Request):
             },
         )
     return {
+        "model": body["model"],
+        "usage": {"cost": 0},
         "choices": [
             {
                 "message": {
@@ -70,5 +76,5 @@ async def completions(request: Request):
                     ],
                 }
             }
-        ]
+        ],
     }

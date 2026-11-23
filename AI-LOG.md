@@ -1,4 +1,4 @@
-# AI-LOG — работа 14–16 ноября; продолжение 21 ноября 2026 (МСК)
+# AI-LOG — работа 14–16 ноября; продолжение 21 и 23 ноября 2026 (МСК)
 
 Пользователь задавал приоритеты, предоставил доступы в ignored env, разрешил
 push/PR/merge/deploy, выбрал **только бесплатную модель / бюджет $0** и сообщил,
@@ -7,6 +7,25 @@ push/PR/merge/deploy, выбрал **только бесплатную моде�
 подтверждены. Review в PR — явная самопроверка агента, не независимое human approval.
 Активные часы разработчика/агента не измерялись; календарные даты их не заменяют.
 Точная модель/стоимость агента неизвестны. Не заявляем сэкономленные часы.
+
+23 ноября начата WB-12 #44, отдельная `feat/wb-12-llm-failover` от develop;
+финальные доказательства WB-18 перенесены commit1219797. Агент реализовал ограниченное
+переключение между явно настроенными free-моделями, свежую проверку каталога,
+общие лимиты и статусы React. Только бесплатные модели/$0; paid fallback исключён.
+Реально выполнены сборка React и 43 unit-теста Assistant, PASS. Полная локальная
+регрессия 20261123T075832Z-5fd8c1: **277 проверок /35 команд exit0 /251 raw Allure**,
+включая настоящие MCP/RabbitMQ/PostgreSQL и desktop/mobile. Тест общего лимита
+усилен после полного прогона, 43 unit повторно PASS. Реальная приёмка не пройдена:
+Docker catalog403; Nvidia/Liquid отвергнуты по policy404; Ling/Gemma вернули429.
+Gemma4 оставлена кандидатом без включения на сервере. Политика данных не ослаблена;
+платные модели/кредиты не использованы, успешная inference/cost0 не выдумана.
+Кодcommit19313a4 запушен, создан draft [PR #45](https://github.com/smalvik/biocad-workspace/pull/45)
+в develop; CI проверяется отдельно, слияния/выпуска/деплоя WB-12 нет.
+Staged secret scan25/path170/policy/whitespace PASS. SSH22 недоступен с Windows/Docker,
+HTTPS443 доступен; прежний VPN отсутствует, пользователю отправлен запрос маршрута.
+Первый Ruff check обнаружил порядок импортов; исправление и повторный check успешны.
+Команды: Docker Compose build assistant-tests/web-tests; Docker ruff check/format;
+pytest tests/unit. [Область и решение](docs/adr/003-free-model-failover.md).
 
 | Конкретное решение | Инициатор / изменение | Фактическая проверка и след |
 |---|---|---|
@@ -20,29 +39,16 @@ agent заменил его серверным root-only сравнением и
 выдаются за неё. Секреты не помещались в Git/argv/публичные логи; персональные
 данные в LLM не отправлялись. Новых LLM calls после v1.3.0 для WB-07/08/10 не требуется.
 
-Срез продукта v1.4.1: отдельные [PR #35](https://github.com/smalvik/biocad-workspace/pull/35)/
-[#36](https://github.com/smalvik/biocad-workspace/pull/36), main [#37](https://github.com/smalvik/biocad-workspace/pull/37),
-source **5364c9e**, [CI/server PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43779639648):
-248 checks / 35 commands exit 0 / 224 raw server Allure. RED 2 failed, GREEN 3 passed
-в child DB; public app 4/report 4/race attachments 2 PASS, downloads=0; данные и
-23 чужих контейнера сохранены. [Progress и история](docs/context/PROGRESS.md).
-
-WB-10 выпущен в **v1.4.2**, [issue #38](https://github.com/smalvik/biocad-workspace/issues/38),
-`docs/wb-10-delivery-evidence` от develop05e08e6 с перенесёнными WB-08 notes e301cb3:
-agent сверяет C1/C2/ADR с кодом, сокращает README, составляет evidence index и
-проверил clean local запуск: 7 healthy, 4 browser smoke PASS; Mermaid3 и full248
-PASS, 35 commands exit0 / raw Allure222. [Task note](docs/changes/WB-10.md),
-[actual commands](docs/evidence/WB-10-remote.md). Часы запрошены, пока не указаны.
-PR39 → develope8e29cf, PR40 → main4a40e18;
-[CI/server 43788663155 PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43788663155): 248/35exit0/raw224.
-Public app4/report4 PASS, download0; данные/23 чужих контейнера сохранены.
-Новых LLM calls и runtime changes не было; следующая P0 docs — WB-18.
-Весь PRD и отложенные WB-12–18 не объявляются готовыми.
-
-WB-18, issue #41: 21 ноября продолжены существующие черновики; guide18/72 сверен
-с кодом, исправлены ACL/trace/SMTP/RPC/deploy и безопасный walkthrough, готовится
-полная проверка. Runtime/schema не менялись, новых LLM calls нет. Пользователь попросил
-сгенерировать оценку часов отдельно: создан локальный иллюстративный черновик для
-проверки, не подтверждённый журнал. В публичных документах факт остаётся «не измерялось».
-Локальный full **20261121T112324Z-e3bdea PASS**: 248/35exit0/raw222;
-structure18/72 и links PASS. Remote CI/release ещё не заявляются выполненными.
+WB-10 v1.4.2: C1/C2/README/ADR/evidence; [проверки/доставка](docs/evidence/WB-10-remote.md).
+WB-18 продолжен **21 ноября**, issue #41: сохранены исходные черновики, 18/72
+сверены с кодом, исправлены speculative ACL/types/trace/SMTP/deploy и walkthrough.
+PR#42 → develop9c30d7a, promotion#43 → mainfb0d342.
+[Main CI/server 44901696653 PASS](https://github.com/smalvik/biocad-workspace/actions/runs/44901696653):
+248 checks /35 commands exit0 /224 raw Allure. Public app4/report4/race logs2 PASS,
+downloads0; исходные данные и 23 чужих контейнера сохранены.
+[Полное evidence](docs/evidence/WB-18-remote.md). Runtime/schema не менялись, новых
+LLM calls нет. Main1 отказал на RAM preflight; только private staging временно
+остановлен, delivery2 с тем же candidate прошёл и восстановил staging, порог сохранён.
+По просьбе пользователя отдельно создан игнорируемый иллюстративный
+черновик часов для его проверки; он не опубликован и не стал фактическим учётом.
+Остальные P1/P2 и весь PRD не объявляются готовыми; следующий P1 — WB-12 free-only.

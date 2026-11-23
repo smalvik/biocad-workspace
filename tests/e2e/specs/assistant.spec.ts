@@ -101,6 +101,7 @@ test("@mobile AI proposes through MCP and books only after explicit exact-slot c
   expect(response.status()).toBe(200);
   const data = await response.json();
   expect(data.scripted_test).toBe(true);
+  await expect(chat(page).getByTestId("assistant-model-status")).toHaveAttribute("data-state", "primary");
   expect(data.tools_used).toEqual(["get_availability", "propose_booking"]);
   expect(writes).toEqual([]);
   await expect(chat(page)).toContainText("Бронь ещё не создана");
@@ -156,6 +157,7 @@ test("@mobile provider outage leaves the manual booking flow usable", async ({
   await login(page, info);
   const response = await ask(page, "сбой AI");
   expect(response.status()).toBe(503);
+  await expect(chat(page).getByTestId("assistant-model-status")).toHaveAttribute("data-state", "unavailable");
   await expect(chat(page).getByRole("alert")).toContainText(
     "AI сейчас недоступен",
   );
@@ -176,6 +178,21 @@ test("@mobile provider outage leaves the manual booking flow usable", async ({
   await expect(
     page.getByRole("dialog", { name: "Результат бронирования" }),
   ).toContainText("Бронь подтверждена");
+});
+
+test("@mobile primary outage uses free fallback and only proposes until explicit confirmation", async ({ page }, info) => {
+  await login(page, info);
+  const response = await ask(page, "резерв AI: найди FreeDesk на выбранное время");
+  expect(response.status()).toBe(200);
+  const data = await response.json();
+  expect(data.routing).toEqual({ state: "fallback", model: "test/fallback" });
+  expect(data.provider_calls.every((call: { cost: number }) => call.cost === 0)).toBe(true);
+  const status = chat(page).getByTestId("assistant-model-status");
+  await expect(status).toHaveAttribute("data-state", "fallback");
+  await expect(status).toContainText("Резервная модель; ответы могут содержать ошибки");
+  await expect(chat(page)).toContainText("Бронь ещё не создана");
+  await chat(page).getByRole("button", { name: "Вернуться к плану" }).click();
+  await expect(page.getByTestId(`space-${data.proposal.selection.space_id}`)).toHaveAttribute("data-status", "free");
 });
 
 test("@mobile clarification creates no proposal and closing a pending chat ignores its late reply", async ({

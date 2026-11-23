@@ -83,15 +83,22 @@ collection and caps prompt/completion/request pricing at **0**. Only explicit
 `:free` variants are allowed; each chat verifies current official catalog prices
 and required tool capabilities. A price change or catalog failure stops AI instead
 of routing to a paid endpoint. One same-model 429 retry waits at least Retry-After
-(3–10 s); longer/invalid delays or a repeated 429 return an honest rate error.
-WB-12 model failover is still separate work and must also respect free-only consent.
+(3–10 s). Without an eligible verified fallback, longer/invalid delays or a repeated
+429 return an honest rate error; WB-12 may instead make its one bounded switch.
+WB-12 adds one request-local switch to a separately verified named free model after
+eligible availability failures. The shared limit is six inference HTTP attempts,
+four planning rounds, eight tools and 60 seconds including fresh catalog checks.
+Auth/billing/policy and price/model boundary failures terminate; they do not switch.
+See [ADR-003](../adr/003-free-model-failover.md) for routing and validation details.
 
 ## Configuration and spend cap
 
 Set server-only `OPENROUTER_API_KEY`, approved `OPENROUTER_PRIMARY_MODEL`, a separate
 random `ASSISTANT_PROPOSAL_SECRET` (32+ characters outside local), and an approved
 `ASSISTANT_BUDGET_USD=0`. The user explicitly approved **free models only**.
-The selected primary is `inclusionai/ling-3.2-flash:free`; no paid fallback is allowed.
+The selected primary is `inclusionai/ling-3.2-flash:free`; optional
+`OPENROUTER_FALLBACK_MODEL=google/gemma-4-26b-a4b-it:free` enables the named
+free backup. An empty fallback disables switching. No paid fallback is allowed.
 `ASSISTANT_REQUESTS_PER_MINUTE` defaults to 3 per authenticated employee, persisted
 in PostgreSQL. Free inference works with a zero monetary budget. Runtime Compose
 enforces `ASSISTANT_FREE_ONLY=true`; Booking rejects paid reservation requests.

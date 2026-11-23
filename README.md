@@ -6,7 +6,7 @@ Booking Service и PostgreSQL — единственный источник по
 
 **[Открыть приложение](https://biocad.smalvik.dev)** ·
 [Репозиторий](https://github.com/smalvik/biocad-workspace) ·
-[Опубликованный v1.4.2](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.2) ·
+[Опубликованный v1.4.3](https://github.com/smalvik/biocad-workspace/releases/tag/v1.4.3) ·
 [Allure в браузере](https://biocad.smalvik.dev/allure/)
 
 Вымышленные демо-пользователи: **e01 … e12**, пароль **demo-workspace**.
@@ -90,9 +90,16 @@ GiST exclusion защищает `[start,end)` в БД, смежные интер
 отдельный signing secret вне local — не менее 32 символов.
 Платный fallback и покупка кредитов не разрешены.
 
+В ветке WB-12 реализовано необязательное переключение; кандидат резерва:
+`OPENROUTER_FALLBACK_MODEL=google/gemma-4-26b-a4b-it:free`.
+Пустое значение отключает переключение. Реальная приёмка резерва пока не пройдена:
+provider вернул 429; включение на сервере отложено. Статус выпуска см. в
+[CURRENT_STATE](docs/context/CURRENT_STATE.md).
+
 Каждый чат проверяет актуальный каталог и нулевые цены; каждый provider request имеет
 нулевые price caps. Бесплатная модель может быть недоступна или вернуть 429; гарантии
-capacity нет. Лимит — 3 запроса/пользователь/минуту, до 4 model rounds/8 tools и 60 секунд.
+capacity нет. Лимит — 3 запроса/пользователь/минуту, до 4 model rounds/8 tools,
+6 inference HTTP attempts на обе модели и 60 секунд вместе с проверкой каталога.
 В браузере требуется согласие; в LLM отправляются текст и минимальные вымышленные
 данные, без cookies/ключей. [MCP/RPC, токены предложений и настройки](docs/architecture/ASSISTANT.md).
 
@@ -118,10 +125,10 @@ python scripts/check_policy.py
 описывают фактический snapshot. Actions генерирует HTML и прикрепляет artifacts;
 просто наличие файлов не означает PASS.
 
-- [v1.4.2 regression Allure](https://biocad.smalvik.dev/allure/v1.4.2/), просмотр inline.
+- [v1.4.3 regression Allure](https://biocad.smalvik.dev/allure/v1.4.3/), просмотр inline.
 - [Исторический реальный бесплатный LLM smoke](https://biocad.smalvik.dev/allure/v1.3.0/live/):
   3 API + 2 browser cases, cost=0, без booking writes. Это отдельное live-доказательство.
-- [Полный CI/CD v1.4.2 PASS](https://github.com/smalvik/biocad-workspace/actions/runs/43788663155):
+- [Полный CI/CD v1.4.3 PASS](https://github.com/smalvik/biocad-workspace/actions/runs/44901696653):
   248 regression checks, 35 команд exit 0; server 224 raw Allure (222 + stage/prod 2,
   Vitest отдельно). UI Allure может группировать phase/history.
 - [Подлинный RED](docs/evidence/concurrency-red.md) / [GREEN](docs/evidence/concurrency-green.md):
@@ -174,7 +181,7 @@ Review в текущих PR — явная самопроверка агента
 
 Девять образов/schema 2, четыре runtime. `sha-<40-character-SHA>` — candidate,
 `v1.MINOR.PATCH` и `latest` — aliases после успешной доставки. Для воспроизведения
-используйте [опубликованный точный manifest v1.4.2](https://github.com/smalvik/biocad-workspace/releases/download/v1.4.2/candidate.json),
+используйте [опубликованный точный manifest v1.4.3](https://github.com/smalvik/biocad-workspace/releases/download/v1.4.3/candidate.json),
 а не подвижный latest. Один SHA собирается один раз; staging → production без rebuild.
 
 ## Объём, долги и время
@@ -182,7 +189,7 @@ Review в текущих PR — явная самопроверка агента
 Реализованы карта, поиск/аватары по выбранному времени, ручная форма/свои брони/отмена,
 AI read/propose/confirm, уведомления, защита БД, CI/CD и Allure. Это incremental demo,
 не утверждение о завершении всего PRD. Нет настоящего SSO/HR/CAD, HA-кластера или
-внешнего SMTP. Отложены model failover WB-12, расширенный comfort NLP/quiz/feedback
+внешнего SMTP. WB-12 model failover в работе; отложены расширенный comfort NLP/quiz/feedback
 WB-13–15, отдельный scope WB-16 и in-product release-history WB-17. Последняя страница
 ещё не реализована; опубликованные релизы доступны на GitHub. WB-18 — отдельная
 проверка interview playbook. [Актуальный статус](docs/context/CURRENT_STATE.md),
@@ -205,6 +212,7 @@ WB-13–15, отдельный scope WB-16 и in-product release-history WB-17. 
 
 [PLAYBOOK](docs/interview/PLAYBOOK.md) связывает 18 задач с реальным кодом/тестами,
 показывает безопасный локальный walkthrough и отличает планы P1 от работающего демо.
+WB-18 выпущен в v1.4.3; [фактическая доставка](docs/evidence/WB-18-remote.md).
 [72 вопроса](docs/interview/INTERVIEW_GUIDE.md),
 [PR/SHA/evidence по задачам](docs/interview/evidence-links.md).
 Проверка документации продолжена 21 ноября 2026: первоначальный трёхдневный план
